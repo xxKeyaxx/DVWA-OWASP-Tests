@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP Parameter Pollution Assessment - DVWA (OTG-INPVAL-004)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            margin-bottom: 25px;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            color: #2a5298;
+            border-bottom: 2px solid #2a5298;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #2a5298;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .vulnerable {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .not-vulnerable {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .code {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            white-space: pre-wrap;
+        }
+        .risk-high {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .risk-medium {
+            color: #f57c00;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .summary-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid #1e88e5;
+        }
+        .findings-summary {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .finding-item {
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+        }
+        .finding-vuln {
+            background-color: #d32f2f;
+        }
+        .finding-safe {
+            background-color: #388e3c;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>HTTP Parameter Pollution Assessment</h1>
+        <p>DVWA Security Test - OWASP Testing Guide OTG-INPVAL-004</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Executive Summary</h2>
+        <div class="summary-box">
+            <p>This assessment identified <span class="risk-high">7 HTTP Parameter Pollution vulnerabilities</span> in the DVWA application. HTTP Parameter Pollution (HPP) occurs when applications process multiple parameters with the same name in unexpected ways, potentially leading to input validation bypass, security control circumvention, or other vulnerabilities.</p>
+        </div>
+        <div class="findings-summary">
+            <div class="finding-item finding-vuln">
+                <h3>7</h3>
+                <p>Vulnerable Tests</p>
+            </div>
+            <div class="finding-item finding-safe">
+                <h3>53</h3>
+                <p>Secure Tests</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Test Details</h2>
+        <table>
+            <tr>
+                <td><strong>Target Application</strong></td>
+                <td>Damn Vulnerable Web Application (DVWA)</td>
+            </tr>
+            <tr>
+                <td><strong>Test Type</strong></td>
+                <td>HTTP Parameter Pollution</td>
+            </tr>
+            <tr>
+                <td><strong>OWASP Test ID</strong></td>
+                <td>OTG-INPVAL-004</td>
+            </tr>
+            <tr>
+                <td><strong>Risk Level</strong></td>
+                <td><span class="risk-medium">Medium</span></td>
+            </tr>
+            <tr>
+                <td><strong>Test Date</strong></td>
+                <td>2025-07-26 04:00:33</td>
+            </tr>
+            <tr>
+                <td><strong>Target URL</strong></td>
+                <td>http://localhost/dvwa</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Methodology</h2>
+        <p>The testing methodology followed the OWASP Testing Guide for HTTP Parameter Pollution:</p>
+        <ol>
+            <li><strong>Authentication</strong>: Logged into DVWA with provided credentials</li>
+            <li><strong>Endpoint Discovery</strong>: Identified GET parameter endpoints throughout DVWA modules</li>
+            <li><strong>Pollution Testing</strong>: Tested various parameter pollution techniques including duplicate parameters, array notation, and comma separation</li>
+            <li><strong>Analysis</strong>: Documented endpoints that processed polluted parameters in unexpected ways</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Findings</h2>
+        <p>The following parameter pollution tests were conducted:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Module</th>
+                    <th>Parameter</th>
+                    <th>Technique</th>
+                    <th>Payload Type</th>
+                    <th>Status</th>
+                    <th>Status Code</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Duplicate Parameters</td>
+                    <td>benign</td>
+                    <td><span class="vulnerable">VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="background-color: #fff3e0;">
+                        <strong>Description:</strong> Both parameter values processed or unexpected behavior detected<br>
+                        <strong>Parameters:</strong> [(&#x27;Submit&#x27;, &#x27;test_first&#x27;), (&#x27;Submit&#x27;, &#x27;test_second&#x27;)]
+                    </td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Duplicate Parameters</td>
+                    <td>benign</td>
+                    <td><span class="vulnerable">VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="background-color: #fff3e0;">
+                        <strong>Description:</strong> Both parameter values processed or unexpected behavior detected<br>
+                        <strong>Parameters:</strong> [(&#x27;id&#x27;, &#x27;test_first&#x27;), (&#x27;id&#x27;, &#x27;test_second&#x27;)]
+                    </td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Duplicate Parameters</td>
+                    <td>benign</td>
+                    <td><span class="vulnerable">VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="background-color: #fff3e0;">
+                        <strong>Description:</strong> Both parameter values processed or unexpected behavior detected<br>
+                        <strong>Parameters:</strong> [(&#x27;name&#x27;, &#x27;test_first&#x27;), (&#x27;name&#x27;, &#x27;test_second&#x27;)]
+                    </td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Duplicate Parameters</td>
+                    <td>malicious</td>
+                    <td><span class="vulnerable">VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="background-color: #fff3e0;">
+                        <strong>Description:</strong> Both parameter values processed or unexpected behavior detected<br>
+                        <strong>Parameters:</strong> [(&#x27;name&#x27;, &#x27;&lt;script&gt;alert(&quot;HPP&quot;)&lt;/script&gt;_first&#x27;), (&#x27;name&#x27;, &#x27;&lt;script&gt;alert(&quot;HPP&quot;)&lt;/script&gt;_second&#x27;)]
+                    </td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Duplicate Parameters</td>
+                    <td>command</td>
+                    <td><span class="vulnerable">VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="background-color: #fff3e0;">
+                        <strong>Description:</strong> Both parameter values processed or unexpected behavior detected<br>
+                        <strong>Parameters:</strong> [(&#x27;name&#x27;, &#x27;whoami_first&#x27;), (&#x27;name&#x27;, &#x27;whoami_second&#x27;)]
+                    </td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Duplicate Parameters</td>
+                    <td>sql</td>
+                    <td><span class="vulnerable">VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="background-color: #fff3e0;">
+                        <strong>Description:</strong> Both parameter values processed or unexpected behavior detected<br>
+                        <strong>Parameters:</strong> [(&#x27;name&#x27;, &quot;&#x27; OR &#x27;1&#x27;=&#x27;1_first&quot;), (&#x27;name&#x27;, &quot;&#x27; OR &#x27;1&#x27;=&#x27;1_second&quot;)]
+                    </td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Comma Separation</td>
+                    <td>malicious</td>
+                    <td><span class="vulnerable">VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="background-color: #fff3e0;">
+                        <strong>Description:</strong> Malicious payload executed - potential XSS via HPP<br>
+                        <strong>Parameters:</strong> {&#x27;name&#x27;: &#x27;&lt;script&gt;alert(&quot;HPP&quot;)&lt;/script&gt;_first,&lt;script&gt;alert(&quot;HPP&quot;)&lt;/script&gt;_second&#x27;}
+                    </td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Duplicate Parameters</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Duplicate Parameters</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Duplicate Parameters</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Duplicate Parameters</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Array Notation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Array Notation</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Array Notation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Array Notation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Comma Separation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Comma Separation</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Comma Separation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>Submit</td>
+                    <td>Comma Separation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Duplicate Parameters</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Duplicate Parameters</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Duplicate Parameters</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Duplicate Parameters</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Array Notation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Array Notation</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Array Notation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Array Notation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Comma Separation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Comma Separation</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Comma Separation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli/</td>
+                    <td>id</td>
+                    <td>Comma Separation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Duplicate Parameters</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Duplicate Parameters</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Duplicate Parameters</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Array Notation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Array Notation</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Array Notation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Array Notation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Comma Separation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Comma Separation</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Comma Separation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>Submit</td>
+                    <td>Comma Separation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>404</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Duplicate Parameters</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Duplicate Parameters</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Duplicate Parameters</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Array Notation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Array Notation</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Array Notation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Array Notation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Comma Separation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Comma Separation</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Comma Separation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/sqli_blind/</td>
+                    <td>id</td>
+                    <td>Comma Separation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Array Notation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Array Notation</td>
+                    <td>malicious</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Array Notation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Array Notation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Comma Separation</td>
+                    <td>benign</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Comma Separation</td>
+                    <td>command</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>vulnerabilities/xss_r/</td>
+                    <td>name</td>
+                    <td>Comma Separation</td>
+                    <td>sql</td>
+                    <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                    <td>200</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Detailed Vulnerabilities</h2>
+        <p>The following HTTP Parameter Pollution vulnerabilities were identified:</p>
+        <div class="code">
+<strong>Vulnerability #1</strong>
+Module: vulnerabilities/xss_r/
+Endpoint: http://localhost/dvwa/vulnerabilities/xss_r/
+Parameter: name
+Technique: Duplicate Parameters
+Payload Type: benign
+Description: Both parameter values processed or unexpected behavior detected
+Parameters Sent: [(&#x27;name&#x27;, &#x27;test_first&#x27;), (&#x27;name&#x27;, &#x27;test_second&#x27;)]
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Reflected Cross Site Scripting (XSS) :: Damn Vulnerable W...
+        </div>
+        <div class="code">
+<strong>Vulnerability #2</strong>
+Module: vulnerabilities/xss_r/
+Endpoint: http://localhost/dvwa/vulnerabilities/xss_r/
+Parameter: name
+Technique: Duplicate Parameters
+Payload Type: malicious
+Description: Both parameter values processed or unexpected behavior detected
+Parameters Sent: [(&#x27;name&#x27;, &#x27;&lt;script&gt;alert(&quot;HPP&quot;)&lt;/script&gt;_first&#x27;), (&#x27;name&#x27;, &#x27;&lt;script&gt;alert(&quot;HPP&quot;)&lt;/script&gt;_second&#x27;)]
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Reflected Cross Site Scripting (XSS) :: Damn Vulnerable W...
+        </div>
+        <div class="code">
+<strong>Vulnerability #3</strong>
+Module: vulnerabilities/xss_r/
+Endpoint: http://localhost/dvwa/vulnerabilities/xss_r/
+Parameter: name
+Technique: Duplicate Parameters
+Payload Type: command
+Description: Both parameter values processed or unexpected behavior detected
+Parameters Sent: [(&#x27;name&#x27;, &#x27;whoami_first&#x27;), (&#x27;name&#x27;, &#x27;whoami_second&#x27;)]
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Reflected Cross Site Scripting (XSS) :: Damn Vulnerable W...
+        </div>
+        <div class="code">
+<strong>Vulnerability #4</strong>
+Module: vulnerabilities/xss_r/
+Endpoint: http://localhost/dvwa/vulnerabilities/xss_r/
+Parameter: name
+Technique: Duplicate Parameters
+Payload Type: sql
+Description: Both parameter values processed or unexpected behavior detected
+Parameters Sent: [(&#x27;name&#x27;, &quot;&#x27; OR &#x27;1&#x27;=&#x27;1_first&quot;), (&#x27;name&#x27;, &quot;&#x27; OR &#x27;1&#x27;=&#x27;1_second&quot;)]
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Reflected Cross Site Scripting (XSS) :: Damn Vulnerable W...
+        </div>
+        <div class="code">
+<strong>Vulnerability #5</strong>
+Module: vulnerabilities/xss_r/
+Endpoint: http://localhost/dvwa/vulnerabilities/xss_r/
+Parameter: name
+Technique: Comma Separation
+Payload Type: malicious
+Description: Malicious payload executed - potential XSS via HPP
+Parameters Sent: {&#x27;name&#x27;: &#x27;&lt;script&gt;alert(&quot;HPP&quot;)&lt;/script&gt;_first,&lt;script&gt;alert(&quot;HPP&quot;)&lt;/script&gt;_second&#x27;}
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Reflected Cross Site Scripting (XSS) :: Damn Vulnerable W...
+        </div>
+        <div class="code">
+<strong>Vulnerability #6</strong>
+Module: vulnerabilities/sqli_blind/
+Endpoint: http://localhost/dvwa/vulnerabilities/sqli_blind/
+Parameter: id
+Technique: Duplicate Parameters
+Payload Type: benign
+Description: Both parameter values processed or unexpected behavior detected
+Parameters Sent: [(&#x27;id&#x27;, &#x27;test_first&#x27;), (&#x27;id&#x27;, &#x27;test_second&#x27;)]
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: SQL Injection (Blind) :: Damn Vulnerable Web Application ...
+        </div>
+        <div class="code">
+<strong>Vulnerability #7</strong>
+Module: vulnerabilities/sqli_blind/
+Endpoint: http://localhost/dvwa/vulnerabilities/sqli_blind/
+Parameter: Submit
+Technique: Duplicate Parameters
+Payload Type: benign
+Description: Both parameter values processed or unexpected behavior detected
+Parameters Sent: [(&#x27;Submit&#x27;, &#x27;test_first&#x27;), (&#x27;Submit&#x27;, &#x27;test_second&#x27;)]
+Status Code: 404
+Response Preview: &lt;br /&gt;
+&lt;b&gt;Warning&lt;/b&gt;:  Undefined array key &quot;id&quot; in &lt;b&gt;C:\xampp\htdocs\DVWA\vulnerabilities\sqli_blind\source\low.php&lt;/b&gt; on line &lt;b&gt;5&lt;/b&gt;&lt;br /&gt;
+&lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta h...
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">HTTP Parameter Pollution Techniques</h2>
+        <p>The following techniques were tested for parameter pollution:</p>
+        <ul>
+            <li><strong>Duplicate Parameters</strong>: Sending the same parameter multiple times (e.g., ?param=value1&param=value2)</li>
+            <li><strong>Array Notation</strong>: Using array syntax (e.g., ?param[]=value1&param[]=value2)</li>
+            <li><strong>Comma Separation</strong>: Separating values with commas (e.g., ?param=value1,value2)</li>
+        </ul>
+        <p>Different web servers and frameworks handle these techniques differently, which can lead to security vulnerabilities.</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Remediation Recommendations</h2>
+        <p>To prevent HTTP Parameter Pollution vulnerabilities, implement the following measures:</p>
+        <ol>
+            <li><strong>Input Validation</strong>: Validate and sanitize all input parameters, especially when multiple values are expected</li>
+            <li><strong>Framework Configuration</strong>: Configure web frameworks to handle duplicate parameters consistently</li>
+            <li><strong>Explicit Parameter Handling</strong>: Explicitly define how the application should handle multiple parameters with the same name</li>
+            <li><strong>Security Testing</strong>: Include HTTP Parameter Pollution testing in regular security assessments</li>
+            <li><strong>Web Server Configuration</strong>: Configure web servers to handle parameter pollution according to application requirements</li>
+            <li><strong>Monitoring</strong>: Implement logging and monitoring for unusual parameter patterns</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/04-Testing_for_HTTP_Parameter_Pollution">OWASP Testing Guide - OTG-INPVAL-004</a></li>
+            <li><a href="https://owasp.org/www-community/attacks/HTTP_Parameter_Pollution">OWASP HTTP Parameter Pollution</a></li>
+            <li><a href="https://owasp.org/www-community/attacks/Code_Injection">OWASP Code Injection</a></li>
+            <li><a href="https://github.com/digininja/DVWA">Damn Vulnerable Web Application (DVWA) Documentation</a></li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Generated by DVWA HTTP Parameter Pollution Testing Script | OWASP/OSCP-Style Report</p>
+        <p>Report generated on: 2025-07-26 04:00:33</p>
+    </div>
+</body>
+</html>
