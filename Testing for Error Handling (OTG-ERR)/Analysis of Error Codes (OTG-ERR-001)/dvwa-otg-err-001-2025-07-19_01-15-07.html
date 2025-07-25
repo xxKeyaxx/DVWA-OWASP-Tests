@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTG-ERR-001 Test Report for DVWA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background-color: #f4f4f4; color: #333; }
+        h1, h2 { color: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #0056b3; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .summary, .findings, .report-meta { background-color: white; padding: 2em; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2em; }
+        .curl-command { background-color: #eee; padding: 1em; border-radius: 4px; font-family: monospace; white-space: pre-wrap; word-wrap: break-word; }
+        .evidence { background-color: #fdeaea; color: #c53030; padding: 1em; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+        .risk-high { color: #c53030; font-weight: bold; }
+        .risk-medium { color: #d69e2e; font-weight: bold; }
+        .risk-low { color: #38a169; font-weight: bold; }
+        .chart-container { width: 50%; margin: auto; }
+    </style>
+</head>
+<body>
+    <h1>OTG-ERR-001: Information Exposure Through an Error Message</h1>
+    <div class="report-meta">
+        <p><strong>Test Target:</strong> http://localhost/dvwa/</p>
+        <p><strong>Report Generated:</strong> 2025-07-19_01-15-07</p>
+        <p><strong>Security Level Tested:</strong> low</p>
+    </div>
+
+    <div class="summary">
+        <h2>Executive Summary</h2>
+        <p><strong>Total Endpoints Tested:</strong> 37</p>
+        <p><strong>Total Findings:</strong> <span class="risk-high">1</span></p>
+        <p><strong>Overall Risk:</strong> <span class="risk-high">High</span> (if findings > 0, else Low)</p>
+        <div class="chart-container">
+            <canvas id="errorChart"></canvas>
+        </div>
+    </div>
+
+    <div class="findings">
+        <h2>Detailed Findings</h2>
+        
+            <table>
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Parameter</th>
+                        <th>Payload</th>
+                        <th>Evidence</th>
+                        <th>Details</th>
+                        <th>Reproduction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>http://localhost/dvwa/vulnerabilities/sqli/</td>
+                        <td>id</td>
+                        <td>' or 1=1--</td>
+                        <td><pre class="evidence">You have an error in your SQL syntax</pre></td>
+                        <td>
+                            <p>Leaked sensitive information via error message.</p>
+                            <p><a href="https://owasp.org/www-community/attacks/Full_Path_Disclosure" target="_blank">CWE-209: Information Exposure Through an Error Message</a></p>
+                            <p><strong>Remediation:</strong> Configure the web server to display generic error messages and disable verbose error reporting.</p>
+                        </td>
+                        <td><pre class="curl-command">curl -X GET 'http://localhost/dvwa/vulnerabilities/sqli/?Submit=test&id=' or 1=1--' -b 'security=low; PHPSESSID=4g9le0cali6vb5d3in5cqf1tf4'</pre></td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        
+    </div>
+
+    <script>
+        const ctx = document.getElementById('errorChart').getContext('2d');
+        const errorChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Findings', 'Clean'],
+                datasets: [{
+                    label: 'Test Results',
+                    data: [1, 36],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Test Outcome Distribution'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

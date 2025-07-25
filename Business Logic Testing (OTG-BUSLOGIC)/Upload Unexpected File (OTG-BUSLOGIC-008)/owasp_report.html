@@ -1,0 +1,118 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>OWASP Penetration Test Report: File Upload Vulnerability</title>
+        
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background-color: #f9f9f9; color: #333; }
+        .container { max-width: 1000px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: #d9534f; border-bottom: 2px solid #d9534f; padding-bottom: 5px; }
+        h1 { font-size: 2.5em; text-align: center; }
+        h2 { font-size: 1.8em; }
+        h3 { font-size: 1.4em; color: #5bc0de; }
+        .section { margin-bottom: 20px; }
+        .risk-high { color: #d9534f; font-weight: bold; }
+        .code-block { background-color: #eee; border: 1px solid #ddd; padding: 10px; border-radius: 5px; white-space: pre-wrap; font-family: monospace; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .footer { text-align: center; margin-top: 30px; font-size: 0.8em; color: #777; }
+    </style>
+    
+    </head>
+    <body>
+        <div class="container">
+            <h1>OWASP Penetration Test Report</h1>
+            <div class="section">
+                <h2>Executive Summary</h2>
+                <p>
+                    This report details the findings of a penetration test focused on the "Upload of Unexpected File Types" vulnerability (OWASP OTG-BUSLOGIC-008) in the Damn Vulnerable Web Application (DVWA). 
+                    The test revealed a <strong class="risk-high">High-Risk</strong> vulnerability. The application's file upload functionality at the 'low' security level fails to properly validate server-side, allowing malicious file types to be uploaded. 
+                    This could lead to Remote Code Execution (RCE), granting an attacker full control over the server.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>Vulnerability Details</h2>
+                <ul>
+                    <li><strong>Vulnerability Name:</strong> Unrestricted File Upload (OTG-BUSLOGIC-008)</li>
+                    <li><strong>Affected Component/URL:</strong> <code class="code-block">http://localhost/dvwa/vulnerabilities/upload/</code></li>
+                </ul>
+                <h3>Description</h3>
+                <p>
+                    The vulnerability lies in the lack of server-side validation to verify if the type of file being uploaded is in a list of approved extensions. The application only seems to perform client-side checks (which can be easily bypassed) or relies on the file's `Content-Type` header, which is not a reliable security measure. This allows an attacker to upload files with dangerous extensions (e.g., `.php`, `.html`).
+                </p>
+                <h3>Impact</h3>
+                <p>
+                    The impact of this vulnerability is severe and includes:
+                    <ul>
+                        <li><strong>Remote Code Execution (RCE):</strong> Uploading a web shell (e.g., a `.php` file) allows an attacker to execute arbitrary commands on the server.</li>
+                        <li><strong>Denial of Service (DoS):</strong> Uploading large files could exhaust server resources.</li>
+                        <li><strong>Website Defacement:</strong> An attacker could upload their own HTML/CSS/JS files to alter the site's appearance.</li>
+                        <li><strong>Sensitive Data Exposure:</strong> An attacker could gain access to the server's file system and databases.</li>
+                    </ul>
+                </p>
+                <h3>Proof of Concept (PoC) / Steps to Reproduce</h3>
+                <ol>
+                    <li>Set DVWA security level to 'low'.</li>
+                    <li>Navigate to the 'File Upload' page.</li>
+                    <li>Attempt to upload a file named `shell.php` with the following content: <code class="code-block">&lt;?php echo shell_exec($_GET['cmd']); ?&gt;</code></li>
+                    <li>The application will confirm a successful upload.</li>
+                    <li>The attacker can then navigate to <code class="code-block">http://localhost/dvwa/hackable/uploads/shell.php?cmd=whoami</code> to execute commands.</li>
+                </ol>
+                <h4>Test Results:</h4>
+                <table>
+                    <tr>
+                        <th>File Type</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr><td>.php</td><td style='color: green;'>Success</td><td>File uploaded successfully.</td></tr> <tr><td>.html</td><td style='color: green;'>Success</td><td>File uploaded successfully.</td></tr> <tr><td>.exe</td><td style='color: green;'>Success</td><td>File uploaded successfully.</td></tr> <tr><td>.txt</td><td style='color: green;'>Success</td><td>File uploaded successfully.</td></tr>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>Risk Rating</h2>
+                <p><strong>Overall Risk:</strong> <span class="risk-high">High</span></p>
+                <ul>
+                    <li><strong>Likelihood:</strong> High (The vulnerability is easy to exploit with basic tools).</li>
+                    <li><strong>Impact:</strong> High (Potential for full server compromise).</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Recommendations</h2>
+                <h3>Technical Mitigations</h3>
+                <ul>
+                    <li><strong>Whitelist File Extensions:</strong> Only allow a specific set of safe file extensions (e.g., `.jpg`, `.png`, `.pdf`). Deny all other extensions.</li>
+                    <li><strong>Validate Content-Type:</strong> Check the `Content-Type` header, but do not rely on it as the sole validation method.</li>
+                    <li><strong>Rename Uploaded Files:</strong> Rename uploaded files to a random string and append a safe extension. This prevents direct execution.</li>
+                    <li><strong>Store Files Outside Web Root:</strong> Store uploaded files in a directory that is not accessible from the web.</li>
+                    <li><strong>Scan for Malware:</strong> Use an anti-malware scanner to check uploaded files.</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Tools Used</h2>
+                <ul>
+                    <li>Python `requests` library</li>
+                    <li>BeautifulSoup</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>References</h2>
+                <ul>
+                    <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/09-Testing_for_Unrestricted_File_Upload">OWASP - Test Upload of Unexpected File Types</a></li>
+                    <li><a href="https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload">OWASP - Unrestricted File Upload</a></li>
+                </ul>
+            </div>
+            <div class="footer">
+                <p>Report generated on: 2025-07-21 16:14:21</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    

