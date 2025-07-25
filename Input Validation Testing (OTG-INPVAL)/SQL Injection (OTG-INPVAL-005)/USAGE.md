@@ -5,6 +5,9 @@ This tool performs comprehensive SQL injection testing against DVWA (Damn Vulner
 
 ## Installation
 
+!!! Add rockyou.txt to this folder first !!!
+!!! rockyou.txt link: https://www.kaggle.com/datasets/wjburns/common-password-list-rockyoutxt !!!
+
 1. Install dependencies:
 ```bash
 pip install -r requirements.txt
