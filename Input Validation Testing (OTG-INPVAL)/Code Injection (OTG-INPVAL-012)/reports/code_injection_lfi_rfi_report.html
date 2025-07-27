@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Injection, LFI & RFI Assessment - DVWA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            margin-bottom: 25px;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            color: #2a5298;
+            border-bottom: 2px solid #2a5298;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #2a5298;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .vulnerable {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .not-vulnerable {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .code {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            white-space: pre-wrap;
+        }
+        .risk-high {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .risk-medium {
+            color: #f57c00;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .summary-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid #1e88e5;
+        }
+        .findings-summary {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .finding-item {
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+        }
+        .finding-vuln {
+            background-color: #d32f2f;
+        }
+        .finding-safe {
+            background-color: #388e3c;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #2a5298;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Code Injection, LFI & RFI Assessment</h1>
+        <p>DVWA Security Test - OWASP Testing Guide OTG-INPVAL-012, 033, 034</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Executive Summary</h2>
+        <div class="summary-box">
+            <p>This assessment identified <span class="risk-high">3 vulnerabilities</span> in the DVWA application including Code Injection (2), Local File Inclusion (0), and Remote File Inclusion (1). These vulnerabilities can lead to remote code execution, sensitive information disclosure, and complete system compromise.</p>
+        </div>
+        <div class="findings-summary">
+            <div class="finding-item finding-vuln">
+                <h3>3</h3>
+                <p>Total Vulnerabilities</p>
+            </div>
+            <div class="finding-item finding-safe">
+                <h3>8</h3>
+                <p>Secure Tests</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Test Details</h2>
+        <table>
+            <tr>
+                <td><strong>Target Application</strong></td>
+                <td>Damn Vulnerable Web Application (DVWA)</td>
+            </tr>
+            <tr>
+                <td><strong>Test Types</strong></td>
+                <td>Code Injection, Local File Inclusion, Remote File Inclusion</td>
+            </tr>
+            <tr>
+                <td><strong>OWASP Test IDs</strong></td>
+                <td>OTG-INPVAL-012, OTG-INPVAL-033, OTG-INPVAL-034</td>
+            </tr>
+            <tr>
+                <td><strong>Risk Level</strong></td>
+                <td><span class="risk-high">High</span></td>
+            </tr>
+            <tr>
+                <td><strong>Test Date</strong></td>
+                <td>2025-07-28 02:04:42</td>
+            </tr>
+            <tr>
+                <td><strong>Target URL</strong></td>
+                <td>http://localhost/dvwa</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Methodology</h2>
+        <p>The testing methodology followed the OWASP Testing Guide for Code Injection, LFI, and RFI:</p>
+        <ol>
+            <li><strong>Authentication</strong>: Logged into DVWA with provided credentials</li>
+            <li><strong>Module Identification</strong>: Identified Command Execution and File Inclusion modules</li>
+            <li><strong>Code Injection Testing</strong>: Tested various command injection payloads in the Command Execution module</li>
+            <li><strong>LFI/RFI Testing</strong>: Tested path traversal and remote inclusion payloads in the File Inclusion module</li>
+            <li><strong>Analysis</strong>: Documented vulnerable endpoints and payloads</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Vulnerability Summary</h2>
+        <div class="findings-summary">
+            <div class="finding-item finding-vuln">
+                <h3>2</h3>
+                <p>Code Injection</p>
+            </div>
+            <div class="finding-item finding-vuln">
+                <h3>0</h3>
+                <p>Local File Inclusion</p>
+            </div>
+            <div class="finding-item finding-vuln">
+                <h3>1</h3>
+                <p>Remote File Inclusion</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Detailed Findings</h2>
+        
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'codeinjection')">Code Injection</button>
+            <button class="tablinks" onclick="openTab(event, 'lfi')">Local File Inclusion</button>
+            <button class="tablinks" onclick="openTab(event, 'rfi')">Remote File Inclusion</button>
+        </div>
+
+        <div id="codeinjection" class="tabcontent" style="display:block">
+            <h3>Code Injection Results</h3>
+            <p>The following Code Injection tests were conducted:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Parameter</th>
+                        <th>Payload Name</th>
+                        <th>Status</th>
+                        <th>Status Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>vulnerabilities/exec/</td>
+                        <td>ip</td>
+                        <td>Semicolon Separator</td>
+                        <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/exec/</td>
+                        <td>ip</td>
+                        <td>AND Operator</td>
+                        <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/exec/</td>
+                        <td>ip</td>
+                        <td>Pipe Operator</td>
+                        <td><span class="vulnerable">VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" style="background-color: #fff3e0;">
+                            <strong>Description:</strong> Found expected result: CODE-INJECTION-DETECTED<br>
+                            <strong>Payload:</strong> | echo CODE-INJECTION-DETECTED
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/exec/</td>
+                        <td>ip</td>
+                        <td>Whoami Command</td>
+                        <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/exec/</td>
+                        <td>ip</td>
+                        <td>Directory Listing</td>
+                        <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/exec/</td>
+                        <td>ip</td>
+                        <td>Directory Listing (Windows)</td>
+                        <td><span class="vulnerable">VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" style="background-color: #fff3e0;">
+                            <strong>Description:</strong> Found expected result: .php<br>
+                            <strong>Payload:</strong> &amp;&amp; dir
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Code Injection Vulnerabilities</h4>
+            <div class="code">
+<strong>Vulnerability #1</strong>
+Module: vulnerabilities/exec/
+Endpoint: http://localhost/dvwa/vulnerabilities/exec/
+Parameter: ip
+Payload Name: Pipe Operator
+Payload: | echo CODE-INJECTION-DETECTED
+Description: Found expected result: CODE-INJECTION-DETECTED
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Command Injection :: Damn Vulnerable Web Application (DVWA)&lt;/title&gt;
+
+		&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;../../dvwa/css/main.css&quot; /&gt;
+
+		&lt;link rel=
+            </div>
+            <div class="code">
+<strong>Vulnerability #2</strong>
+Module: vulnerabilities/exec/
+Endpoint: http://localhost/dvwa/vulnerabilities/exec/
+Parameter: ip
+Payload Name: Directory Listing (Windows)
+Payload: &amp;&amp; dir
+Description: Found expected result: .php
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Command Injection :: Damn Vulnerable Web Application (DVWA)&lt;/title&gt;
+
+		&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;../../dvwa/css/main.css&quot; /&gt;
+
+		&lt;link rel=
+            </div>
+        </div>
+
+        <div id="lfi" class="tabcontent">
+            <h3>Local File Inclusion Results</h3>
+            <p>The following LFI tests were conducted:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Parameter</th>
+                        <th>Payload Name</th>
+                        <th>Status</th>
+                        <th>Status Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>vulnerabilities/fi/</td>
+                        <td>page</td>
+                        <td>Basic LFI - /etc/passwd</td>
+                        <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/fi/</td>
+                        <td>page</td>
+                        <td>Basic LFI - Windows hosts</td>
+                        <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/fi/</td>
+                        <td>page</td>
+                        <td>URL Encoded LFI</td>
+                        <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/fi/</td>
+                        <td>page</td>
+                        <td>Windows win.ini</td>
+                        <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Local File Inclusion Vulnerabilities</h4>
+            <p>No Local File Inclusion vulnerabilities were found.</p>
+        </div>
+
+        <div id="rfi" class="tabcontent">
+            <h3>Remote File Inclusion Results</h3>
+            <p>The following RFI tests were conducted:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Parameter</th>
+                        <th>Payload Name</th>
+                        <th>Status</th>
+                        <th>Status Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>vulnerabilities/fi/</td>
+                        <td>page</td>
+                        <td>Data URI</td>
+                        <td><span class="vulnerable">VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" style="background-color: #fff3e0;">
+                            <strong>Description:</strong> Found RFI test string in response<br>
+                            <strong>Payload:</strong> data://text/plain,RFI-TEST
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Remote File Inclusion Vulnerabilities</h4>
+            <div class="code">
+<strong>Vulnerability #1</strong>
+Module: vulnerabilities/fi/
+Endpoint: http://localhost/dvwa/vulnerabilities/fi/
+Parameter: page
+Payload Name: Data URI
+Payload: data://text/plain,RFI-TEST
+Description: Found RFI test string in response
+Status Code: 200
+Response Preview: RFI-TEST&lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: File Inclusion :: Damn Vulnerable Web Application (DVWA)&lt;/title&gt;
+
+		&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;../../dvwa/css/main.css&quot; /&gt;
+
+		&lt;link
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Attack Techniques</h2>
+        
+        <h3>Code Injection</h3>
+        <p>Code Injection occurs when applications execute user-supplied input as system commands:</p>
+        <ul>
+            <li><strong>Command Separators</strong>: Using <code>;</code>, <code>&&</code>, <code>|</code> to chain commands</li>
+            <li><strong>Blind Injection</strong>: Using time-based payloads to detect command execution</li>
+            <li><strong>Information Disclosure</strong>: Executing commands to read system information</li>
+        </ul>
+        
+        <h3>Local File Inclusion (LFI)</h3>
+        <p>LFI allows attackers to include local files on the server:</p>
+        <ul>
+            <li><strong>Path Traversal</strong>: Using <code>../</code> to navigate directories</li>
+            <li><strong>Null Byte Injection</strong>: Using <code>%00</code> to bypass file extension checks</li>
+            <li><strong>Log Poisoning</strong>: Including log files to execute injected code</li>
+        </ul>
+        
+        <h3>Remote File Inclusion (RFI)</h3>
+        <p>RFI allows attackers to include remote files:</p>
+        <ul>
+            <li><strong>HTTP Inclusion</strong>: Including files from remote HTTP servers</li>
+            <li><strong>FTP Inclusion</strong>: Including files from FTP servers</li>
+            <li><strong>Data URIs</strong>: Using data:// wrappers to include inline content</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Remediation Recommendations</h2>
+        <p>To prevent Code Injection, LFI, and RFI vulnerabilities, implement the following measures:</p>
+        
+        <h3>Code Injection Prevention</h3>
+        <ol>
+            <li><strong>Input Validation</strong>: Validate and sanitize all user input, especially command parameters</li>
+            <li><strong>Whitelist Approach</strong>: Use whitelists for allowed commands and parameters</li>
+            <li><strong>Secure APIs</strong>: Use secure APIs instead of system calls when possible</li>
+            <li><strong>Privilege Separation</strong>: Run applications with minimal privileges</li>
+        </ol>
+        
+        <h3>LFI/RFI Prevention</h3>
+        <ol>
+            <li><strong>Disable Dangerous Functions</strong>: Disable allow_url_include and register_globals in PHP</li>
+            <li><strong>Input Validation</strong>: Validate file paths and restrict file inclusion to specific directories</li>
+            <li><strong>Whitelist Files</strong>: Use a whitelist of allowed files for inclusion</li>
+            <li><strong>Web Server Configuration</strong>: Configure web servers to prevent directory traversal</li>
+            <li><strong>Secure Coding Practices</strong>: Avoid dynamic file inclusion based on user input</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/12-Testing_for_Code_Injection">OWASP Testing Guide - OTG-INPVAL-012</a></li>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/03-Testing_for_Local_File_Inclusion">OWASP Testing Guide - OTG-INPVAL-033</a></li>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/04-Testing_for_Remote_File_Inclusion">OWASP Testing Guide - OTG-INPVAL-034</a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/94.html">CWE-94: Code Injection</a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/22.html">CWE-22: Path Traversal</a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/98.html">CWE-98: RFI</a></li>
+            <li><a href="https://github.com/digininja/DVWA">Damn Vulnerable Web Application (DVWA) Documentation</a></li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Generated by DVWA Code Injection, LFI & RFI Testing Script | OWASP/OSCP-Style Report</p>
+        <p>Report generated on: {timestamp}</p>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {{
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {{
+                tabcontent[i].style.display = "none";
+            }}
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {{
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }}
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }}
+    </script>
+</body>
+</html>

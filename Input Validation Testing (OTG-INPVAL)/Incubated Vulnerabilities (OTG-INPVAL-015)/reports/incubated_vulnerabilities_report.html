@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incubated Vulnerabilities Assessment - DVWA (OTG-INPVAL-015)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            margin-bottom: 25px;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            color: #2a5298;
+            border-bottom: 2px solid #2a5298;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #2a5298;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .vulnerable {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .not-vulnerable {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .code {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            white-space: pre-wrap;
+        }
+        .risk-high {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .risk-medium {
+            color: #f57c00;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .summary-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid #1e88e5;
+        }
+        .findings-summary {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .finding-item {
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+        }
+        .finding-vuln {
+            background-color: #d32f2f;
+        }
+        .finding-safe {
+            background-color: #388e3c;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #2a5298;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            background-color: white;
+        }
+        .payload-table {
+            font-size: 0.9em;
+        }
+        .payload-table th, .payload-table td {
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Incubated Vulnerabilities Assessment</h1>
+        <p>DVWA Security Test - OWASP Testing Guide OTG-INPVAL-015</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Executive Summary</h2>
+        <div class="summary-box">
+            <p>This assessment identified <span class="risk-high">3 Incubated Vulnerabilities</span> in the DVWA application. Incubated vulnerabilities are those that are stored or delayed in execution, manifesting their effects when the stored data is later processed or accessed. These vulnerabilities can be particularly dangerous as they may not be immediately apparent during initial testing.</p>
+        </div>
+        <div class="findings-summary">
+            <div class="finding-item finding-vuln">
+                <h3>3</h3>
+                <p>Total Vulnerabilities</p>
+            </div>
+            <div class="finding-item finding-safe">
+                <h3>1</h3>
+                <p>Secure Tests</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Test Details</h2>
+        <table>
+            <tr>
+                <td><strong>Target Application</strong></td>
+                <td>Damn Vulnerable Web Application (DVWA)</td>
+            </tr>
+            <tr>
+                <td><strong>Test Type</strong></td>
+                <td>Incubated/Delayed Vulnerabilities</td>
+            </tr>
+            <tr>
+                <td><strong>OWASP Test ID</strong></td>
+                <td>OTG-INPVAL-015</td>
+            </tr>
+            <tr>
+                <td><strong>Risk Level</strong></td>
+                <td><span class="risk-high">High</span></td>
+            </tr>
+            <tr>
+                <td><strong>Test Date</strong></td>
+                <td>2025-07-28 02:35:06</td>
+            </tr>
+            <tr>
+                <td><strong>Target URL</strong></td>
+                <td>http://localhost/dvwa</td>
+            </tr>
+            <tr>
+                <td><strong>Verification Delay</strong></td>
+                <td>5 seconds</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Methodology</h2>
+        <p>The testing methodology followed the OWASP Testing Guide for Incubated Vulnerabilities:</p>
+        <ol>
+            <li><strong>Authentication</strong>: Logged into DVWA with provided credentials</li>
+            <li><strong>Endpoint Discovery</strong>: Identified modules that support stored/delayed processing</li>
+            <li><strong>Incubated XSS Testing</strong>: Tested Stored XSS payloads in the Guestbook module</li>
+            <li><strong>File Upload Testing</strong>: Tested malicious file uploads with delayed execution</li>
+            <li><strong>Delayed Verification</strong>: Waited for incubation period and verified payload execution</li>
+            <li><strong>Analysis</strong>: Documented vulnerable endpoints and payloads</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Tested Payloads</h2>
+        <p>The following payloads were tested during the assessment:</p>
+        <table class="payload-table">
+            <thead>
+                <tr>
+                    <th>Payload Name</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Vector</th>
+                    <th>Payload</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Basic Script Tag</td>
+                    <td>Stored XSS</td>
+                    <td>Stored XSS</td>
+                    <td>script_tag</td>
+                    <td><code>&lt;script&gt;alert(&quot;INCUBATED-XSS&quot;)&lt;/script&gt;</code></td>
+                </tr>
+                <tr>
+                    <td>Image OnError</td>
+                    <td>Stored XSS</td>
+                    <td>Stored XSS</td>
+                    <td>img_onerror</td>
+                    <td><code>&lt;img src=&quot;x&quot; onerror=&quot;alert(&#x27;XSS&#x27;)&quot;&gt;</code></td>
+                </tr>
+                <tr>
+                    <td>SVG Payload</td>
+                    <td>Stored XSS</td>
+                    <td>Stored XSS</td>
+                    <td>svg_onload</td>
+                    <td><code>&lt;svg/onload=alert(&quot;XSS&quot;)&gt;</code></td>
+                </tr>
+                <tr>
+                    <td>HTML XSS File</td>
+                    <td>File Upload</td>
+                    <td>File Upload</td>
+                    <td>text/html</td>
+                    <td><code>File: test_xss.html with XSS content</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Vulnerability Summary</h2>
+        <div class="findings-summary">
+            <div class="finding-item finding-vuln">
+                <h3>3</h3>
+                <p>Stored XSS</p>
+            </div>
+            <div class="finding-item finding-vuln">
+                <h3>0</h3>
+                <p>File Upload</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Detailed Findings</h2>
+        
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'storedxss')">Stored XSS</button>
+            <button class="tablinks" onclick="openTab(event, 'fileupload')">File Upload</button>
+        </div>
+
+        <div id="storedxss" class="tabcontent" style="display:block">
+            <h3>Stored XSS Results</h3>
+            <p>The following Stored XSS tests were conducted:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Vector</th>
+                        <th>Payload Name</th>
+                        <th>Delay (s)</th>
+                        <th>Status</th>
+                        <th>Status Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>vulnerabilities/xss_s/</td>
+                        <td>script_tag</td>
+                        <td>Basic Script Tag</td>
+                        <td>5</td>
+                        <td><span class="vulnerable">VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="background-color: #fff3e0;">
+                            <strong>Description:</strong> Found expected result: INCUBATED-XSS<br>
+                            <strong>Payload:</strong> &lt;script&gt;alert(&quot;INCUBATED-XSS&quot;)&lt;/script&gt;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/xss_s/</td>
+                        <td>img_onerror</td>
+                        <td>Image OnError</td>
+                        <td>5</td>
+                        <td><span class="vulnerable">VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="background-color: #fff3e0;">
+                            <strong>Description:</strong> Found expected result: XSS<br>
+                            <strong>Payload:</strong> &lt;img src=&quot;x&quot; onerror=&quot;alert(&#x27;XSS&#x27;)&quot;&gt;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>vulnerabilities/xss_s/</td>
+                        <td>svg_onload</td>
+                        <td>SVG Payload</td>
+                        <td>5</td>
+                        <td><span class="vulnerable">VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="background-color: #fff3e0;">
+                            <strong>Description:</strong> Found expected result: XSS<br>
+                            <strong>Payload:</strong> &lt;svg/onload=alert(&quot;XSS&quot;)&gt;
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Stored XSS Vulnerabilities</h4>
+            <div class="code">
+<strong>Vulnerability #1</strong>
+Module: vulnerabilities/xss_s/
+Endpoint: http://localhost/dvwa/vulnerabilities/xss_s/
+Vector: script_tag
+Payload Name: Basic Script Tag
+Payload: &lt;script&gt;alert(&quot;INCUBATED-XSS&quot;)&lt;/script&gt;
+Delay: 5s
+Description: Found expected result: INCUBATED-XSS
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Stored Cross Site Scripting (XSS) :: Damn Vulnerable Web Application (DVWA)&lt;/title&gt;
+
+		&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;../../dvwa/css/main.css&quot; 
+            </div>
+            <div class="code">
+<strong>Vulnerability #2</strong>
+Module: vulnerabilities/xss_s/
+Endpoint: http://localhost/dvwa/vulnerabilities/xss_s/
+Vector: img_onerror
+Payload Name: Image OnError
+Payload: &lt;img src=&quot;x&quot; onerror=&quot;alert(&#x27;XSS&#x27;)&quot;&gt;
+Delay: 5s
+Description: Found expected result: XSS
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Stored Cross Site Scripting (XSS) :: Damn Vulnerable Web Application (DVWA)&lt;/title&gt;
+
+		&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;../../dvwa/css/main.css&quot; 
+            </div>
+            <div class="code">
+<strong>Vulnerability #3</strong>
+Module: vulnerabilities/xss_s/
+Endpoint: http://localhost/dvwa/vulnerabilities/xss_s/
+Vector: svg_onload
+Payload Name: SVG Payload
+Payload: &lt;svg/onload=alert(&quot;XSS&quot;)&gt;
+Delay: 5s
+Description: Found expected result: XSS
+Status Code: 200
+Response Preview: &lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en-GB&quot;&gt;
+
+	&lt;head&gt;
+		&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+
+		&lt;title&gt;Vulnerability: Stored Cross Site Scripting (XSS) :: Damn Vulnerable Web Application (DVWA)&lt;/title&gt;
+
+		&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;../../dvwa/css/main.css&quot; 
+            </div>
+        </div>
+
+        <div id="fileupload" class="tabcontent">
+            <h3>File Upload Results</h3>
+            <p>The following File Upload tests were conducted:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>File Type</th>
+                        <th>Payload Name</th>
+                        <th>Delay (s)</th>
+                        <th>Status</th>
+                        <th>Status Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>vulnerabilities/upload/</td>
+                        <td>text/html</td>
+                        <td>HTML XSS File</td>
+                        <td>5</td>
+                        <td><span class="not-vulnerable">NOT VULNERABLE</span></td>
+                        <td>200</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>File Upload Vulnerabilities</h4>
+            <p>No File Upload vulnerabilities were found.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Incubated Vulnerabilities Explained</h2>
+        
+        <h3>What are Incubated Vulnerabilities?</h3>
+        <p>Incubated vulnerabilities are security flaws where the malicious payload is stored or delayed in execution, and the effects manifest when the stored data is later processed or accessed. Unlike immediate vulnerabilities, these require a "triggering" action to be exploited.</p>
+        
+        <h3>Common Types</h3>
+        <ul>
+            <li><strong>Stored XSS</strong>: Malicious scripts stored in databases or files that execute when viewed</li>
+            <li><strong>Malicious File Uploads</strong>: Harmful files uploaded to servers that execute when accessed</li>
+            <li><strong>Delayed Command Execution</strong>: Commands that execute when data is later processed</li>
+            <li><strong>Log Poisoning</strong>: Malicious input that executes when logs are viewed</li>
+        </ul>
+        
+        <h3>Detection Challenges</h3>
+        <ul>
+            <li><strong>Timing</strong>: Requires delayed verification to detect execution</li>
+            <li><strong>Triggering</strong>: May require specific actions to activate the payload</li>
+            <li><strong>Persistence</strong>: Payloads may persist across sessions</li>
+            <li><strong>False Negatives</strong>: Immediate testing may miss delayed effects</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Remediation Recommendations</h2>
+        <p>To prevent Incubated Vulnerabilities, implement the following measures:</p>
+        
+        <h3>Input Validation and Sanitization</h3>
+        <ol>
+            <li><strong>Whitelist Approach</strong>: Only allow known good input patterns</li>
+            <li><strong>Content-Type Validation</strong>: Validate file types and content during upload</li>
+            <li><strong>Size Limits</strong>: Restrict input and file sizes to prevent complex payloads</li>
+            <li><strong>Character Encoding</strong>: Properly encode special characters</li>
+        </ol>
+        
+        <h3>Output Encoding and Security</h3>
+        <ol>
+            <li><strong>Context-Aware Encoding</strong>: Encode data based on where it will be displayed</li>
+            <li><strong>Content Security Policy</strong>: Implement strict CSP headers to prevent script execution</li>
+            <li><strong>Secure File Storage</strong>: Store uploaded files outside web root or with restricted execution</li>
+            <li><strong>Output Sanitization</strong>: Sanitize data before displaying it to users</li>
+        </ol>
+        
+        <h3>Monitoring and Detection</h3>
+        <ol>
+            <li><strong>Regular Scanning</strong>: Periodically scan stored content for malicious payloads</li>
+            <li><strong>Access Logging</strong>: Monitor access to uploaded files and stored content</li>
+            <li><strong>Automated Detection</strong>: Implement automated tools to detect incubated vulnerabilities</li>
+            <li><strong>Security Testing</strong>: Include delayed verification in security testing procedures</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/15-Testing_for_Incubated_Vulnerabilities">OWASP Testing Guide - OTG-INPVAL-015</a></li>
+            <li><a href="https://owasp.org/www-community/attacks/xss/">OWASP Cross-Site Scripting (XSS)</a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/79.html">CWE-79: Cross-Site Scripting</a></li>
+            <li><a href="https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload">OWASP Unrestricted File Upload</a></li>
+            <li><a href="https://github.com/digininja/DVWA">Damn Vulnerable Web Application (DVWA) Documentation</a></li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Generated by DVWA Incubated Vulnerabilities Testing Script | OWASP/OSCP-Style Report</p>
+        <p>Report generated on: {timestamp}</p>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {{
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {{
+                tabcontent[i].style.display = "none";
+            }}
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {{
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }}
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }}
+    </script>
+</body>
+</html>
