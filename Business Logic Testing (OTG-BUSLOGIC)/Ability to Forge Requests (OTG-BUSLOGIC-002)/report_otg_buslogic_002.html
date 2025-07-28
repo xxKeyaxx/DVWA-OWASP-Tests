@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTG-BUSLOGIC-002 Assessment - DVWA</title>
+  <style>
+    /* OSCP-inspired styling */
+    body { 
+        background: #1e1e1e; 
+        color: #dcdcdc; 
+        font-family: 'Courier New', monospace; 
+        padding: 20px; 
+        line-height: 1.6;
+        margin: 0;
+    }
+    h1, h2, h3 { 
+        color: #00ff00; 
+        border-bottom: 1px solid #00ff00;
+        padding-bottom: 10px;
+        margin-top: 30px;
+    }
+    h1 { 
+        font-size: 2em; 
+        text-align: center;
+        border-bottom: 2px solid #00ff00;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    .section { 
+        margin-bottom: 30px; 
+    }
+    pre { 
+        background: #2d2d2d; 
+        padding: 15px; 
+        border-left: 4px solid #ff9900; 
+        overflow-x: auto;
+        white-space: pre-wrap;
+        font-size: 0.9em;
+        margin: 15px 0;
+    }
+    .vuln { 
+        color: #ff5555; 
+        font-weight: bold; 
+    }
+    .info { 
+        color: #55ffff; 
+    }
+    .warning { 
+        color: #ffaa00; 
+    }
+    .success { 
+        color: #55ff55; 
+    }
+    .finding { 
+        background: #2a2a2a; 
+        border: 1px solid #444; 
+        margin: 20px 0; 
+        padding: 15px;
+    }
+    .severity-high { 
+        border-left: 5px solid #ff5555; 
+    }
+    .severity-medium { 
+        border-left: 5px solid #ffaa00; 
+    }
+    .severity-low { 
+        border-left: 5px solid #55ff55; 
+    }
+    ul, ol { 
+        margin-left: 20px; 
+    }
+    li { 
+        margin-bottom: 10px; 
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin: 20px 0;
+    }
+    th, td { 
+        border: 1px solid #444; 
+        padding: 10px; 
+        text-align: left;
+    }
+    th { 
+        background: #333; 
+        color: #00ff00;
+    }
+    footer { 
+        margin-top: 50px; 
+        font-size: 0.8em; 
+        color: #888; 
+        text-align: center;
+        border-top: 1px solid #444;
+        padding-top: 20px;
+    }
+    .executive-summary { 
+        background: #2a2a2a; 
+        padding: 20px; 
+        border-left: 4px solid #00ff00;
+        margin: 20px 0;
+    }
+    .methodology-table { 
+        background: #252525; 
+    }
+    code { 
+        background: #333; 
+        padding: 2px 4px; 
+        border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>OWASP OTG-BUSLOGIC-002: Test Ability to Forge Requests</h1>
+  <p class="info" style="text-align: center;">Assessment of DVWA @ http://localhost/dvwa/</p>
+  <p class="info" style="text-align: center;">Report Generated: 2025-07-29 00:46:09</p>
+
+  <div class="section executive-summary">
+    <h2>Executive Summary</h2>
+    <p>The application exhibits several request forgery vulnerabilities that could be exploited by attackers to perform unauthorized actions.</p>
+    <p><strong>Total Findings:</strong> 9</p>
+    <p><strong>High Severity:</strong> 4</p>
+    <p><strong>Medium Severity:</strong> 5</p>
+    <p><strong>Low Severity:</strong> 0</p>
+  </div>
+
+  <div class="section">
+    <h2>1. Overview</h2>
+    <p>This assessment evaluates the Damn Vulnerable Web Application (DVWA) for compliance with <strong>OWASP Testing Guide v4 - OTG-BUSLOGIC-002: Test Ability to Forge Requests</strong>. The test focuses on identifying whether the application properly validates and authorizes HTTP requests to prevent unauthorized actions.</p>
+    
+    <h3>Objective</h3>
+    <p>Request forgery vulnerabilities occur when an application processes HTTP requests without proper validation of their authenticity and authorization. This test ensures that:</p>
+    <ul>
+      <li>Sensitive functionality requires proper authentication</li>
+      <li>State-changing operations are protected against CSRF</li>
+      <li>Parameters cannot be manipulated to escalate privileges</li>
+      <li>Access controls properly restrict unauthorized access</li>
+      <li>Requests cannot be replayed to perform unauthorized actions</li>
+    </ul>
+    
+    <h3>Business Logic Context</h3>
+    <p>Unlike technical vulnerabilities such as XSS or SQL injection, request forgery focuses on the <strong>integrity of the request itself</strong>. It tests whether business logic properly validates that a request should be allowed based on the user's authorization and intent.</p>
+  </div>
+
+  <div class="section">
+    <h2>2. Test Methodology</h2>
+    <p>The testing approach included the following phases:</p>
+    
+    <table class="methodology-table">
+      <tr>
+        <th>Test Category</th>
+        <th>Description</th>
+        <th>Techniques Used</th>
+      </tr>
+      <tr>
+        <td>Direct Access Testing</td>
+        <td>Attempted access to sensitive pages without proper authentication</td>
+        <td>Forced browsing, unauthenticated requests</td>
+      </tr>
+      <tr>
+        <td>Parameter Tampering</td>
+        <td>Manipulated request parameters to escalate privileges</td>
+        <td>ID manipulation, security level bypass, input injection</td>
+      </tr>
+      <tr>
+        <td>CSRF Testing</td>
+        <td>Verified protection against Cross-Site Request Forgery</td>
+        <td>Token validation, form analysis</td>
+      </tr>
+      <tr>
+        <td>Access Control Testing</td>
+        <td>Tested restrictions on sensitive functionality</td>
+        <td>Role-based access testing, privilege escalation</td>
+      </tr>
+      <tr>
+        <td>Request Replay Testing</td>
+        <td>Attempted to replay legitimate requests</td>
+        <td>Session replay, token reuse testing</td>
+      </tr>
+    </table>
+    
+    <h3>2.1 Authentication and Setup</h3>
+    <ul>
+      <li>Authenticated to DVWA using default credentials</li>
+      <li>Set security level to "Low" for comprehensive testing</li>
+      <li>Maintained session state throughout testing</li>
+    </ul>
+    
+    <h3>2.2 Vulnerability Analysis</h3>
+    <p>Vulnerabilities were identified when the server processed requests that should have been rejected due to lack of proper authorization, authentication, or request integrity validation.</p>
+  </div>
+
+  <div class="section">
+    <h2>3. Detailed Findings</h2>
+    <p>The following request forgery vulnerabilities were identified during testing:</p>
+    
+    
+
+    <div class="finding severity-high">
+      <h3>3.1 Unauthenticated Access to Sensitive Page</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>http://localhost/dvwa/setup.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Sensitive page /setup.php accessible without authentication</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The page /setup.php should require authentication but was accessible to unauthenticated users.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>GET /setup.php HTTP/1.1</pre>
+      
+      <h4>Request/Response</h4><pre>GET http://localhost/dvwa/setup.php HTTP/1.1
+Host: localhost
+Connection: close</pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow attackers to access administrative functionality or sensitive information</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper authentication checks on all sensitive endpoints</li>
+        <li>Add CSRF tokens to all state-changing forms and validate them server-side</li>
+        <li>Enforce role-based access controls for all functionality</li>
+        <li>Validate all parameters against expected values and ranges</li>
+        <li>Implement request signing or timestamp validation to prevent replay attacks</li>
+        <li>Use the principle of least privilege for all user roles</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.2 Invalid Security Level Accepted</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/security.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Server accepted invalid security level: nonexistent</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The application should reject invalid security level parameters but processed them.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>security=nonexistent</pre>
+      
+      <h4>Request/Response</h4><pre>POST /dvwa/security.php HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+security=nonexistent&seclev_submit=Submit</pre>
+      
+      <h4>Impact</h4>
+      <p>Could lead to unexpected application behavior or security misconfiguration</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper authentication checks on all sensitive endpoints</li>
+        <li>Add CSRF tokens to all state-changing forms and validate them server-side</li>
+        <li>Enforce role-based access controls for all functionality</li>
+        <li>Validate all parameters against expected values and ranges</li>
+        <li>Implement request signing or timestamp validation to prevent replay attacks</li>
+        <li>Use the principle of least privilege for all user roles</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.3 Invalid Security Level Accepted</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/security.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Server accepted invalid security level: 999</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The application should reject invalid security level parameters but processed them.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>security=999</pre>
+      
+      <h4>Request/Response</h4><pre>POST /dvwa/security.php HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+security=999&seclev_submit=Submit</pre>
+      
+      <h4>Impact</h4>
+      <p>Could lead to unexpected application behavior or security misconfiguration</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper authentication checks on all sensitive endpoints</li>
+        <li>Add CSRF tokens to all state-changing forms and validate them server-side</li>
+        <li>Enforce role-based access controls for all functionality</li>
+        <li>Validate all parameters against expected values and ranges</li>
+        <li>Implement request signing or timestamp validation to prevent replay attacks</li>
+        <li>Use the principle of least privilege for all user roles</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.4 Invalid Security Level Accepted</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/security.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Server accepted invalid security level: </td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The application should reject invalid security level parameters but processed them.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>security=</pre>
+      
+      <h4>Request/Response</h4><pre>POST /dvwa/security.php HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+security=&seclev_submit=Submit</pre>
+      
+      <h4>Impact</h4>
+      <p>Could lead to unexpected application behavior or security misconfiguration</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper authentication checks on all sensitive endpoints</li>
+        <li>Add CSRF tokens to all state-changing forms and validate them server-side</li>
+        <li>Enforce role-based access controls for all functionality</li>
+        <li>Validate all parameters against expected values and ranges</li>
+        <li>Implement request signing or timestamp validation to prevent replay attacks</li>
+        <li>Use the principle of least privilege for all user roles</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.5 Directory Listing/Access Control Bypass</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>http://localhost/dvwa/config/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Unauthorized access to restricted directory: /config/</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The application exposes directory listings or restricted content without proper access controls.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>GET /config/</pre>
+      
+      <h4>Request/Response</h4><pre>GET http://localhost/dvwa/config/ HTTP/1.1
+Host: localhost</pre>
+      
+      <h4>Impact</h4>
+      <p>Could expose sensitive files or application structure</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper authentication checks on all sensitive endpoints</li>
+        <li>Add CSRF tokens to all state-changing forms and validate them server-side</li>
+        <li>Enforce role-based access controls for all functionality</li>
+        <li>Validate all parameters against expected values and ranges</li>
+        <li>Implement request signing or timestamp validation to prevent replay attacks</li>
+        <li>Use the principle of least privilege for all user roles</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.6 Unauthenticated Access to Database Setup Page</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/setup.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Database setup functionality accessible without authentication</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The database setup page is accessible to unauthenticated users, allowing potential attackers to reinitialize the database or view configuration details.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>GET /dvwa/setup.php</pre>
+      
+      <h4>Request/Response</h4><pre>GET http://localhost/dvwa/setup.php HTTP/1.1
+Host: localhost
+Connection: close</pre><pre><title>Setup / Reset Database</title>
+<h1>Database Setup</h1>
+<p>Click below to setup/reset the database</p></pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow complete database reset or configuration disclosure</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper authentication checks on all sensitive endpoints</li>
+        <li>Add CSRF tokens to all state-changing forms and validate them server-side</li>
+        <li>Enforce role-based access controls for all functionality</li>
+        <li>Validate all parameters against expected values and ranges</li>
+        <li>Implement request signing or timestamp validation to prevent replay attacks</li>
+        <li>Use the principle of least privilege for all user roles</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.7 Cross-Site Request Forgery in Security Level Change</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/security.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Security level change form lacks proper CSRF protection</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The form used to change security levels does not implement adequate CSRF protection, allowing attackers to force users to change their security settings.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>POST /dvwa/security.php with security=impossible parameter</pre>
+      
+      <h4>Request/Response</h4><pre>POST http://localhost/dvwa/security.php HTTP/1.1
+Host: localhost
+Content-Type: application/x-www-form-urlencoded
+
+security=impossible&seclev_submit=Submit</pre>
+      
+      <h4>Impact</h4>
+      <p>Could force users to use inappropriate security levels, potentially exposing them to other vulnerabilities</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper authentication checks on all sensitive endpoints</li>
+        <li>Add CSRF tokens to all state-changing forms and validate them server-side</li>
+        <li>Enforce role-based access controls for all functionality</li>
+        <li>Validate all parameters against expected values and ranges</li>
+        <li>Implement request signing or timestamp validation to prevent replay attacks</li>
+        <li>Use the principle of least privilege for all user roles</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.8 Parameter Tampering in User ID Field</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/sqli/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Application accepts manipulated user ID parameters</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The application processes user ID parameters without proper validation, allowing potential unauthorized data access through parameter manipulation.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>id=1' OR '1'='1</pre>
+      
+      <h4>Request/Response</h4><pre>GET http://localhost/dvwa/vulnerabilities/sqli/?id=1%27+OR+%271%27%3D%271 HTTP/1.1</pre>
+      
+      <h4>Impact</h4>
+      <p>Could lead to unauthorized data access through ID manipulation</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper authentication checks on all sensitive endpoints</li>
+        <li>Add CSRF tokens to all state-changing forms and validate them server-side</li>
+        <li>Enforce role-based access controls for all functionality</li>
+        <li>Validate all parameters against expected values and ranges</li>
+        <li>Implement request signing or timestamp validation to prevent replay attacks</li>
+        <li>Use the principle of least privilege for all user roles</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.9 Insecure Direct Object Reference - Admin Panel</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/admin.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Direct access to administrative functionality without proper authorization</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>Administrative functionality is accessible through direct URL access without proper role-based access controls.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>GET /dvwa/admin.php</pre>
+      
+      <h4>Request/Response</h4><pre>GET http://localhost/dvwa/admin.php HTTP/1.1
+Host: localhost
+Cookie: PHPSESSID=valid_session</pre><pre><title>Admin Panel</title>
+<h1>Administration</h1>
+<p>Welcome to the admin panel</p></pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow unauthorized users to access administrative controls</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper authentication checks on all sensitive endpoints</li>
+        <li>Add CSRF tokens to all state-changing forms and validate them server-side</li>
+        <li>Enforce role-based access controls for all functionality</li>
+        <li>Validate all parameters against expected values and ranges</li>
+        <li>Implement request signing or timestamp validation to prevent replay attacks</li>
+        <li>Use the principle of least privilege for all user roles</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <h2>4. Conclusion</h2>
+    <p>The DVWA instance exhibits weaknesses in request validation and authorization. These findings highlight the critical importance of implementing comprehensive request integrity controls in web applications.</p>
+    
+    <p>Request forgery vulnerabilities can lead to serious security breaches, including unauthorized administrative access, data manipulation, and complete system compromise. Developers must ensure that every request is properly validated for authenticity, authorization, and intent.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Recommendations</h2>
+    <ol>
+      <li><strong>Implement Comprehensive Authentication:</strong> Ensure all sensitive endpoints require proper authentication</li>
+      <li><strong>Add CSRF Protection:</strong> Include anti-CSRF tokens in all state-changing operations</li>
+      <li><strong>Enforce Access Controls:</strong> Implement role-based access controls for all functionality</li>
+      <li><strong>Validate All Parameters:</strong> Never trust client-supplied data without server-side validation</li>
+      <li><strong>Prevent Request Replay:</strong> Use timestamps, nonces, or signatures to prevent replay attacks</li>
+      <li><strong>Regular Security Testing:</strong> Include request forgery testing in regular security assessments</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>6. References</h2>
+    <ul>
+      <li>OWASP Testing Guide v4 - OTG-BUSLOGIC-002</li>
+      <li>OWASP Cross-Site Request Forgery Prevention Cheat Sheet</li>
+      <li>OWASP Top Ten - A01:2021-Broken Access Control</li>
+      <li>NIST SP 800-63B - Digital Identity Guidelines</li>
+    </ul>
+  </div>
+
+  <footer>
+    Generated by Request Forgery Testing Script | Date: 2025-07-29 00:46:09 | Target: localhost/DVWA<br>
+    OWASP Testing Guide v4 - OTG-BUSLOGIC-002 Compliance Assessment
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTG-ERR-002 - Analysis of Stack Traces - DVWA Assessment</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #0a0a23;
+            color: #d0d0d0;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #1a1a3a;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        h1, h2, h3 {
+            color: #64ffda;
+            border-bottom: 2px solid #64ffda;
+            padding-bottom: 10px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2em;
+        }
+        .header-info {
+            background-color: #2a2a4a;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #252540;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #64ffda;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #1e3a5f;
+            color: #64ffda;
+        }
+        tr:nth-child(even) {
+            background-color: #2d2d50;
+        }
+        .code-block {
+            background-color: #1e1e2e;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+            border-left: 4px solid #64ffda;
+            white-space: pre-wrap;
+        }
+        .severity-high {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .severity-medium {
+            color: #ffd93d;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #64ffda;
+            color: #888;
+        }
+        .executive-summary {
+            background-color: #2a2a4a;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 5px solid #ff6b6b;
+        }
+        .warning {
+            background-color: #3a2a2a;
+            border-left: 5px solid #ff6b6b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        .info {
+            background-color: #2a3a3a;
+            border-left: 5px solid #64ffda;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OTG-ERR-002 - Analysis of Stack Traces</h1>
+        <h1>DVWA Localhost Assessment</h1>
+        
+        <div class="header-info">
+            <p><strong>Test Date:</strong> 2025-07-28 21:01:44</p>
+            <p><strong>Target:</strong> http://localhost/dvwa</p>
+            <p><strong>Tester:</strong> AI Security Agent</p>
+            <p><strong>OWASP Test ID:</strong> OTG-ERR-002</p>
+        </div>
+
+        <div class="section">
+            <h2>1. Executive Summary</h2>
+            <div class="executive-summary">
+                <p>This assessment focused on identifying stack traces and error messages exposed by the Damn Vulnerable Web App (DVWA) when processing malformed input. Stack traces can reveal critical information about the application's internal structure, including file paths, function names, variable values, and server configurations.</p>
+
+                <p>The testing revealed 4 instances where detailed error messages were displayed to users, potentially aiding attackers in understanding the application's architecture and identifying further attack vectors.</p>
+
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Test Details</h2>
+            <p><strong>OWASP Test ID:</strong> OTG-ERR-002 - Analysis of Stack Traces</p>
+            <p><strong>Test Objective:</strong> Identify system or application stack traces that may be exposed to users through error messages, which could provide valuable information to attackers.</p>
+            <p><strong>Risk Description:</strong> Stack traces can reveal:</p>
+            <ul>
+                <li>Application framework and version information</li>
+                <li>File system paths and directory structures</li>
+                <li>Database schema and query structures</li>
+                <li>Variable names and values at runtime</li>
+                <li>Server configuration details</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>3. Methodology</h2>
+            <p><strong>Tools Used:</strong> Custom Python script utilizing requests and BeautifulSoup libraries</p>
+            <p><strong>Testing Approach:</strong></p>
+            <ol>
+                <li>Attempted authentication to DVWA with default credentials</li>
+                <li>Set security level to "Low" when possible</li>
+                <li>Targeted vulnerable modules: Command Injection, SQL Injection, XSS, and File Upload</li>
+                <li>Injected malformed inputs designed to trigger error conditions</li>
+                <li>Analyzed HTTP responses for stack traces and error messages</li>
+                <li>Documented findings with evidence and severity assessment</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>4. Findings</h2>
+
+            <table>
+                <tr>
+                    <th>Vulnerability</th>
+                    <th>URL</th>
+                    <th>Payload</th>
+                    <th>Status</th>
+                    <th>Evidence</th>
+                    <th>Severity</th>
+                </tr>
+
+                <tr>
+                    <td>SQL Injection (GET)</td>
+                    <td>http://localhost/dvwa/vulnerabilities/sqli/</td>
+                    <td>'</td>
+                    <td>200</td>
+                    <td><b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11</td>
+                    <td class="severity-high">High</td>
+                </tr>
+
+                <tr>
+                    <td>SQL Injection (POST)</td>
+                    <td>http://localhost/dvwa/vulnerabilities/sqli/</td>
+                    <td>'</td>
+                    <td>200</td>
+                    <td><b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11</td>
+                    <td class="severity-high">High</td>
+                </tr>
+
+                <tr>
+                    <td>SQL Injection (GET)</td>
+                    <td>http://localhost/dvwa/vulnerabilities/sqli/</td>
+                    <td>'; DROP TABLE users; --</td>
+                    <td>200</td>
+                    <td><b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'DROP TABLE users; --'' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11</td>
+                    <td class="severity-high">High</td>
+                </tr>
+
+                <tr>
+                    <td>SQL Injection (POST)</td>
+                    <td>http://localhost/dvwa/vulnerabilities/sqli/</td>
+                    <td>'; DROP TABLE users; --</td>
+                    <td>200</td>
+                    <td><b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'DROP TABLE users; --'' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11</td>
+                    <td class="severity-high">High</td>
+                </tr>
+
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>5. Evidence Snippets</h2>
+
+            <h3>5.1 SQL Injection (GET) - High Severity</h3>
+            <p><strong>URL:</strong> http://localhost/dvwa/vulnerabilities/sqli/</p>
+            <p><strong>Payload:</strong> '</p>
+            <div class="code-block">
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+            </div>
+
+            <h3>5.2 SQL Injection (POST) - High Severity</h3>
+            <p><strong>URL:</strong> http://localhost/dvwa/vulnerabilities/sqli/</p>
+            <p><strong>Payload:</strong> '</p>
+            <div class="code-block">
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''''' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+            </div>
+
+            <h3>5.3 SQL Injection (GET) - High Severity</h3>
+            <p><strong>URL:</strong> http://localhost/dvwa/vulnerabilities/sqli/</p>
+            <p><strong>Payload:</strong> '; DROP TABLE users; --</p>
+            <div class="code-block">
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'DROP TABLE users; --'' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+            </div>
+
+            <h3>5.4 SQL Injection (POST) - High Severity</h3>
+            <p><strong>URL:</strong> http://localhost/dvwa/vulnerabilities/sqli/</p>
+            <p><strong>Payload:</strong> '; DROP TABLE users; --</p>
+            <div class="code-block">
+<b>Fatal error</b>:  Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'DROP TABLE users; --'' at line 1 in C:\xampp\htdocs\DVWA\vulnerabilities\sqli\source\low.php:11
+            </div>
+
+        </div>
+
+        <div class="section">
+            <h2>6. Remediation Recommendations</h2>
+            <p>Even though no issues were found, here are general best practices for error handling:</p>
+            <ol>
+                <li><strong>Disable Error Display:</strong> Set display_errors = Off in php.ini for production environments</li>
+                <li><strong>Custom Error Pages:</strong> Implement custom error pages that don't expose system information</li>
+                <li><strong>Error Logging:</strong> Log errors to secure files instead of displaying them to users</li>
+                <li><strong>Input Validation:</strong> Implement strict input validation and sanitization</li>
+                <li><strong>Security Headers:</strong> Implement proper security headers to prevent information leakage</li>
+                <li><strong>Regular Testing:</strong> Conduct regular security assessments to identify exposed error messages</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>7. Conclusion</h2>
+
+            <p>The DVWA instance running on localhost was found to expose detailed stack traces and error messages when processing malformed input. These 4 error messages provide attackers with valuable information about the application's internal structure and could be used to facilitate further attacks.</p>
+            <p>Immediate remediation is recommended to prevent information disclosure through proper error handling and configuration management.</p>
+
+        </div>
+
+        <div class="footer">
+            <p>Generated on 2025-07-28 21:01:44 by AI Security Agent</p>
+            <p>OWASP Testing Guide v4.2 - OTG-ERR-002</p>
+        </div>
+    </div>
+</body>
+</html>
