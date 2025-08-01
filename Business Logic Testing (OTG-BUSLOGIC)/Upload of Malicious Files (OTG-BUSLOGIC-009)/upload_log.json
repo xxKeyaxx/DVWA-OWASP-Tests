@@ -1,0 +1,45 @@
+{
+  "basic_php": {
+    "filename": "shell.php",
+    "content_type": "application/x-php",
+    "response_status": 200,
+    "response_text": "<!DOCTYPE html>\n\n<html lang=\"en-GB\">\n\n\t<head>\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\n\t\t<title>Vulnerability: File Upload :: Damn Vulnerable Web Application (DVWA)</title>\n\n\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../../dvwa/css/main.css\" />\n\n\t\t<link rel=\"icon\" type=\"\\image/ico\" href=\"../../favicon.ico\" />\n\n\t\t<script type=\"text/javascript\" src=\"../../dvwa/js/dvwaPage.js\"></script>\n\n\t</head>\n\n\t<body class=\"home light\">\n\t\t<div id=\"container\">\n\n\t\t\t<div id=\"hea",
+    "timestamp": "2025-08-01T23:06:37.707845"
+  },
+  "double_extension": {
+    "filename": "shell.php.jpg",
+    "content_type": "image/jpeg",
+    "response_status": 200,
+    "response_text": "<!DOCTYPE html>\n\n<html lang=\"en-GB\">\n\n\t<head>\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\n\t\t<title>Vulnerability: File Upload :: Damn Vulnerable Web Application (DVWA)</title>\n\n\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../../dvwa/css/main.css\" />\n\n\t\t<link rel=\"icon\" type=\"\\image/ico\" href=\"../../favicon.ico\" />\n\n\t\t<script type=\"text/javascript\" src=\"../../dvwa/js/dvwaPage.js\"></script>\n\n\t</head>\n\n\t<body class=\"home light\">\n\t\t<div id=\"container\">\n\n\t\t\t<div id=\"hea",
+    "timestamp": "2025-08-01T23:06:37.868063"
+  },
+  "mime_type_bypass": {
+    "filename": "shell.php",
+    "spoofed_content_type": "image/jpeg",
+    "actual_content": "PHP code",
+    "response_status": 200,
+    "response_text": "<!DOCTYPE html>\n\n<html lang=\"en-GB\">\n\n\t<head>\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\n\t\t<title>Vulnerability: File Upload :: Damn Vulnerable Web Application (DVWA)</title>\n\n\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../../dvwa/css/main.css\" />\n\n\t\t<link rel=\"icon\" type=\"\\image/ico\" href=\"../../favicon.ico\" />\n\n\t\t<script type=\"text/javascript\" src=\"../../dvwa/js/dvwaPage.js\"></script>\n\n\t</head>\n\n\t<body class=\"home light\">\n\t\t<div id=\"container\">\n\n\t\t\t<div id=\"hea",
+    "timestamp": "2025-08-01T23:06:37.931462"
+  },
+  "case_manipulation": {
+    "filename": "shell.PHP",
+    "content_type": "application/x-php",
+    "response_status": 200,
+    "response_text": "<!DOCTYPE html>\n\n<html lang=\"en-GB\">\n\n\t<head>\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\n\t\t<title>Vulnerability: File Upload :: Damn Vulnerable Web Application (DVWA)</title>\n\n\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../../dvwa/css/main.css\" />\n\n\t\t<link rel=\"icon\" type=\"\\image/ico\" href=\"../../favicon.ico\" />\n\n\t\t<script type=\"text/javascript\" src=\"../../dvwa/js/dvwaPage.js\"></script>\n\n\t</head>\n\n\t<body class=\"home light\">\n\t\t<div id=\"container\">\n\n\t\t\t<div id=\"hea",
+    "timestamp": "2025-08-01T23:06:37.989427"
+  },
+  "content_type_manipulation": {
+    "filename": "test.php",
+    "content_type": "text/plain",
+    "response_status": 200,
+    "response_text": "<!DOCTYPE html>\n\n<html lang=\"en-GB\">\n\n\t<head>\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\n\t\t<title>Vulnerability: File Upload :: Damn Vulnerable Web Application (DVWA)</title>\n\n\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../../dvwa/css/main.css\" />\n\n\t\t<link rel=\"icon\" type=\"\\image/ico\" href=\"../../favicon.ico\" />\n\n\t\t<script type=\"text/javascript\" src=\"../../dvwa/js/dvwaPage.js\"></script>\n\n\t</head>\n\n\t<body class=\"home light\">\n\t\t<div id=\"container\">\n\n\t\t\t<div id=\"hea",
+    "timestamp": "2025-08-01T23:06:38.048825"
+  },
+  "html_upload": {
+    "filename": "test.html",
+    "content_type": "text/html",
+    "response_status": 200,
+    "response_text": "<!DOCTYPE html>\n\n<html lang=\"en-GB\">\n\n\t<head>\n\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n\n\t\t<title>Vulnerability: File Upload :: Damn Vulnerable Web Application (DVWA)</title>\n\n\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../../dvwa/css/main.css\" />\n\n\t\t<link rel=\"icon\" type=\"\\image/ico\" href=\"../../favicon.ico\" />\n\n\t\t<script type=\"text/javascript\" src=\"../../dvwa/js/dvwaPage.js\"></script>\n\n\t</head>\n\n\t<body class=\"home light\">\n\t\t<div id=\"container\">\n\n\t\t\t<div id=\"hea",
+    "timestamp": "2025-08-01T23:06:38.157802"
+  }
+}

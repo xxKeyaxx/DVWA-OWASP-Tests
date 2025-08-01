@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTG-BUSLOGIC-003 Assessment - DVWA</title>
+  <style>
+    /* OSCP-inspired styling */
+    body { 
+        background: #1e1e1e; 
+        color: #dcdcdc; 
+        font-family: 'Courier New', monospace; 
+        padding: 20px; 
+        line-height: 1.6;
+        margin: 0;
+    }
+    h1, h2, h3 { 
+        color: #00ff00; 
+        border-bottom: 1px solid #00ff00;
+        padding-bottom: 10px;
+        margin-top: 30px;
+    }
+    h1 { 
+        font-size: 2em; 
+        text-align: center;
+        border-bottom: 2px solid #00ff00;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    .section { 
+        margin-bottom: 30px; 
+    }
+    pre { 
+        background: #2d2d2d; 
+        padding: 15px; 
+        border-left: 4px solid #ff9900; 
+        overflow-x: auto;
+        white-space: pre-wrap;
+        font-size: 0.9em;
+        margin: 15px 0;
+    }
+    .vuln { 
+        color: #ff5555; 
+        font-weight: bold; 
+    }
+    .info { 
+        color: #55ffff; 
+    }
+    .warning { 
+        color: #ffaa00; 
+    }
+    .success { 
+        color: #55ff55; 
+    }
+    .finding { 
+        background: #2a2a2a; 
+        border: 1px solid #444; 
+        margin: 20px 0; 
+        padding: 15px;
+    }
+    .severity-high { 
+        border-left: 5px solid #ff5555; 
+    }
+    .severity-medium { 
+        border-left: 5px solid #ffaa00; 
+    }
+    .severity-low { 
+        border-left: 5px solid #55ff55; 
+    }
+    ul, ol { 
+        margin-left: 20px; 
+    }
+    li { 
+        margin-bottom: 10px; 
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin: 20px 0;
+    }
+    th, td { 
+        border: 1px solid #444; 
+        padding: 10px; 
+        text-align: left;
+    }
+    th { 
+        background: #333; 
+        color: #00ff00;
+    }
+    footer { 
+        margin-top: 50px; 
+        font-size: 0.8em; 
+        color: #888; 
+        text-align: center;
+        border-top: 1px solid #444;
+        padding-top: 20px;
+    }
+    .executive-summary { 
+        background: #2a2a2a; 
+        padding: 20px; 
+        border-left: 4px solid #00ff00;
+        margin: 20px 0;
+    }
+    .methodology-table { 
+        background: #252525; 
+    }
+    code { 
+        background: #333; 
+        padding: 2px 4px; 
+        border-radius: 3px;
+    }
+    .business-principle { 
+        background: #2a2a2a; 
+        border-left: 4px solid #00ff00; 
+        padding: 15px; 
+        margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>OWASP OTG-BUSLOGIC-003: Test Integrity Checks</h1>
+  <p class="info" style="text-align: center;">Assessment of DVWA @ http://localhost/dvwa/</p>
+  <p class="info" style="text-align: center;">Report Generated: 2025-08-01 18:10:45</p>
+
+  <div class="section executive-summary">
+    <h2>Executive Summary</h2>
+    <p>The application exhibits several integrity check vulnerabilities that could be exploited by attackers to manipulate critical data and bypass business workflows.</p>
+    <p><strong>Total Findings:</strong> 5</p>
+    <p><strong>High Severity:</strong> 3</p>
+    <p><strong>Medium Severity:</strong> 2</p>
+    <p><strong>Low Severity:</strong> 0</p>
+  </div>
+
+  <div class="section">
+    <h2>1. Overview</h2>
+    <p>This assessment evaluates the Damn Vulnerable Web Application (DVWA) for compliance with <strong>OWASP Testing Guide v4 - OTG-BUSLOGIC-003: Test Integrity Checks</strong>. The test focuses on identifying whether the application properly enforces data and process integrity by validating all critical operations server-side and preventing unauthorized manipulation of data, state, or workflow.</p>
+    
+    <div class="business-principle">
+      <h3>Business Logic Principle</h3>
+      <p><strong>"Never trust the client."</strong> All business-critical decisions must be validated server-side. Hidden fields, read-only UI elements, and client-side validation should never be the sole protection mechanism.</p>
+    </div>
+    
+    <h3>Objective</h3>
+    <p>Integrity checks ensure that:</p>
+    <ul>
+      <li>Data cannot be tampered with during transmission or storage</li>
+      <li>Business workflows cannot be bypassed or manipulated</li>
+      <li>Hidden or non-editable fields are not trusted without server-side validation</li>
+      <li>Only authorized users can perform create, read, update, or delete (CRUD) actions</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>2. Test Methodology</h2>
+    <p>The testing approach included the following phases:</p>
+    
+    <table class="methodology-table">
+      <tr>
+        <th>Test Category</th>
+        <th>Description</th>
+        <th>Techniques Used</th>
+      </tr>
+      <tr>
+        <td>Hidden Field Tampering</td>
+        <td>Modified hidden form fields to bypass business logic</td>
+        <td>Parameter manipulation, form field inspection</td>
+      </tr>
+      <tr>
+        <td>Password Confirmation Integrity</td>
+        <td>Tested server-side validation of password fields</td>
+        <td>Client-side bypass, mismatched field submission</td>
+      </tr>
+      <tr>
+        <td>Workflow Integrity</td>
+        <td>Attempted to bypass required workflow steps</td>
+        <td>Direct page access, step skipping</td>
+      </tr>
+      <tr>
+        <td>Parameter Injection</td>
+        <td>Injected unauthorized parameters into requests</td>
+        <td>Additional parameter testing, hidden field analysis</td>
+      </tr>
+      <tr>
+        <td>Client-Side Validation Bypass</td>
+        <td>Disabled JavaScript and submitted invalid data</td>
+        <td>JS disabling, manual request crafting</td>
+      </tr>
+    </table>
+    
+    <h3>2.1 Authentication and Setup</h3>
+    <ul>
+      <li>Authenticated to DVWA using default credentials</li>
+      <li>Set security level to "Low" for comprehensive testing</li>
+      <li>Maintained session state throughout testing</li>
+    </ul>
+    
+    <h3>2.2 Vulnerability Analysis</h3>
+    <p>Vulnerabilities were identified when the server processed requests that should have been rejected due to lack of proper integrity validation, allowing unauthorized data manipulation or workflow bypass.</p>
+  </div>
+
+  <div class="section">
+    <h2>3. Detailed Findings</h2>
+    <p>The following integrity check vulnerabilities were identified during testing:</p>
+    
+    
+
+    <div class="finding severity-high">
+      <h3>3.1 Workflow Bypass - Direct Access to Setup Page</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/setup.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Setup functionality accessible without proper workflow completion</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The database setup page can be accessed directly, bypassing the intended workflow and potentially allowing unauthorized database operations.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>GET /dvwa/setup.php</pre>
+      
+      <h4>Request/Response</h4><pre>GET http://localhost/dvwa/setup.php HTTP/1.1
+Host: localhost</pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow attackers to reset or reconfigure the database without proper authorization</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement server-side validation for all critical business logic decisions</li>
+        <li>Never trust client-supplied data, especially hidden fields and read-only values</li>
+        <li>Validate all parameters against expected values and ranges server-side</li>
+        <li>Enforce workflow integrity by validating state transitions</li>
+        <li>Use cryptographic signatures or tokens for sensitive data integrity</li>
+        <li>Implement proper access controls for all CRUD operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.2 Missing Server-Side Password Confirmation Validation</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/csrf/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Server accepts different values for password_new and password_conf fields</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The application does not validate that the new password and confirmation password match on the server side. It relies solely on client-side JavaScript validation, which can be easily bypassed.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>password_new=hacked123&password_conf=different456&Change=Change</pre>
+      
+      <h4>Request/Response</h4><pre>POST http://localhost/dvwa/vulnerabilities/csrf/ HTTP/1.1
+Host: localhost
+Content-Type: application/x-www-form-urlencoded
+Cookie: PHPSESSID=valid_session_id
+
+password_new=hacked123&password_conf=different456&Change=Change</pre><pre>Password Changed.</pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow attackers to set a password different from what was confirmed, leading to unauthorized account access</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement server-side validation for all critical business logic decisions</li>
+        <li>Never trust client-supplied data, especially hidden fields and read-only values</li>
+        <li>Validate all parameters against expected values and ranges server-side</li>
+        <li>Enforce workflow integrity by validating state transitions</li>
+        <li>Use cryptographic signatures or tokens for sensitive data integrity</li>
+        <li>Implement proper access controls for all CRUD operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.3 Hidden Field Tampering - Security Level Manipulation</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/security.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Application accepts injected hidden field parameters</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The security level change form accepts additional parameters that are not part of the intended form, allowing potential manipulation of application state.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>security=low&seclev_submit=Submit&admin=1&debug=true</pre>
+      
+      <h4>Request/Response</h4><pre>POST http://localhost/dvwa/security.php HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+security=low&seclev_submit=Submit&admin=1&debug=true</pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow unauthorized parameter injection and potential privilege escalation</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement server-side validation for all critical business logic decisions</li>
+        <li>Never trust client-supplied data, especially hidden fields and read-only values</li>
+        <li>Validate all parameters against expected values and ranges server-side</li>
+        <li>Enforce workflow integrity by validating state transitions</li>
+        <li>Use cryptographic signatures or tokens for sensitive data integrity</li>
+        <li>Implement proper access controls for all CRUD operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.4 Workflow Integrity Bypass - Direct Setup Access</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/setup.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Database setup functionality accessible without proper workflow</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The database setup page can be accessed directly without completing the intended setup workflow or proper authentication, potentially allowing unauthorized database operations.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>GET /dvwa/setup.php</pre>
+      
+      <h4>Request/Response</h4><pre>GET http://localhost/dvwa/setup.php HTTP/1.1
+Host: localhost
+Cookie: PHPSESSID=valid_session</pre><pre><title>Setup / Reset Database</title>
+<h1>Database Setup</h1></pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow attackers to reset the database or view sensitive configuration information</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement server-side validation for all critical business logic decisions</li>
+        <li>Never trust client-supplied data, especially hidden fields and read-only values</li>
+        <li>Validate all parameters against expected values and ranges server-side</li>
+        <li>Enforce workflow integrity by validating state transitions</li>
+        <li>Use cryptographic signatures or tokens for sensitive data integrity</li>
+        <li>Implement proper access controls for all CRUD operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.5 Client-Side Only Validation Reliance</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/brute/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Application relies on client-side validation without server-side confirmation</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>Critical form validations are performed only in client-side JavaScript without corresponding server-side checks, making them trivial to bypass.</p>
+      
+      <h4>Proof of Concept</h4>
+      <pre>username=admin&password=short</pre>
+      
+      <h4>Request/Response</h4><pre>POST http://localhost/dvwa/vulnerabilities/brute/ HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=short</pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow submission of invalid or malicious data that violates business rules</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement server-side validation for all critical business logic decisions</li>
+        <li>Never trust client-supplied data, especially hidden fields and read-only values</li>
+        <li>Validate all parameters against expected values and ranges server-side</li>
+        <li>Enforce workflow integrity by validating state transitions</li>
+        <li>Use cryptographic signatures or tokens for sensitive data integrity</li>
+        <li>Implement proper access controls for all CRUD operations</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <h2>4. Conclusion</h2>
+    <p>The DVWA instance exhibits weaknesses in data and process integrity controls. These findings highlight the critical importance of implementing comprehensive server-side validation and never relying solely on client-side protections.</p>
+    
+    <p>Integrity check vulnerabilities can lead to serious security breaches, including unauthorized data manipulation, account compromise, and business process disruption. Developers must ensure that every business-critical decision is validated server-side, regardless of client-side checks.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Recommendations</h2>
+    <ol>
+      <li><strong>Implement Server-Side Validation:</strong> Validate all critical data and workflow states server-side</li>
+      <li><strong>Never Trust Client Data:</strong> Assume all client-supplied data is potentially malicious</li>
+      <li><strong>Enforce Workflow Integrity:</strong> Validate that all required steps are completed before allowing progression</li>
+      <li><strong>Use Cryptographic Protection:</strong> Sign sensitive data to prevent tampering</li>
+      <li><strong>Validate All Parameters:</strong> Check all input parameters against expected values</li>
+      <li><strong>Regular Integrity Testing:</strong> Include integrity checks in regular security assessments</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>6. References</h2>
+    <ul>
+      <li>OWASP Testing Guide v4 - OTG-BUSLOGIC-003</li>
+      <li>OWASP Input Validation Cheat Sheet</li>
+      <li>OWASP Top Ten - A07:2021-Identification and Authentication Failures</li>
+      <li>NIST SP 800-63B - Digital Identity Guidelines</li>
+    </ul>
+  </div>
+
+  <footer>
+    Generated by Integrity Check Testing Script | Date: 2025-08-01 18:10:45 | Target: localhost/DVWA<br>
+    OWASP Testing Guide v4 - OTG-BUSLOGIC-003 Compliance Assessment
+  </footer>
+
+</body>
+</html>

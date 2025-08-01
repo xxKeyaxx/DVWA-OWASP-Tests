@@ -1,0 +1,216 @@
+{
+  "brute_force": {
+    "total_attempts": 10,
+    "failed_attempts": 10,
+    "successful_attempts": 0,
+    "duration_seconds": 3.089225,
+    "results": [
+      {
+        "attempt": 1,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.076,
+        "timestamp": "2025-08-01T22:52:42.136794"
+      },
+      {
+        "attempt": 2,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.077,
+        "timestamp": "2025-08-01T22:52:42.463691"
+      },
+      {
+        "attempt": 3,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.081,
+        "timestamp": "2025-08-01T22:52:42.758647"
+      },
+      {
+        "attempt": 4,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.086,
+        "timestamp": "2025-08-01T22:52:43.073261"
+      },
+      {
+        "attempt": 5,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.091,
+        "timestamp": "2025-08-01T22:52:43.386499"
+      },
+      {
+        "attempt": 6,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.092,
+        "timestamp": "2025-08-01T22:52:43.717250"
+      },
+      {
+        "attempt": 7,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.045,
+        "timestamp": "2025-08-01T22:52:44.013256"
+      },
+      {
+        "attempt": 8,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.063,
+        "timestamp": "2025-08-01T22:52:44.323655"
+      },
+      {
+        "attempt": 9,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.042,
+        "timestamp": "2025-08-01T22:52:44.601453"
+      },
+      {
+        "attempt": 10,
+        "status": "Failed Login",
+        "response_code": 200,
+        "response_time": 0.085,
+        "timestamp": "2025-08-01T22:52:44.923238"
+      }
+    ]
+  },
+  "rate_limiting": {
+    "operation": "database_reset",
+    "total_attempts": 8,
+    "successful_attempts": 8,
+    "duration_seconds": 3.473822,
+    "results": [
+      {
+        "attempt": 1,
+        "status": "Success",
+        "response_code": 200,
+        "response_time": 0.121,
+        "timestamp": "2025-08-01T22:52:45.405507"
+      },
+      {
+        "attempt": 2,
+        "status": "Success",
+        "response_code": 200,
+        "response_time": 0.122,
+        "timestamp": "2025-08-01T22:52:45.840866"
+      },
+      {
+        "attempt": 3,
+        "status": "Success",
+        "response_code": 200,
+        "response_time": 0.164,
+        "timestamp": "2025-08-01T22:52:46.318215"
+      },
+      {
+        "attempt": 4,
+        "status": "Success",
+        "response_code": 200,
+        "response_time": 0.109,
+        "timestamp": "2025-08-01T22:52:46.742452"
+      },
+      {
+        "attempt": 5,
+        "status": "Success",
+        "response_code": 200,
+        "response_time": 0.129,
+        "timestamp": "2025-08-01T22:52:47.185989"
+      },
+      {
+        "attempt": 6,
+        "status": "Success",
+        "response_code": 200,
+        "response_time": 0.089,
+        "timestamp": "2025-08-01T22:52:47.588290"
+      },
+      {
+        "attempt": 7,
+        "status": "Success",
+        "response_code": 200,
+        "response_time": 0.122,
+        "timestamp": "2025-08-01T22:52:48.023899"
+      },
+      {
+        "attempt": 8,
+        "status": "Success",
+        "response_code": 200,
+        "response_time": 0.107,
+        "timestamp": "2025-08-01T22:52:48.444448"
+      }
+    ]
+  },
+  "anti_automation": {
+    "total_attempts": 12,
+    "duration_seconds": 0.034085,
+    "results": [
+      {
+        "attempt": 1,
+        "page": "/vulnerabilities/sqli/",
+        "status_code": 200,
+        "response_time": 0.034,
+        "anti_automation_detected": true,
+        "indicators": [
+          "captcha"
+        ],
+        "timestamp": "2025-08-01T22:52:48.779515"
+      }
+    ]
+  },
+  "session_abuse": {
+    "total_attempts": 6,
+    "results": [
+      {
+        "attempt": 1,
+        "session_valid": true,
+        "result": "Session Valid",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:52:48.785772"
+      },
+      {
+        "attempt": 2,
+        "session_valid": true,
+        "result": "Session Valid",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:52:49.294851"
+      },
+      {
+        "attempt": 3,
+        "session_valid": true,
+        "result": "Session Valid",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:52:49.803015"
+      },
+      {
+        "attempt": 4,
+        "session_valid": true,
+        "result": "Session Valid",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:52:50.310436"
+      },
+      {
+        "attempt": 5,
+        "session_valid": true,
+        "result": "Session Valid",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:52:50.817840"
+      },
+      {
+        "attempt": 6,
+        "session_valid": true,
+        "result": "Session Valid",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:52:51.325594"
+      }
+    ]
+  },
+  "logging_monitoring": {
+    "suspicious_activities_performed": [
+      "Multiple failed logins",
+      "Rapid page access"
+    ],
+    "accessible_logs": [],
+    "timestamp": "2025-08-01T22:52:52.763943"
+  }
+}
