@@ -1,0 +1,111 @@
+# AI Coding Agent Prompt: JavaScript Execution (OTG-CLIENT-002) Test Script & OSCP-Style Report for DVWA
+
+## Objective
+
+Create a Python script that automates testing for **JavaScript Execution (OTG-CLIENT-002)** on a local instance of **Damn Vulnerable Web Application (DVWA)** running via **XAMPP on localhost**. The script must detect and demonstrate client-side JavaScript execution vulnerabilities (e.g., in XSS-prone fields) and generate a professional, well-structured **OWASP/OSCP-style HTML report** styled to resemble official penetration testing reports.
+
+---
+
+## Prompt for AI Coding Agent
+
+> You are an advanced AI security automation assistant. Your task is to generate a complete Python script that performs the following:
+
+### 1. **Target Environment**
+- The target is `http://localhost/dvwa/`
+- DVWA is running via XAMPP with login credentials:
+  - Username: `admin`
+  - Password: `password`
+- Security level: Set to **Low** (automatically configure via script if possible)
+
+### 2. **Testing Objective: OTG-CLIENT-002 – Client-Side JavaScript Execution**
+- Identify input fields vulnerable to JavaScript execution (e.g., reflected/stored XSS).
+- Focus on key DVWA modules: **XSS (Reflected)** and **XSS (Stored)**.
+- Inject a benign JavaScript payload: `<script>alert('XSS')</script>`
+- Confirm execution by detecting alert triggers (via browser automation) or analyzing responses.
+
+### 3. **Automation Requirements**
+- Use `selenium` for browser interaction (simulate real user behavior).
+- Use `requests` and `BeautifulSoup` for form parsing and session handling.
+- Automate login to DVWA.
+- Navigate to XSS (Reflected) and XSS (Stored) pages.
+- Submit payloads into vulnerable fields.
+- Capture evidence: page source, success indicators, and browser behavior.
+- Handle CSRF tokens (DVWA `user_token`) dynamically.
+
+### 4. **Output: OSCP/OWASP-Style HTML Report**
+Generate a standalone `report.html` file with the following structure and styling:
+
+#### Report Structure
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OSCP-Style Security Assessment Report</title>
+  <style>
+    /* Professional OSCP-inspired styling: monospace font, dark theme, clear sections */
+    body { font-family: 'Courier New', monospace; background: #111; color: #00FF00; padding: 20px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    h1, h2, h3 { color: #00CCFF; }
+    .section { margin: 20px 0; }
+    pre { background: #222; padding: 10px; border-left: 4px solid #00CCFF; overflow-x: auto; }
+    .evidence { color: #FFCC00; }
+    .recommendation { color: #AAFF00; }
+    footer { margin-top: 50px; font-size: 0.8em; text-align: center; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Security Assessment Report</h1>
+    <p><strong>Test ID:</strong> OTG-CLIENT-002</p>
+    <p><strong>Target:</strong> http://localhost/dvwa/</p>
+    <p><strong>Date:</strong> [CURRENT DATE]</p>
+  </div>
+
+  <div class="section">
+    <h2>1. Test Overview</h2>
+    <p><strong>Objective:</strong> Test for client-side JavaScript execution vulnerabilities (e.g., XSS).</p>
+    <p><strong>OWASP Reference:</strong> OTG-CLIENT-002</p>
+  </div>
+
+  <div class="section">
+    <h2>2. Test Procedure</h2>
+    <p>1. Authenticate to DVWA using provided credentials.</p>
+    <p>2. Navigate to XSS (Reflected) and XSS (Stored) pages.</p>
+    <p>3. Extract forms and CSRF tokens.</p>
+    <p>4. Inject JavaScript payload: <code><script>alert('XSS')</script></code></p>
+    <p>5. Monitor for execution indicators.</p>
+  </div>
+
+  <div class="section">
+    <h2>3. Findings</h2>
+    <h3>XSS (Reflected)</h3>
+    <p><strong>Status:</strong> <span style="color: #FF0000;">Vulnerable</span></p>
+    <p><strong>Payload Used:</strong> <code><script>alert('XSS')</script></code></p>
+    <pre>[Injected URL or Response Snippet]</pre>
+    <p class="evidence"><strong>Evidence:</strong> JavaScript alert observed during automation.</p>
+
+    <h3>XSS (Stored)</h3>
+    <p><strong>Status:</strong> <span style="color: #FF0000;">Vulnerable</span></p>
+    <p><strong>Payload Used:</strong> <code><script>alert('XSS')</script></code></p>
+    <pre>[Stored Input Response]</pre>
+    <p class="evidence"><strong>Evidence:</strong> Script executed upon page reload.</p>
+  </div>
+
+  <div class="section">
+    <h2>4. Impact</h2>
+    <p>An attacker can execute arbitrary JavaScript in the context of the victim's session, leading to session hijacking, defacement, or malware delivery.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Recommendations</h2>
+    <p class="recommendation">- Implement proper output encoding for user-supplied data.</p>
+    <p class="recommendation">- Use Content Security Policy (CSP) headers.</p>
+    <p class="recommendation">- Validate and sanitize all inputs on both client and server sides.</p>
+  </div>
+
+  <footer>
+    &copy; 2025 Automated Security Testing Framework. Report generated by AI Agent.
+  </footer>
+</body>
+</html>
