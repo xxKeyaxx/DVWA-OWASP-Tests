@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exposed Session Variables Test - OTG-SESS-004</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background-color: #252526;
+            padding: 20px;
+            border-left: 4px solid #569cd6;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #569cd6;
+            font-size: 24px;
+        }
+        .summary-box {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .findings-table {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .risk-rating {
+            display: inline-block;
+            padding: 5px 10px;
+            font-weight: bold;
+            background-color: #ff6b6b;
+            color: #000;
+        }
+        .high-risk {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .medium-risk {
+            color: #ffd93d;
+        }
+        .low-risk {
+            color: #6bcf7f;
+        }
+        .recommendations {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .references {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        h2, h3 {
+            color: #569cd6;
+        }
+        .timestamp {
+            color: #9cdcfe;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1e1e1e;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #3c3c3c;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #252526;
+            color: #569cd6;
+        }
+        pre {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 10px;
+            margin: 5px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        a {
+            color: #569cd6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OWASP Testing Guide - OTG-SESS-004</h1>
+        <h2>Exposed Session Variables Test Report</h2>
+        <div class="timestamp">Generated on: 2025-08-03 00:12:51</div>
+        <div>Target: <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></div>
+    </div>
+
+    <div class="summary-box">
+        <h3>Executive Summary</h3>
+        <p>This report details the findings of automated testing for Exposed Session Variables (OTG-SESS-004) on the DVWA application. The tests focused on identifying session-related information that is unnecessarily exposed to the client-side, which could potentially be exploited by attackers to hijack sessions or gain unauthorized access.</p>
+        <p><strong>Risk Rating: <span class="risk-rating">HIGH</span></strong></p>
+        <p><strong>Findings: 164</strong></p>
+    </div>
+
+    <h2>Test Details</h2>
+    <h3>Methodology</h3>
+    <p>The following methodology was used to test for exposed session variables:</p>
+    <ul>
+        <li>Logged into DVWA with valid credentials</li>
+        <li>Navigated through multiple application pages</li>
+        <li>Analyzed HTML source code for session-related variables</li>
+        <li>Checked URLs for session data in query parameters</li>
+        <li>Scanned JavaScript code for exposed session tokens</li>
+        <li>Reviewed HTML comments and meta tags for sensitive data</li>
+        <li>Identified hidden form fields containing session information</li>
+    </ul>
+
+    <h3>Exposed Session Variables Findings</h3>
+    <div class="findings-table">
+        
+        <table>
+            <tr>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Content</th>
+                <th>Keyword</th>
+                <th>Risk</th>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>Weak Session IDs</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>Authorisation Bypass</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>Damn Vulnerable Web Application (DVWA) is a PHP/MySQL web application that is damn vulnerable. Its main goal is to be an aid for security professionals to test their skills and tools in a legal enviro...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>various levels of difficultly</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>It is up to the user how they approach DVWA. Either by working through every module at a fixed level, or selecting any module and working up to reach the highest level they can before moving onto the ...</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>Do not upload it to your hosting provider's public html folder or any Internet facing servers</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>), which is set to NAT networking mode. Inside a guest machine, you can download and install </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>Mutillidae</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>Username:</pre></td>
+                <td>username</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/</td>
+                <td><pre>Security Level:</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>Weak Session IDs</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>Authorisation Bypass</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>Security Level</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>Security level is currently: </pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>You can set the security level to low, medium, high or impossible. The security level changes the vulnerability level of DVWA:</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre> Low - This security level is completely vulnerable and </pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre> Impossible - This level should be </pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>
+				Prior to DVWA v1.9, this level was known as 'high'.</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>Username:</pre></td>
+                <td>username</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>Security Level:</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>Hidden Form Field</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>name='user_token' value='687dfc4b544472ea3f383d94ac269c4c'</pre></td>
+                <td>token</td>
+                <td class="high-risk">High</td>
+            </tr>
+            <tr>
+                <td>Session Variable Pattern</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td><pre>token' value='687dfc4b544472ea3f383d94ac269c4c</pre></td>
+                <td>token</td>
+                <td class="high-risk">High</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>
+body {background-color: #fff; color: #222; font-family: sans-serif;}
+pre {margin: 0; font-family: monospace;}
+a:link {color: #009; text-decoration: none; background-color: #fff;}
+a:hover {text-decora...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>provided by mbstring </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>core mod_win32 mpm_winnt http_core mod_so mod_access_compat mod_actions mod_alias mod_allowmethods mod_asis mod_auth_basic mod_authn_core mod_authn_file mod_authz_core mod_authz_groupfile mod_authz_ho...</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>HTTP_COOKIE </pre></td>
+                <td>cookie</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>security=low; PHPSESSID=adn0vodkg56097k4mla3aligdn </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\Python313\Scripts\;C:\Program Files\Python313\;C:\Program Files (x86...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Cookie </pre></td>
+                <td>cookie</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>no-store, no-cache, must-revalidate </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>max_input_nesting_level</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>syslog.ident</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>IDN </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Input Validation and Filtering </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>mysqlnd,debug_trace,auth_plugin_mysql_native_password,auth_plugin_mysql_clear_password,auth_plugin_caching_sha2_password,auth_plugin_sha256_password </pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Session Support </pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.auto_start</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.cache_expire</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.cache_limiter</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.cookie_domain</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.cookie_httponly</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.cookie_lifetime</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.cookie_path</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.cookie_samesite</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.cookie_secure</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.gc_divisor</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.gc_maxlifetime</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.gc_probability</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.lazy_write</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.name</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>PHPSESSID</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.referer_check</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.save_handler</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.save_path</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.serialize_handler</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.sid_bits_per_character</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.sid_length</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.upload_progress.cleanup</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.upload_progress.enabled</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.upload_progress.freq</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.upload_progress.min_freq</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.upload_progress.name</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>PHP_SESSION_UPLOAD_PROGRESS</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.upload_progress.prefix</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.use_cookies</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.use_only_cookies</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.use_strict_mode</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.use_trans_sid</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>AppendIterator, ArrayIterator, ArrayObject, BadFunctionCallException, BadMethodCallException, CachingIterator, CallbackFilterIterator, DirectoryIterator, DomainException, EmptyIterator, FilesystemIter...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.trans_sid_hosts</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>session.trans_sid_tags</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>tokenizer</pre></td>
+                <td>token</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Tokenizer Support </pre></td>
+                <td>token</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>zlib.output_compression_level</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>PROCESSOR_IDENTIFIER </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>AMD64 Family 23 Model 96 Stepping 1, AuthenticAMD </pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>PROCESSOR_LEVEL </pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>SESSIONNAME </pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>USERNAME </pre></td>
+                <td>username</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>AP_PARENT_PID </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>$_COOKIE['security']</pre></td>
+                <td>cookie</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>$_COOKIE['PHPSESSID']</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>$_SERVER['HTTP_COOKIE']</pre></td>
+                <td>cookie</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>security=low; PHPSESSID=adn0vodkg56097k4mla3aligdn</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>PHP Authors</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Authors</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Module Authors</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Stig Bakken, Thies C. Arntzen, Andy Sautins, David Benson, Maxim Maletsky, Harald Radi, Antony Dovgal, Andi Gutmans, Wez Furlong, Christopher Jones, Oracle Corporation </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Sessions </pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>tidy </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>tokenizer </pre></td>
+                <td>token</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Authors </pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Previously active authors, editors and other contributors are listed in the manual. </pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>Ilia Alshanetsky, Joerg Behrens, Antony Dovgal, Stefan Esser, Moriyoshi Koizumi, Magnus Maatta, Sebastian Nohn, Derick Rethans, Melvyn Sopacua, Pierre-Alain Joye, Dmitry Stogov, Felipe Pena, David Sor...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td><pre>If you did not receive a copy of the PHP license, or have any questions about PHP licensing, please contact license@php.net.
+</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Weak Session IDs</pre></td>
+                <td>session</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Authorisation Bypass</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>PDF Guide</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Damn Vulnerable Web Application (DVWA) is a PHP/MariaDB web application that is damn vulnerable. Its main goal is to be an aid for security professionals to test their skills and tools in a legal envi...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>various levels of difficulty</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Do not upload it to your hosting provider's public html folder or any Internet facing servers</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>), which is set to NAT networking mode. Inside a guest machine, you can download and install </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>. A lot of work went into creating the script and, when it was created, it did not do anything malicious, however it is recommended you review the script before blindly running it on your system, just...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre> and run it automatically. This would not be included here if we did not trust the author and the script as it was when we reviewed it, but there is always the chance of someone going rogue, and so if...</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Installation Videos</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>video</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>installation guide</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>We provide support for the latest Docker release as shown above.</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Ideally you should be using the latest stable version of PHP as that is the version that this app will be developed and tested on.</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If you did not install Composer to the system path, make sure you reference its full location.</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>On Windows, this can be a bit harder if you are hiding file extensions, if you are unsure about this, this blog post explains more about it:</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If you want to set the default security level to "low", simply add the following line to the </pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>environment:
+  - DB_SERVER=db
+  - DEFAULT_SECURITY_LEVEL=low</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If you receive an error while trying to create your database, make sure your database credentials are correct within </pre></td>
+                <td>credential</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>$_DVWA[ 'db_server'] = '127.0.0.1';
+$_DVWA[ 'db_port'] = '3306';
+$_DVWA[ 'db_user' ] = 'dvwa';
+$_DVWA[ 'db_password' ] = 'p@ssw0rd';
+$_DVWA[ 'db_database' ] = 'dvwa';</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>MariaDB [(none)]> create database dvwa;
+Query OK, 1 row affected (0.00 sec)
+
+MariaDB [(none)]> create user dvwa@localhost identified by 'p@ssw0rd';
+Query OK, 0 rows affected (0.01 sec)
+
+MariaDB [(none...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Disable Authentication</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Some tools don't work well with authentication so can't be used with DVWA. To get around this, there is a config option to disable authentication checking. To do this, simply set the following in the ...</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>$_DVWA[ 'disable_authentication' ] = true;</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>You will also need to set the security level to one that is appropriate to the testing you want to do:</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>$_DVWA[ 'default_security_level' ] = 'low';</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>In this state, you can access all the features without needing to log in and set any cookies.</pre></td>
+                <td>cookie</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Default Credentials</pre></td>
+                <td>credential</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Default username = </pre></td>
+                <td>username</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Default password = </pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>password</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Login URL: </pre></td>
+                <td>login</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>http://127.0.0.1/login.php</pre></td>
+                <td>login</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If you'd rather watch a video than read words, the most common issues are covered in the video </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Video Help</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre> with all the DVWA files inside it. They then browse to </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>This is usually one configuration issue hiding another issue. By default, PHP does not display errors, and so if you forgot to turn error display on during the setup process, any other problems, such ...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If you see the following when running the setup script it means the username or password in the config file do not match those configured on the database. </pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Database Error #1045: Access denied for user 'notdvwa'@'localhost' (using password: YES).</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>The error is telling you that you are using the username </pre></td>
+                <td>username</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre> and a password of </pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If you see the following, the password is correct:</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 14
+Server version: 10.3.22-MariaDB-0ubuntu0.19.10.1 Ubuntu 19.10
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Co...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If you see the following, the username or password you are using is wrong. Repeat the </pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre> steps and make sure you use the same username and password throughout the process.</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>ERROR 1045 (28000): Access denied for user 'dvwa'@'localhost' (using password: YES)</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If you get the following, the user credentials are correct but the user does not have access to the database. Again, repeat the setup steps and check the database name you are using.</pre></td>
+                <td>credential</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>This is not an authentication issue but tells you that the database server is not running. Start it with the following</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre> and make sure you put your Linux user password in if requested.</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Unknown authentication method</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Database Error #2054: The server requested authentication method unknown to the client.</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>You have two options, the easiest is to uninstall MySQL and install MariaDB. The following is the official guide from the MariaDB project:</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>default-authentication-plugin=mysql_native_password</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Check the authentication method for your database user:</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre> mysql> select Host,User, plugin from mysql.user where mysql.user.User = 'dvwa';
+ +-----------+------------------+-----------------------+
+ | Host      | User             | plugin                |
+ +-...</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>caching_sha2_password</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre> mysql> ALTER USER dvwa@localhost IDENTIFIED WITH mysql_native_password BY 'p@ssw0rd';</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>mysql_native_password</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre> mysql> select Host,User, plugin from mysql.user where mysql.user.User = 'dvwa';
+ +-----------+------+-----------------------+
+ | Host      | User | plugin                |
+ +-----------+------+------...</pre></td>
+                <td>password</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If it is a database authentication problem, go through the steps above and screenshot each step. Submit these along with a screenshot of the section of the config file showing the database user and pa...</pre></td>
+                <td>auth</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>A full description of what is going wrong, what you expect to happen, and what you have tried to do to fix it. "login broken" is no enough for us to understand your problem and to help fix it.</pre></td>
+                <td>login</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>I am going to try to put together some tutorial videos that walk through some of the vulnerabilities and show how to detect them and then how to exploit them. Here are the ones I've made so far:</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>If you have an idea, some kind of improvement or just simply want to collaborate, you are welcome to contribute and participate in the Project, feel free to send your PR.</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Once a year or so, someone will submit a report for a vulnerability they've found in the app, some are well written, sometimes better than I've seen in paid pen test reports, some are just "you are mi...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>In 2023, this elevated to a whole new level when someone decided to request a CVE for one of the vulnerabities, they were given </pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>The app has vulnerabilities, it is deliberate. Most are the well documented ones that you work through as lessons, others are "hidden" ones, ones to find on your own. If you really want to show off yo...</pre></td>
+                <td>id</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Username:</pre></td>
+                <td>username</td>
+                <td class="medium-risk">Medium</td>
+            </tr>
+            <tr>
+                <td>HTML Comment</td>
+                <td>http://localhost/dvwa/instructions.php</td>
+                <td><pre>Security Level:</pre></td>
+                <td>level</td>
+                <td class="medium-risk">Medium</td>
+            </tr></table>
+    </div>
+
+    <div class="recommendations">
+        <h3>Remediation Recommendations</h3>
+        <ul>
+            <li>Avoid passing session identifiers in URLs or query parameters</li>
+            <li>Do not store session tokens in client-side JavaScript variables</li>
+            <li>Remove session-related information from HTML comments and meta tags</li>
+            <li>Ensure hidden form fields do not contain sensitive session data</li>
+            <li>Implement proper server-side session management</li>
+            <li>Use HTTPOnly and Secure flags for session cookies</li>
+            <li>Regularly audit application code for exposed sensitive information</li>
+            <li>Implement Content Security Policy (CSP) to restrict script execution</li>
+        </ul>
+        <h4>Secure Implementation Example:</h4>
+        <pre>// Instead of:
+var sessionToken = "abc123xyz";
+// Use server-side session management
+
+// Instead of:
+<input type="hidden" name="session_id" value="<?php echo $session_id; ?>">
+// Use session cookies or server-side storage</pre>
+    </div>
+
+    <div class="references">
+        <h3>References</h3>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/06-Session_Management_Testing/04-Testing_for_Exposed_Session_Variables" target="_blank">OWASP Testing Guide - OTG-SESS-004</a></li>
+            <li><a href="https://owasp.org/www-project-cheat-sheets/cheatsheets/Session_Management_Cheat_Sheet" target="_blank">OWASP Session Management Cheat Sheet</a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/200.html" target="_blank">CWE-200: Exposure of Sensitive Information to an Unauthorized Actor</a></li>
+            <li><a href="https://owasp.org/www-community/attacks/Session_hijacking_attack" target="_blank">OWASP Session Hijacking</a></li>
+        </ul>
+    </div>
+</body>
+</html>
