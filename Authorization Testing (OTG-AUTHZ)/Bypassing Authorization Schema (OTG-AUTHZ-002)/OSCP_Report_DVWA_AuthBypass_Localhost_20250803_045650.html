@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Penetration Test Report - DVWA Authorization Bypass</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #ffffff;
+            color: #000000;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            color: #000080;
+            border-bottom: 2px solid #000080;
+            padding-bottom: 5px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+        }
+        .header {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+        }
+        .section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .code-block {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        .vulnerable {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        .safe {
+            color: #006600;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #e0e0e0;
+            color: #000080;
+        }
+        tr:nth-child(even) {
+            background-color: #f0f0f0;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .risk-high {
+            background-color: #ffe6e6;
+            border-left: 4px solid #cc0000;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Penetration Test Report</h1>
+            <p><strong>Target:</strong> http://localhost/dvwa/vulnerabilities/authbypass/</p>
+            <p><strong>Date:</strong> 2025-08-03 04:56:50</p>
+            <p><strong>Author:</strong> Automated Security Agent</p>
+            <p><strong>Classification:</strong> UNCLASSIFIED</p>
+        </div>
+
+        <div class="section">
+            <h2>Executive Summary</h2>
+            <p>This penetration test identified a critical broken access control vulnerability in the Damn Vulnerable Web Application (DVWA) Authorization Bypass section. Testing was performed by logging in as a regular user (gordonb/abc123) and accessing the authorization bypass page without any parameters.</p>
+            
+            <div class="risk-high">
+                <strong>Risk Level:</strong> HIGH
+            </div>
+            <p>The vulnerability allows regular users to view all user information including administrative accounts, demonstrating a complete failure of access controls.</p>
+            
+        </div>
+
+        <div class="section">
+            <h2>Vulnerability Details</h2>
+            <table>
+                <tr><th>Category</th><th>Details</th></tr>
+                <tr><td><strong>Name</strong></td><td>Authorization Bypass / Broken Access Control</td></tr>
+                <tr><td><strong>OWASP ID</strong></td><td>OTG-AUTHZ-002</td></tr>
+                
+                <tr><td><strong>Risk Level</strong></td><td><span class="vulnerable">HIGH</span></td></tr>
+                
+                <tr><td><strong>URL</strong></td><td>http://localhost/dvwa/vulnerabilities/authbypass/</td></tr>
+                <tr><td><strong>Description</strong></td><td>The application fails to implement proper access controls, allowing regular users to view information that should be restricted to administrators.</td></tr>
+                <tr><td><strong>Impact</strong></td><td>Unauthorized access to sensitive user information, potential privilege escalation, and violation of data confidentiality principles.</td></tr>
+                <tr><td><strong>Remediation</strong></td><td>Implement proper role-based access control (RBAC) and validate user permissions server-side for all sensitive operations.</td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Technical Analysis</h2>
+            <h3>Testing Methodology</h3>
+            <p>The test was conducted by:</p>
+            <ol>
+                <li>Logging into DVWA as regular user (gordonb/abc123)</li>
+                <li>Setting security level to "Low"</li>
+                <li>Accessing the Authorization Bypass page without any parameters</li>
+                <li>Analyzing the response for unauthorized data access</li>
+            </ol>
+            
+            <h3>Test Results</h3>
+            <table>
+                <tr><th>Test Aspect</th><th>Value</th></tr>
+                <tr><td>User Context</td><td>Regular User (gordonb)</td></tr>
+                <tr><td>Parameters Used</td><td>None</td></tr>
+                <tr><td>Status Code</td><td>200</td></tr>
+                <tr><td>Response Length</td><td>4343 characters</td></tr>
+                <tr><td>Shows User List</td><td>Yes</td></tr>
+                <tr><td>Can See Admin Data</td><td>Yes</td></tr>
+                <tr><td>Number of Users Visible</td><td>N/A</td></tr>
+                <tr><td><strong>Vulnerable</strong></td><td><span class="vulnerable">YES</span></td></tr>
+            </table>
+            
+            <h3>Proof of Concept</h3>
+            <div class="code-block">
+<span class="highlight">Attack Scenario:</span> Regular user accessing administrative user data
+<span class="highlight">Request:</span> GET /dvwa/vulnerabilities/authbypass/ HTTP/1.1
+<span class="highlight">Authentication:</span> Regular user session (gordonb/abc123)
+<span class="highlight">Result:</span> Successfully retrieved list of all users including admin accounts
+<span class="highlight">Vulnerability:</span> Broken Access Control
+<span class="highlight">Impact:</span> Unauthorized access to sensitive user information
+            </div>
+            
+        </div>
+
+        <div class="section">
+            <h2>Conclusion</h2>
+            
+            <p>The test confirmed a critical broken access control vulnerability in DVWA's Authorization Bypass section. When logged in as a regular user and accessing the auth bypass page, the application returns information about ALL users including administrative accounts.</p>
+            <p>This represents a fundamental failure in access control implementation where the application does not differentiate between regular users and administrators when displaying user information.</p>
+            
+        </div>
+
+        <div class="section">
+            <h2>Recommendations</h2>
+            <ol>
+                <li><strong>Implement Role-Based Access Control:</strong> Ensure users can only access data appropriate to their role</li>
+                <li><strong>Server-Side Validation:</strong> Always validate user permissions on the server side</li>
+                <li><strong>Principle of Least Privilege:</strong> Grant users only the minimum required access</li>
+                <li><strong>Regular Security Testing:</strong> Conduct periodic access control testing</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>References</h2>
+            <ul>
+                <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/02-Testing_for_Bypassing_Authorization_Schema">OWASP Testing Guide - OTG-AUTHZ-002</a></li>
+                <li><a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">OWASP Top Ten - Broken Access Control</a></li>
+                <li><a href="https://www.dvwa.co.uk/">DVWA Documentation</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
