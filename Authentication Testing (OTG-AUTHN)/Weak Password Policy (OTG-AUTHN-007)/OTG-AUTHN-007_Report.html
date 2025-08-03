@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OTG-AUTHN-007 Security Assessment Report</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            margin: -20px -20px 20px -20px;
+        }
+        h1, h2, h3 {
+            color: #003366;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 200px;
+        }
+        .value {
+            display: inline;
+        }
+        .status {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            font-size: 0.9em;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .risk {
+            font-weight: bold;
+            color: #cc0000;
+        }
+        .success {
+            color: #008800;
+            font-weight: bold;
+        }
+        .failed {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .vulnerable {
+            background-color: #ffe6e6;
+        }
+        .secure {
+            background-color: #e6ffe6;
+        }
+        .weak {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        .strong {
+            color: #008800;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            OWASP Web Security Testing Guide - OTG-AUTHN-007
+        </header>
+
+        <h1>OTG-AUTHN-007: Testing for Weak Password Policy</h1>
+
+        <div class="field"><span class="label">Test Date:</span> <span class="value">2025-08-04 00:05:54</span></div>
+        <div class="field"><span class="label">Target URL:</span> <span class="value">http://localhost/dvwa</span></div>
+        <div class="field"><span class="label">Test Result:</span> <span class="value status">Failed</span></div>
+
+        <h2>Vulnerability Description</h2>
+        <p>
+            A weak password policy allows users to set easily guessable or compromised passwords, 
+            increasing the risk of account takeover through brute-force attacks, dictionary attacks, 
+            or credential stuffing. Strong password policies are essential for maintaining 
+            authentication security.
+        </p>
+        <p>
+            This test evaluates whether DVWA enforces appropriate password requirements by 
+            testing the actual password change functionality in the CSRF vulnerability page.
+        </p>
+
+        <h2>Impact</h2>
+        <p class="risk">Medium</p>
+        <p>
+            Weak password policies significantly increase the likelihood of successful password-based 
+            attacks, leading to unauthorized access to user accounts and potential data breaches. 
+            This can result in identity theft, financial loss, and reputational damage.
+        </p>
+
+        <h2>Test Findings</h2>
+        <pre>Password Policy Test Results:
++----------------+----------------------+--------+----------------------+----------------------+
+| Password       | Description          | Length | Issues               | Status               |
++----------------+----------------------+--------+----------------------+----------------------+
+| a              | 1 character          | 1      | 4                    | ACCEPTED             |
+| 123            | 3 characters         | 3      | 4                    | ACCEPTED             |
+| pass           | 4 characters         | 4      | 4                    | ACCEPTED             |
+| 12345          | 5 characters         | 5      | 4                    | ACCEPTED             |
+| 123456         | 6 characters         | 6      | 5                    | ACCEPTED             |
+| password       | No complexity - lowercase only | 8      | 4                    | ACCEPTED             |
+| PASSWORD       | No complexity - uppercase only | 8      | 4                    | ACCEPTED             |
+| 12345678       | No complexity - numbers only | 8      | 3                    | ACCEPTED             |
+| password123    | Missing uppercase and special chars | 11     | 2                    | ACCEPTED             |
+| admin          | Common password      | 5      | 5                    | ACCEPTED             |
+| letmein        | Common password      | 7      | 5                    | ACCEPTED             |
+| welcome        | Common password      | 7      | 5                    | ACCEPTED             |
+| StrongPass123! | Strong password      | 14     | 0                    | ACCEPTED             |
++----------------+----------------------+--------+----------------------+----------------------+
+
+Detailed Issues Found:
+  Password 'a': Too short (less than 8 characters), Missing uppercase letters, Missing numbers, Missing special characters
+  Password '123': Too short (less than 8 characters), Missing uppercase letters, Missing lowercase letters, Missing special characters
+  Password 'pass': Too short (less than 8 characters), Missing uppercase letters, Missing numbers, Missing special characters
+  Password '12345': Too short (less than 8 characters), Missing uppercase letters, Missing lowercase letters, Missing special characters
+  Password '123456': Too short (less than 8 characters), Missing uppercase letters, Missing lowercase letters, Missing special characters, Commonly used weak password
+  Password 'password': Missing uppercase letters, Missing numbers, Missing special characters, Commonly used weak password
+  Password 'PASSWORD': Missing lowercase letters, Missing numbers, Missing special characters, Commonly used weak password
+  Password '12345678': Missing uppercase letters, Missing lowercase letters, Missing special characters
+  Password 'password123': Missing uppercase letters, Missing special characters
+  Password 'admin': Too short (less than 8 characters), Missing uppercase letters, Missing numbers, Missing special characters, Commonly used weak password
+  Password 'letmein': Too short (less than 8 characters), Missing uppercase letters, Missing numbers, Missing special characters, Commonly used weak password
+  Password 'welcome': Too short (less than 8 characters), Missing uppercase letters, Missing numbers, Missing special characters, Commonly used weak password
+
+</pre>
+
+        <h2>Proof of Concept (PoC)</h2>
+        <p>The following examples demonstrate weak password acceptance:</p>
+        <pre><code>curl "http://localhost/dvwa/vulnerabilities/csrf/?password_new=a&password_conf=a&Change=Change"
+curl "http://localhost/dvwa/vulnerabilities/csrf/?password_new=123&password_conf=123&Change=Change"
+curl "http://localhost/dvwa/vulnerabilities/csrf/?password_new=pass&password_conf=pass&Change=Change"</code></pre>
+
+        <h2>Remediation / Recommendations</h2>
+        <p>
+The application has weak password policy enforcement that must be addressed:
+
+1. Enforce minimum password length of at least 8 characters.
+2. Require at least 3 of the following 4 character types:
+   - Uppercase letters (A-Z)
+   - Lowercase letters (a-z)
+   - Numbers (0-9)
+   - Special characters (!@#$%^&* etc.)
+
+3. Block commonly used weak passwords:
+   - password, 123456, admin, letmein, welcome, etc.
+   - Use a comprehensive deny list of known weak passwords
+
+4. Implement password history to prevent reuse:
+   - Store last 5-10 passwords
+   - Prevent users from reusing recent passwords
+
+5. Consider implementing password expiration:
+   - Require password changes every 60-90 days
+   - Provide advance warnings before expiration
+
+6. Provide clear, user-friendly password strength feedback:
+   - Real-time strength meter during password creation
+   - Specific guidance on how to improve password strength
+
+7. Follow NIST guidelines for password policies:
+   - Allow long passwords (up to 64 characters)
+   - Do not require frequent mandatory changes unless compromised
+   - Do not impose arbitrary composition rules that reduce usability
+
+8. Implement rate limiting on password change attempts to prevent abuse.
+</p>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authentication_Testing/07-Testing_for_Weak_Password_Policy" target="_blank">
+                OWASP WSTG - OTG-AUTHN-007</a></li>
+            <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#password-requirements" target="_blank">
+                OWASP Authentication Cheat Sheet - Password Requirements</a></li>
+            <li><a href="https://pages.nist.gov/800-63-3/sp800-63b.html" target="_blank">
+                NIST SP 800-63B - Digital Identity Guidelines</a></li>
+            <li><a href="https://owasp.org/www-project-top-ten/2017/A02_2017-Broken_Authentication" target="_blank">
+                OWASP Top 10 - A02:2017 Broken Authentication</a></li>
+            <li>Enforce minimum 8-character passwords</li>
+            <li>Require 3 of 4 character types: uppercase, lowercase, number, special character</li>
+            <li>Block common passwords using deny lists</li>
+            <li>Implement password history (last 4-5 passwords)</li>
+            <li>Enforce rotation every 60-90 days</li>
+        </ul>
+
+        <footer>
+            OSCP-Style Security Assessment Report | Generated by OTG-AUTHN-007 Tester
+        </footer>
+    </div>
+</body>
+</html>
+    

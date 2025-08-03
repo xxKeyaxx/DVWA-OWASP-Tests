@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OTG-AUTHN-002 Security Assessment Report</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            margin: -20px -20px 20px -20px;
+        }
+        h1, h2, h3 {
+            color: #003366;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 180px;
+        }
+        .value {
+            display: inline;
+        }
+        .status {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            font-size: 0.9em;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .risk {
+            font-weight: bold;
+            color: #cc0000;
+        }
+        .success {
+            color: #008800;
+            font-weight: bold;
+        }
+        .failed {
+            color: #cc0000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            OWASP Web Security Testing Guide - OTG-AUTHN-002
+        </header>
+
+        <h1>OTG-AUTHN-002: Testing for Default Credentials</h1>
+
+        <div class="field"><span class="label">Test Date:</span> <span class="value">2025-08-03 22:36:09</span></div>
+        <div class="field"><span class="label">Target URL:</span> <span class="value">http://localhost/dvwa/login.php</span></div>
+        <div class="field"><span class="label">Test Result:</span> <span class="value status">Failed</span></div>
+
+        <h2>Vulnerability Description</h2>
+        <p>
+            Many applications and devices are shipped with default usernames and passwords that are well-known 
+            or easily guessable. If these default credentials are not changed during deployment, attackers 
+            can gain unauthorized access to the system.
+        </p>
+        <p>
+            This test attempts to authenticate using a list of common default credentials to determine 
+            if any of them are still active on the target application.
+        </p>
+
+        <h2>Impact</h2>
+        <p class="risk">Medium</p>
+        <p>
+            Successful exploitation of default credentials can lead to full compromise of the application, 
+            unauthorized access to sensitive data, and potential lateral movement within the network. 
+            It represents a critical security misconfiguration.
+        </p>
+
+        <h2>Test Findings</h2>
+        <pre>Default credentials were found to be active on the system.
+
+Valid Credentials: admin:password
+
+Attempted Credentials:
+  admin:password - ✓ SUCCESS
+</pre>
+
+        <h2>Proof of Concept (PoC)</h2>
+        <p>The following request demonstrates successful authentication with default credentials:</p>
+        <pre><code>curl -X POST "http://localhost/dvwa/login.php" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin" \
+  -d "password=password" \
+  -d "Login=Login"</code></pre>
+
+        <h2>Remediation / Recommendations</h2>
+        <p>
+1. Immediately change all default passwords to strong, unique credentials.
+2. Disable or rename default accounts that are not actively used.
+3. Implement account lockout policies to prevent brute-force attacks.
+4. Enforce strong password policies including minimum length, complexity, and regular rotation.
+5. Regularly audit user accounts and remove unused or unnecessary default accounts.
+6. Educate administrators about the importance of changing default credentials during deployment.
+</p>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authentication_Testing/02-Testing_for_Default_Credentials" target="_blank">
+                OWASP WSTG - OTG-AUTHN-002</a></li>
+            <li><a href="https://csrc.nist.gov/publications/detail/sp/800-123/final" target="_blank">
+                NIST SP 800-123: Guide to General Server Security</a></li>
+            <li>Change all default passwords during initial setup.</li>
+            <li>Implement account lockout mechanisms after failed login attempts.</li>
+            <li>Disable or rename default accounts that are not required.</li>
+            <li>Enforce strong password policies for all user accounts.</li>
+        </ul>
+
+        <footer>
+            OSCP-Style Security Assessment Report | Generated by OTG-AUTHN-002 Tester
+        </footer>
+    </div>
+</body>
+</html>
+    

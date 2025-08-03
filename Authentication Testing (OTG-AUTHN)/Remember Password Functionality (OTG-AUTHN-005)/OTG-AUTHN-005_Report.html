@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OTG-AUTHN-005 Security Assessment Report</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            margin: -20px -20px 20px -20px;
+        }
+        h1, h2, h3 {
+            color: #003366;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 200px;
+        }
+        .value {
+            display: inline;
+        }
+        .status {
+            color: #008800;
+            font-weight: bold;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            font-size: 0.9em;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .risk {
+            font-weight: bold;
+            color: #cc0000;
+        }
+        .success {
+            color: #008800;
+            font-weight: bold;
+        }
+        .failed {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .vulnerable {
+            background-color: #ffe6e6;
+        }
+        .secure {
+            background-color: #e6ffe6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            OWASP Web Security Testing Guide - OTG-AUTHN-005
+        </header>
+
+        <h1>OTG-AUTHN-005: Testing for Remember Password Functionality</h1>
+
+        <div class="field"><span class="label">Test Date:</span> <span class="value">2025-08-03 23:31:41</span></div>
+        <div class="field"><span class="label">Target URL:</span> <span class="value">http://localhost/dvwa</span></div>
+        <div class="field"><span class="label">Test Result:</span> <span class="value status">Passed</span></div>
+
+        <h2>Vulnerability Description</h2>
+        <p>
+            The "Remember Me" or "Remember Password" functionality allows users to remain authenticated 
+            across browser sessions by storing authentication tokens. When implemented insecurely, this 
+            feature can lead to long-term unauthorized access, session hijacking, and credential exposure.
+        </p>
+        <p>
+            This test evaluates the security of any persistent authentication mechanisms, including 
+            cookie-based tokens, their storage security, and proper revocation practices.
+        </p>
+
+        <h2>Impact</h2>
+        <p class="risk">Medium</p>
+        <p>
+            Insecure "Remember Me" implementations can allow attackers to gain long-term access to 
+            user accounts, even after the original session has ended. This can lead to persistent 
+            unauthorized access and potential account takeover.
+        </p>
+
+        <h2>Test Findings</h2>
+        <pre>Normal Login Results:
+  Total Cookies Set: 2
+    Cookie: security = low
+      Secure: NO
+      HttpOnly: NO
+      SameSite: none
+      Remember Cookie: NO
+      Issues: Missing Secure flag, Missing HttpOnly flag, Weak SameSite policy: none
+
+    Cookie: PHPSESSID = 4u4ff3cnt842sqpsv4q2bpa11k
+      Secure: NO
+      HttpOnly: NO
+      SameSite: none
+      Remember Cookie: NO
+      Issues: Missing Secure flag, Missing HttpOnly flag, Weak SameSite policy: none
+
+Simulated Remember Me Results:
+  Total Cookies Set: 2
+    Cookie: security = low
+      Secure: NO
+      HttpOnly: NO
+      SameSite: none
+      Remember Cookie: NO
+      Issues: Missing Secure flag, Missing HttpOnly flag, Weak SameSite policy: none
+
+    Cookie: PHPSESSID = 374d69mitaipra7u5lgl7isln6
+      Secure: NO
+      HttpOnly: NO
+      SameSite: none
+      Remember Cookie: NO
+      Issues: Missing Secure flag, Missing HttpOnly flag, Weak SameSite policy: none
+
+Token Revocation Test: PASSED - Token properly revoked
+Session Fixation Test: ERROR - There are multiple cookies with name, 'PHPSESSID'
+No persistent authentication tokens found.
+
+No insecure remember password functionality detected.
+The application either doesn't implement this feature or implements it securely.
+</pre>
+
+        <h2>Proof of Concept (PoC)</h2>
+        <p>The following examples demonstrate insecure remember password implementations:</p>
+        <pre><code>No insecure implementations found.</code></pre>
+
+        <h2>Remediation / Recommendations</h2>
+        <p>
+The application does not appear to have insecure "Remember Password" functionality. 
+However, continue to follow these best practices:
+
+1. If implementing "Remember Me" functionality, use secure token-based approaches.
+2. Always use cryptographically secure random tokens with sufficient entropy.
+3. Store tokens securely with HttpOnly, Secure, and SameSite flags.
+4. Implement proper token expiration and revocation mechanisms.
+5. Regenerate session IDs after login to prevent session fixation.
+6. Never store actual credentials in persistent storage.
+7. Regularly audit authentication mechanisms for security issues.
+8. Conduct security testing on all authentication features.
+</p>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authentication_Testing/05-Testing_for_Rember_Password_Functionality" target="_blank">
+                OWASP WSTG - OTG-AUTHN-005</a></li>
+            <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#remember-me-feature" target="_blank">
+                OWASP Authentication Cheat Sheet - Remember Me</a></li>
+            <li><a href="https://owasp.org/www-project-top-ten/2017/A03_2017-Sensitive_Data_Exposure" target="_blank">
+                OWASP Top 10 - A03:2017 Sensitive Data Exposure</a></li>
+            <li>Use cryptographically secure random tokens with sufficient entropy.</li>
+            <li>Store tokens securely with HttpOnly, Secure, and SameSite flags.</li>
+            <li>Implement proper token expiration and revocation mechanisms.</li>
+            <li>Never store actual credentials or predictable tokens.</li>
+        </ul>
+
+        <footer>
+            OSCP-Style Security Assessment Report | Generated by OTG-AUTHN-005 Tester
+        </footer>
+    </div>
+</body>
+</html>
+    

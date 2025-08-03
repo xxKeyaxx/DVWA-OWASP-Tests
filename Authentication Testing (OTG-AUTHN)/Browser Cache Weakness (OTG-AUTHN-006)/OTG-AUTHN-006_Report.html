@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OTG-AUTHN-006 Security Assessment Report</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            margin: -20px -20px 20px -20px;
+        }
+        h1, h2, h3 {
+            color: #003366;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 200px;
+        }
+        .value {
+            display: inline;
+        }
+        .status {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            font-size: 0.9em;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .risk {
+            font-weight: bold;
+            color: #cc0000;
+        }
+        .success {
+            color: #008800;
+            font-weight: bold;
+        }
+        .failed {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .vulnerable {
+            background-color: #ffe6e6;
+        }
+        .secure {
+            background-color: #e6ffe6;
+        }
+        .issue {
+            color: #cc0000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            OWASP Web Security Testing Guide - OTG-AUTHN-006
+        </header>
+
+        <h1>OTG-AUTHN-006: Testing for Browser Cache Weakness</h1>
+
+        <div class="field"><span class="label">Test Date:</span> <span class="value">2025-08-03 23:42:57</span></div>
+        <div class="field"><span class="label">Target URL:</span> <span class="value">http://localhost/dvwa</span></div>
+        <div class="field"><span class="label">Test Result:</span> <span class="value status">Failed</span></div>
+
+        <h2>Vulnerability Description</h2>
+        <p>
+            Browser cache weakness occurs when web applications fail to properly instruct browsers 
+            and intermediate caches not to store sensitive content. This can lead to unauthorized 
+            access to authenticated data through browser history, cache files, or shared computer access.
+        </p>
+        <p>
+            This test evaluates whether the application sets appropriate cache control headers 
+            to prevent sensitive content from being stored in browser caches.
+        </p>
+
+        <h2>Impact</h2>
+        <p class="risk">Medium</p>
+        <p>
+            Improper cache control can expose sensitive information such as user credentials, 
+            personal data, and application functionality to unauthorized users. On shared or 
+            public computers, cached sensitive pages can be accessed by subsequent users.
+        </p>
+
+        <h2>Test Findings</h2>
+        <pre>Page: http://localhost/dvwa/login.php
+  Sensitive Content: NO
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/index.php
+  Sensitive Content: YES
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/vulnerabilities/brute/
+  Sensitive Content: YES
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/vulnerabilities/sqli/
+  Sensitive Content: YES
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/security.php
+  Sensitive Content: YES
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/phpinfo.php
+  Sensitive Content: YES
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/index.php
+  Sensitive Content: YES
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/vulnerabilities/brute/
+  Sensitive Content: YES
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/vulnerabilities/sqli/
+  Sensitive Content: YES
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/security.php
+  Sensitive Content: YES
+  Cache-Control: no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Tue, 23 Jun 2009 12:00:00 GMT
+  Issues Found:
+    - Missing 'no-store' directive
+    - Missing 'private' directive for authenticated content
+    - Expires header not set to 0 or past date
+
+Page: http://localhost/dvwa/phpinfo.php
+  Sensitive Content: YES
+  Cache-Control: no-store, no-cache, must-revalidate
+  Pragma: no-cache
+  Expires: Thu, 19 Nov 1981 08:52:00 GMT
+  Issues Found:
+    - Expires header not set to 0 or past date
+
+</pre>
+
+        <h2>Proof of Concept (PoC)</h2>
+        <p>The following commands demonstrate insecure cache headers:</p>
+        <pre><code># Testing cache headers for http://localhost/dvwa/login.php
+curl -v "http://localhost/dvwa/login.php" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/index.php
+curl -v "http://localhost/dvwa/index.php" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/vulnerabilities/brute/
+curl -v "http://localhost/dvwa/vulnerabilities/brute/" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/vulnerabilities/sqli/
+curl -v "http://localhost/dvwa/vulnerabilities/sqli/" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/security.php
+curl -v "http://localhost/dvwa/security.php" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/phpinfo.php
+curl -v "http://localhost/dvwa/phpinfo.php" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/index.php
+curl -v "http://localhost/dvwa/index.php" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/vulnerabilities/brute/
+curl -v "http://localhost/dvwa/vulnerabilities/brute/" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/vulnerabilities/sqli/
+curl -v "http://localhost/dvwa/vulnerabilities/sqli/" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/security.php
+curl -v "http://localhost/dvwa/security.php" | grep -i -E 'cache-control|pragma|expires'
+# Testing cache headers for http://localhost/dvwa/phpinfo.php
+curl -v "http://localhost/dvwa/phpinfo.php" | grep -i -E 'cache-control|pragma|expires'</code></pre>
+
+        <h2>Remediation / Recommendations</h2>
+        <p>
+The application has browser cache weaknesses that must be addressed immediately:
+
+1. Set proper cache control headers on all authenticated and sensitive pages:
+   Cache-Control: no-store, no-cache, must-revalidate, private
+   Pragma: no-cache
+   Expires: 0
+
+2. Never allow caching of authenticated content or sensitive data.
+
+3. Use the following header configuration for sensitive pages:
+   Header set Cache-Control "no-store, no-cache, must-revalidate, private"
+   Header set Pragma "no-cache"
+   Header set Expires "0"
+
+4. For static public content, use appropriate caching with versioning:
+   Cache-Control: public, max-age=31536000
+
+5. Implement cache control in your application framework:
+   - PHP: header('Cache-Control: no-store, no-cache, must-revalidate, private');
+   - Apache: Use mod_headers to set appropriate headers
+   - Nginx: add_header directives for cache control
+
+6. Regularly audit cache headers during security testing.
+
+7. Test on both HTTP and HTTPS to ensure consistent header behavior.
+</p>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authentication_Testing/06-Testing_for_Browser_Cache_Weakness" target="_blank">
+                OWASP WSTG - OTG-AUTHN-006</a></li>
+            <li><a href="https://owasp.org/www-project-secure-headers/" target="_blank">
+                OWASP Secure Headers Project</a></li>
+            <li><a href="https://httpwg.org/specs/rfc9111.html" target="_blank">
+                RFC 9111 - HTTP Caching</a></li>
+            <li><a href="https://owasp.org/www-project-top-ten/2017/A03_2017-Sensitive_Data_Exposure" target="_blank">
+                OWASP Top 10 - A03:2017 Sensitive Data Exposure</a></li>
+            <li>Set Cache-Control: no-store, no-cache, must-revalidate, private</li>
+            <li>Add Pragma: no-cache for HTTP/1.0 compatibility</li>
+            <li>Set Expires: 0 to prevent caching</li>
+            <li>Apply to all authenticated and sensitive pages</li>
+        </ul>
+
+        <footer>
+            OSCP-Style Security Assessment Report | Generated by OTG-AUTHN-006 Tester
+        </footer>
+    </div>
+</body>
+</html>
+    
