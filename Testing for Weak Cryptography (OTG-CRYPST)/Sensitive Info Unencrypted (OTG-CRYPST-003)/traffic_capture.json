@@ -1,0 +1,78 @@
+{
+  "target": "http://localhost/dvwa/",
+  "test_date": "2025-08-04 20:26:50",
+  "protocol": "HTTP",
+  "findings": [
+    "Site uses unencrypted HTTP protocol",
+    "Cookie 'security' missing Secure flag",
+    "Cookie 'security' missing HttpOnly flag",
+    "Cookie 'PHPSESSID' missing Secure flag",
+    "Cookie 'PHPSESSID' missing HttpOnly flag",
+    "Password transmitted in plaintext POST data",
+    "Username transmitted in plaintext POST data"
+  ],
+  "evidence": {
+    "login_page_response": {
+      "status_code": 200,
+      "headers": {
+        "Date": "Mon, 04 Aug 2025 13:26:50 GMT",
+        "Server": "Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2",
+        "X-Powered-By": "PHP/8.1.2",
+        "Set-Cookie": "security=low; path=/, PHPSESSID=0rhl79cvsndqsskr9k9l5gn9up; expires=Tue, 05-Aug-2025 13:26:50 GMT; Max-Age=86400; path=/",
+        "Expires": "Tue, 23 Jun 2009 12:00:00 GMT",
+        "Cache-Control": "no-cache, must-revalidate",
+        "Pragma": "no-cache",
+        "Content-Length": "1342",
+        "Keep-Alive": "timeout=5, max=100",
+        "Connection": "Keep-Alive",
+        "Content-Type": "text/html;charset=utf-8"
+      }
+    },
+    "login_request": {
+      "method": "POST",
+      "url": "http://localhost/dvwa/login.php",
+      "data": {
+        "username": "admin",
+        "password": "password",
+        "Login": "Login"
+      },
+      "headers": {
+        "User-Agent": "python-requests/2.32.4",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive"
+      }
+    },
+    "login_response": {
+      "status_code": 200,
+      "headers": {
+        "Date": "Mon, 04 Aug 2025 13:26:50 GMT",
+        "Server": "Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2",
+        "X-Powered-By": "PHP/8.1.2",
+        "Expires": "Tue, 23 Jun 2009 12:00:00 GMT",
+        "Cache-Control": "no-cache, must-revalidate",
+        "Pragma": "no-cache",
+        "Content-Length": "1392",
+        "Keep-Alive": "timeout=5, max=97",
+        "Connection": "Keep-Alive",
+        "Content-Type": "text/html;charset=utf-8"
+      },
+      "url": "http://localhost/dvwa/login.php"
+    },
+    "cookies": [
+      {
+        "name": "security",
+        "value": "low",
+        "secure": false,
+        "httponly": false
+      },
+      {
+        "name": "PHPSESSID",
+        "value": "0rhl79cvsndqsskr9k9l5gn9up",
+        "secure": false,
+        "httponly": false
+      }
+    ]
+  },
+  "risk_level": "High"
+}
