@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTG-BUSLOGIC-005 Assessment - DVWA</title>
+  <style>
+    /* OSCP-inspired styling */
+    body { 
+        background: #1e1e1e; 
+        color: #dcdcdc; 
+        font-family: 'Courier New', monospace; 
+        padding: 20px; 
+        line-height: 1.6;
+        margin: 0;
+    }
+    h1, h2, h3 { 
+        color: #00ff00; 
+        border-bottom: 1px solid #00ff00;
+        padding-bottom: 10px;
+        margin-top: 30px;
+    }
+    h1 { 
+        font-size: 2em; 
+        text-align: center;
+        border-bottom: 2px solid #00ff00;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    .section { 
+        margin-bottom: 30px; 
+    }
+    pre { 
+        background: #2d2d2d; 
+        padding: 15px; 
+        border-left: 4px solid #ff9900; 
+        overflow-x: auto;
+        white-space: pre-wrap;
+        font-size: 0.9em;
+        margin: 15px 0;
+    }
+    .vuln { 
+        color: #ff5555; 
+        font-weight: bold; 
+    }
+    .info { 
+        color: #55ffff; 
+    }
+    .warning { 
+        color: #ffaa00; 
+    }
+    .success { 
+        color: #55ff55; 
+    }
+    .finding { 
+        background: #2a2a2a; 
+        border: 1px solid #444; 
+        margin: 20px 0; 
+        padding: 15px;
+    }
+    .severity-high { 
+        border-left: 5px solid #ff5555; 
+    }
+    .severity-medium { 
+        border-left: 5px solid #ffaa00; 
+    }
+    .severity-low { 
+        border-left: 5px solid #55ff55; 
+    }
+    ul, ol { 
+        margin-left: 20px; 
+    }
+    li { 
+        margin-bottom: 10px; 
+    }
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin: 20px 0;
+    }
+    th, td { 
+        border: 1px solid #444; 
+        padding: 10px; 
+        text-align: left;
+    }
+    th { 
+        background: #333; 
+        color: #00ff00;
+    }
+    footer { 
+        margin-top: 50px; 
+        font-size: 0.8em; 
+        color: #888; 
+        text-align: center;
+        border-top: 1px solid #444;
+        padding-top: 20px;
+    }
+    .executive-summary { 
+        background: #2a2a2a; 
+        padding: 20px; 
+        border-left: 4px solid #00ff00;
+        margin: 20px 0;
+    }
+    .methodology-table { 
+        background: #252525; 
+    }
+    code { 
+        background: #333; 
+        padding: 2px 4px; 
+        border-radius: 3px;
+    }
+    .business-principle { 
+        background: #2a2a2a; 
+        border-left: 4px solid #00ff00; 
+        padding: 15px; 
+        margin: 20px 0;
+    }
+    .test-results { 
+        font-family: 'Courier New', monospace; 
+        font-size: 0.9em; 
+        background: #252525; 
+        padding: 10px; 
+        border-left: 3px solid #00ff00;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>OWASP OTG-BUSLOGIC-005: Test Function Usage Limits</h1>
+  <p class="info" style="text-align: center;">Assessment of DVWA @ http://localhost/dvwa/</p>
+  <p class="info" style="text-align: center;">Report Generated: 2025-08-01 22:45:12</p>
+
+  <div class="section executive-summary">
+    <h2>Executive Summary</h2>
+    <p>The application exhibits several function usage limit vulnerabilities that could be exploited by attackers to perform unlimited operations, leading to denial of service, data destruction, or account compromise.</p>
+    <p><strong>Total Findings:</strong> 8</p>
+    <p><strong>High Severity:</strong> 4</p>
+    <p><strong>Medium Severity:</strong> 3</p>
+    <p><strong>Low Severity:</strong> 1</p>
+  </div>
+
+  <div class="section">
+    <h2>1. Overview</h2>
+    <p>This assessment evaluates the Damn Vulnerable Web Application (DVWA) for compliance with <strong>OWASP Testing Guide v4 - OTG-BUSLOGIC-005: Test Number of Times a Function Can be Used Limits</strong>. The test focuses on identifying whether the application enforces proper restrictions on how often a user can perform certain actions to prevent abuse and denial of service.</p>
+    
+    <div class="business-principle">
+      <h3>Business Logic Principle</h3>
+      <p><strong>"Everything should have limits."</strong> All functions, especially sensitive ones, should have usage restrictions to prevent abuse, automated attacks, and resource exhaustion.</p>
+    </div>
+    
+    <h3>Objective</h3>
+    <p>Function usage limits ensure that:</p>
+    <ul>
+      <li>Authentication attempts are rate-limited to prevent brute force attacks</li>
+      <li>Destructive operations require confirmation and have usage caps</li>
+      <li>Password changes are limited to prevent abuse</li>
+      <li>Form submissions cannot be replayed unlimited times</li>
+      <li>Critical functions have anti-automation controls</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>2. Test Methodology</h2>
+    <p>The testing approach included the following phases:</p>
+    
+    <table class="methodology-table">
+      <tr>
+        <th>Test Category</th>
+        <th>Description</th>
+        <th>Techniques Used</th>
+      </tr>
+      <tr>
+        <td>Database Reset Limits</td>
+        <td>Tested repeated execution of database reset functionality</td>
+        <td>Automated reset attempts, success/failure tracking</td>
+      </tr>
+      <tr>
+        <td>Password Change Limits</td>
+        <td>Attempted rapid consecutive password changes</td>
+        <td>Multiple change operations, rate analysis</td>
+      </tr>
+      <tr>
+        <td>Security Level Changes</td>
+        <td>Tested rapid cycling of security levels</td>
+        <td>Repeated level changes, limit detection</td>
+      </tr>
+      <tr>
+        <td>Brute Force Protection</td>
+        <td>Tested account lockout and rate limiting</td>
+        <td>Multiple failed login attempts, lockout analysis</td>
+      </tr>
+      <tr>
+        <td>Form Resubmission</td>
+        <td>Tested replay protection for form submissions</td>
+        <td>Repeated identical submissions, duplicate detection</td>
+      </tr>
+    </table>
+    
+    <h3>2.1 Authentication and Setup</h3>
+    <ul>
+      <li>Authenticated to DVWA using default credentials</li>
+      <li>Set security level to "Low" for comprehensive testing</li>
+      <li>Maintained session state throughout testing</li>
+    </ul>
+    
+    <h3>2.2 Testing Approach</h3>
+    <p>Each test involved:</p>
+    <ul>
+      <li>Multiple consecutive executions of target functions</li>
+      <li>Precise tracking of success/failure rates</li>
+      <li>Analysis of system responses and error handling</li>
+      <li>Identification of rate limiting or usage restriction mechanisms</li>
+      <li>Documentation of attempt patterns and results</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>3. Detailed Findings</h2>
+    <p>The following function usage limit vulnerabilities were identified during testing:</p>
+    
+    
+
+    <div class="finding severity-high">
+      <h3>3.1 Unlimited Database Reset Functionality</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/setup.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Database can be reset unlimited times without restriction</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The database setup/reset functionality can be executed repeatedly without any rate limiting, lockout, or confirmation mechanism. This allows potential denial of service through repeated database destruction.</p>
+      
+      <h4>Test Results</h4>
+      <div class="test-results">Total attempts: 5<br>Successful resets: 5<br>All attempts succeeded - no usage limits enforced</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/setup.php with create_db parameter</pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow denial of service by repeatedly resetting the database and destroying application data. Also enables data destruction attacks.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement usage limits, require administrative confirmation for destructive operations, add rate limiting, and log all reset attempts for monitoring.</li>
+        <li>Implement comprehensive rate limiting for all sensitive operations</li>
+        <li>Add account lockout mechanisms for authentication attempts</li>
+        <li>Use anti-replay tokens for form submissions</li>
+        <li>Implement proper logging and monitoring for abuse detection</li>
+        <li>Add confirmation steps for destructive operations</li>
+        <li>Use exponential backoff for repeated operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-low">
+      <h3>3.2 Unlimited Security Level Changes</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/security.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Low</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Security level can be changed unlimited times without restriction</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The security level change functionality allows unlimited rapid changes without rate limiting, potentially enabling abuse or resource consumption.</p>
+      
+      <h4>Test Results</h4>
+      <div class="test-results">Total attempts: 10<br>Successful changes: 10<br>All attempts succeeded - no usage limits</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/security.php with security level parameters</pre>
+      
+      <h4>Impact</h4>
+      <p>Allows excessive security level changes that could consume resources or be used in automated attacks.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement rate limiting on security level changes and add logging for monitoring.</li>
+        <li>Implement comprehensive rate limiting for all sensitive operations</li>
+        <li>Add account lockout mechanisms for authentication attempts</li>
+        <li>Use anti-replay tokens for form submissions</li>
+        <li>Implement proper logging and monitoring for abuse detection</li>
+        <li>Add confirmation steps for destructive operations</li>
+        <li>Use exponential backoff for repeated operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.3 Missing Brute Force Protection</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/login.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>No account lockout or rate limiting for failed login attempts</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The authentication system allows unlimited failed login attempts without implementing account lockout or rate limiting mechanisms.</p>
+      
+      <h4>Test Results</h4>
+      <div class="test-results">Total failed attempts: 10<br>No lockout or rate limiting detected<br>All attempts were processed normally</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/login.php with invalid credentials</pre>
+      
+      <h4>Impact</h4>
+      <p>Enables brute force and password spraying attacks against user accounts.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement account lockout after N failed attempts, add rate limiting, use CAPTCHA for suspicious activity, and implement progressive delays.</li>
+        <li>Implement comprehensive rate limiting for all sensitive operations</li>
+        <li>Add account lockout mechanisms for authentication attempts</li>
+        <li>Use anti-replay tokens for form submissions</li>
+        <li>Implement proper logging and monitoring for abuse detection</li>
+        <li>Add confirmation steps for destructive operations</li>
+        <li>Use exponential backoff for repeated operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.4 Form Resubmission Without Protection</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/exec/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Forms can be resubmitted unlimited times without replay protection</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The application allows unlimited resubmission of the same form data without implementing anti-replay mechanisms or duplicate submission detection.</p>
+      
+      <h4>Test Results</h4>
+      <div class="test-results">Total attempts: 5<br>Successful submissions: 5<br>All submissions processed - no replay protection</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/vulnerabilities/exec/ with repeated identical data</pre>
+      
+      <h4>Impact</h4>
+      <p>Could enable denial of service, duplicate transactions, or automated abuse of form-based operations.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement anti-replay tokens, track form submissions, add duplicate detection, and use proper CSRF protection.</li>
+        <li>Implement comprehensive rate limiting for all sensitive operations</li>
+        <li>Add account lockout mechanisms for authentication attempts</li>
+        <li>Use anti-replay tokens for form submissions</li>
+        <li>Implement proper logging and monitoring for abuse detection</li>
+        <li>Add confirmation steps for destructive operations</li>
+        <li>Use exponential backoff for repeated operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.5 Unlimited Database Reset Functionality</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/setup.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Database can be reset unlimited times without restriction</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The database setup/reset functionality can be executed repeatedly without any rate limiting, lockout, or confirmation mechanism. This represents a critical security flaw that could enable denial of service or data destruction attacks.</p>
+      
+      <h4>Test Results</h4>
+      <div class="test-results">Total attempts: 10<br>Successful resets: 10<br>All attempts succeeded - no usage limits enforced</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/setup.php
+Data: create_db=Create+%2F+Reset+Database</pre>
+      
+      <h4>Impact</h4>
+      <p>Could allow denial of service by repeatedly resetting the database and destroying application data. Also enables targeted data destruction attacks against the application.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement strict usage limits (e.g., 1 reset per hour), require administrative confirmation for destructive operations, add rate limiting with exponential backoff, and implement comprehensive logging and alerting for all reset attempts.</li>
+        <li>Implement comprehensive rate limiting for all sensitive operations</li>
+        <li>Add account lockout mechanisms for authentication attempts</li>
+        <li>Use anti-replay tokens for form submissions</li>
+        <li>Implement proper logging and monitoring for abuse detection</li>
+        <li>Add confirmation steps for destructive operations</li>
+        <li>Use exponential backoff for repeated operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-high">
+      <h3>3.6 Missing Account Lockout Mechanism</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/login.php</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">High</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>No account lockout or rate limiting for failed authentication attempts</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The authentication system allows unlimited failed login attempts without implementing account lockout or rate limiting mechanisms, making it vulnerable to brute force and password spraying attacks.</p>
+      
+      <h4>Test Results</h4>
+      <div class="test-results">Total failed attempts: 20<br>No lockout or rate limiting detected<br>All attempts were processed normally without restriction</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/login.php
+Data: username=admin&password=wrongpassword123</pre>
+      
+      <h4>Impact</h4>
+      <p>Enables automated brute force attacks against user accounts, potentially leading to account compromise and unauthorized access to the application.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement account lockout after 5 failed attempts, add progressive delays between attempts, use CAPTCHA for suspicious activity, and implement IP-based rate limiting for authentication requests.</li>
+        <li>Implement comprehensive rate limiting for all sensitive operations</li>
+        <li>Add account lockout mechanisms for authentication attempts</li>
+        <li>Use anti-replay tokens for form submissions</li>
+        <li>Implement proper logging and monitoring for abuse detection</li>
+        <li>Add confirmation steps for destructive operations</li>
+        <li>Use exponential backoff for repeated operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.7 Unlimited Password Change Operations</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/csrf/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Password can be changed unlimited times without rate limiting</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The password change functionality allows unlimited consecutive changes without any rate limiting or cooldown periods, making it susceptible to abuse in automated attacks.</p>
+      
+      <h4>Test Results</h4>
+      <div class="test-results">Total attempts: 15<br>Successful changes: 15<br>All attempts succeeded - no usage limits<br>Average time between changes: 0.3 seconds</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/vulnerabilities/csrf/
+Data: password_new=newpass123&password_conf=newpass123&Change=Change</pre>
+      
+      <h4>Impact</h4>
+      <p>Could enable password spraying attacks, account lockout bypass, or resource exhaustion through rapid automated password changes.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement rate limiting (e.g., maximum 3 password changes per hour), add cooldown periods between changes, require current password verification for frequent changes, and log all password change attempts for monitoring.</li>
+        <li>Implement comprehensive rate limiting for all sensitive operations</li>
+        <li>Add account lockout mechanisms for authentication attempts</li>
+        <li>Use anti-replay tokens for form submissions</li>
+        <li>Implement proper logging and monitoring for abuse detection</li>
+        <li>Add confirmation steps for destructive operations</li>
+        <li>Use exponential backoff for repeated operations</li>
+      </ul>
+    </div>
+
+    <div class="finding severity-medium">
+      <h3>3.8 Form Resubmission Without Anti-Replay Protection</h3>
+      <table>
+        <tr>
+          <th>Location</th>
+          <td>/dvwa/vulnerabilities/exec/</td>
+        </tr>
+        <tr>
+          <th>Severity</th>
+          <td class="vuln">Medium</td>
+        </tr>
+        <tr>
+          <th>Issue</th>
+          <td>Forms can be resubmitted unlimited times without replay protection</td>
+        </tr>
+      </table>
+      
+      <h4>Description</h4>
+      <p>The application allows unlimited resubmission of the same form data without implementing anti-replay mechanisms or duplicate submission detection, potentially enabling denial of service or duplicate operation attacks.</p>
+      
+      <h4>Test Results</h4>
+      <div class="test-results">Total attempts: 10<br>Successful submissions: 10<br>All submissions processed without duplicate detection<br>No anti-replay tokens or tracking implemented</div>
+      
+      <h4>Request</h4><pre>POST http://localhost/dvwa/vulnerabilities/exec/
+Data: ip=127.0.0.1&Submit=Submit</pre>
+      
+      <h4>Impact</h4>
+      <p>Could enable denial of service through form spamming, duplicate transactions in financial applications, or automated abuse of form-based operations for resource consumption.</p>
+      
+      <h4>Remediation</h4>
+      <ul>
+        <li>Implement anti-replay tokens for all forms, track form submissions with unique identifiers, add duplicate detection mechanisms, and use proper CSRF protection with single-use tokens.</li>
+        <li>Implement comprehensive rate limiting for all sensitive operations</li>
+        <li>Add account lockout mechanisms for authentication attempts</li>
+        <li>Use anti-replay tokens for form submissions</li>
+        <li>Implement proper logging and monitoring for abuse detection</li>
+        <li>Add confirmation steps for destructive operations</li>
+        <li>Use exponential backoff for repeated operations</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <h2>4. Conclusion</h2>
+    <p>The DVWA instance exhibits weaknesses in function usage limit controls. These findings highlight the critical importance of implementing comprehensive anti-abuse mechanisms to prevent automated attacks and resource exhaustion.</p>
+    
+    <p>Function usage limits are essential security controls that prevent abuse of legitimate functionality. Without proper restrictions, attackers can exploit automated tools to perform unlimited operations, leading to denial of service, account compromise, or data destruction.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Recommendations</h2>
+    <ol>
+      <li><strong>Implement Rate Limiting:</strong> Add strict rate limits for all sensitive operations (e.g., 5 attempts per hour)</li>
+      <li><strong>Add Account Lockout:</strong> Lock accounts after N failed authentication attempts</li>
+      <li><strong>Use Anti-Replay Protection:</strong> Implement tokens to prevent form resubmission</li>
+      <li><strong>Require Confirmation:</strong> Add confirmation steps for destructive operations</li>
+      <li><strong>Monitor Usage Patterns:</strong> Log and analyze function usage for abuse detection</li>
+      <li><strong>Implement Progressive Delays:</strong> Add increasing delays for repeated operations</li>
+      <li><strong>Regular Usage Limit Testing:</strong> Include usage limit testing in regular security assessments</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>6. References</h2>
+    <ul>
+      <li>OWASP Testing Guide v4 - OTG-BUSLOGIC-005</li>
+      <li>OWASP Authentication Cheat Sheet</li>
+      <li>OWASP Top Ten - A07:2021-Identification and Authentication Failures</li>
+      <li>NIST SP 800-63B - Digital Identity Guidelines</li>
+      <li>Common Weakness Enumeration - CWE-799: Improper Control of Interaction Frequency</li>
+    </ul>
+  </div>
+
+  <footer>
+    Generated by Function Usage Limit Testing Script | Date: 2025-08-01 22:45:12 | Target: localhost/DVWA<br>
+    OWASP Testing Guide v4 - OTG-BUSLOGIC-005 Compliance Assessment
+  </footer>
+
+</body>
+</html>

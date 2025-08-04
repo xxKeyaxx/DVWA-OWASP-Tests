@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Session Timeout Test - OTG-SESS-007</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background-color: #252526;
+            padding: 20px;
+            border-left: 4px solid #569cd6;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #569cd6;
+            font-size: 24px;
+        }
+        .summary-box {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .security-level, .reuse-test {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .finding {
+            background-color: #1e1e1e;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .finding.error {
+            border-left: 4px solid #ff6b6b;
+        }
+        .risk-rating {
+            display: inline-block;
+            padding: 5px 10px;
+            font-weight: bold;
+            background-color: #ffd93d;
+            color: #000;
+        }
+        .cvss-score {
+            display: inline-block;
+            padding: 5px 10px;
+            font-weight: bold;
+            background-color: #9cdcfe;
+            color: #000;
+        }
+        .pass {
+            color: #6bcf7f;
+        }
+        .fail {
+            color: #ff6b6b;
+        }
+        .recommendations {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .references {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        h2, h3 {
+            color: #569cd6;
+        }
+        .timestamp {
+            color: #9cdcfe;
+            font-size: 14px;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .details ul {
+            margin-top: 5px;
+        }
+        pre {
+            background-color: #1e1e1e;
+            border: 1px solid #3c3c3c;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        a {
+            color: #569cd6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OWASP Testing Guide - OTG-SESS-007</h1>
+        <h2>Session Timeout Test Report</h2>
+        <div class="timestamp">Generated on: 2025-08-03 01:16:57</div>
+        <div>Target: <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></div>
+    </div>
+
+    <div class="summary-box">
+        <h3>Executive Summary</h3>
+        <p>This report details the findings of automated testing for Session Timeout (OTG-SESS-007) on the DVWA application. Session timeout is a critical security control that helps protect against unauthorized access by automatically terminating user sessions after a period of inactivity.</p>
+        <p><strong>Risk Rating: <span class="risk-rating">MEDIUM</span></strong></p>
+        <p><strong>CVSS Score: <span class="cvss-score">4.3 (Medium)</span></strong></p>
+        <p><strong>Sessions Expired: 0/9 test intervals</strong></p>
+    </div>
+
+    <h2>Test Details</h2>
+    <h3>Methodology</h3>
+    <p>The following methodology was used to test session timeout functionality:</p>
+    <ul>
+        <li>Logged into DVWA with valid credentials at different security levels</li>
+        <li>Waited for specified timeout intervals (30 seconds, 1 minute, 2 minutes)</li>
+        <li>Attempted to access protected resources after each interval</li>
+        <li>Verified session expiration and proper invalidation</li>
+        <li>Tested user redirection to login page after timeout</li>
+        <li>Evaluated session reuse with expired session IDs</li>
+        <li>Analyzed session state before and after timeout periods</li>
+    </ul>
+
+    <h3>Test Results</h3>
+    
+        <div class="security-level">
+            <h3>Security Level: Low</h3>
+            <div class="finding">
+                <p><strong>Test Interval:</strong> 30 seconds</p>
+                <p><strong>Status:</strong> <span class="fail">ACTIVE</span></p>
+                <p><strong>Session ID Before:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Session ID After:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Authenticated Before:</strong> True</p>
+                <p><strong>Authenticated After:</strong> True</p>
+                <p><strong>Redirects to Login:</strong> False</p>
+                <p><strong>Elapsed Time:</strong> 30.01 seconds</p>
+                <div class="details">
+                    <strong>Details:</strong>
+                    <ul><li>Session still active after 30 seconds</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="finding">
+                <p><strong>Test Interval:</strong> 60 seconds</p>
+                <p><strong>Status:</strong> <span class="fail">ACTIVE</span></p>
+                <p><strong>Session ID Before:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Session ID After:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Authenticated Before:</strong> True</p>
+                <p><strong>Authenticated After:</strong> True</p>
+                <p><strong>Redirects to Login:</strong> False</p>
+                <p><strong>Elapsed Time:</strong> 60.01 seconds</p>
+                <div class="details">
+                    <strong>Details:</strong>
+                    <ul><li>Session still active after 60 seconds</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="finding">
+                <p><strong>Test Interval:</strong> 120 seconds</p>
+                <p><strong>Status:</strong> <span class="fail">ACTIVE</span></p>
+                <p><strong>Session ID Before:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Session ID After:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Authenticated Before:</strong> True</p>
+                <p><strong>Authenticated After:</strong> True</p>
+                <p><strong>Redirects to Login:</strong> False</p>
+                <p><strong>Elapsed Time:</strong> 120.01 seconds</p>
+                <div class="details">
+                    <strong>Details:</strong>
+                    <ul><li>Session still active after 120 seconds</li>
+                    </ul>
+                </div>
+            </div></div>
+        <div class="security-level">
+            <h3>Security Level: Medium</h3>
+            <div class="finding">
+                <p><strong>Test Interval:</strong> 30 seconds</p>
+                <p><strong>Status:</strong> <span class="fail">ACTIVE</span></p>
+                <p><strong>Session ID Before:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Session ID After:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Authenticated Before:</strong> True</p>
+                <p><strong>Authenticated After:</strong> True</p>
+                <p><strong>Redirects to Login:</strong> False</p>
+                <p><strong>Elapsed Time:</strong> 30.01 seconds</p>
+                <div class="details">
+                    <strong>Details:</strong>
+                    <ul><li>Session still active after 30 seconds</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="finding">
+                <p><strong>Test Interval:</strong> 60 seconds</p>
+                <p><strong>Status:</strong> <span class="fail">ACTIVE</span></p>
+                <p><strong>Session ID Before:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Session ID After:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Authenticated Before:</strong> True</p>
+                <p><strong>Authenticated After:</strong> True</p>
+                <p><strong>Redirects to Login:</strong> False</p>
+                <p><strong>Elapsed Time:</strong> 60.01 seconds</p>
+                <div class="details">
+                    <strong>Details:</strong>
+                    <ul><li>Session still active after 60 seconds</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="finding">
+                <p><strong>Test Interval:</strong> 120 seconds</p>
+                <p><strong>Status:</strong> <span class="fail">ACTIVE</span></p>
+                <p><strong>Session ID Before:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Session ID After:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Authenticated Before:</strong> True</p>
+                <p><strong>Authenticated After:</strong> True</p>
+                <p><strong>Redirects to Login:</strong> False</p>
+                <p><strong>Elapsed Time:</strong> 120.01 seconds</p>
+                <div class="details">
+                    <strong>Details:</strong>
+                    <ul><li>Session still active after 120 seconds</li>
+                    </ul>
+                </div>
+            </div></div>
+        <div class="security-level">
+            <h3>Security Level: High</h3>
+            <div class="finding">
+                <p><strong>Test Interval:</strong> 30 seconds</p>
+                <p><strong>Status:</strong> <span class="fail">ACTIVE</span></p>
+                <p><strong>Session ID Before:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Session ID After:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Authenticated Before:</strong> True</p>
+                <p><strong>Authenticated After:</strong> True</p>
+                <p><strong>Redirects to Login:</strong> False</p>
+                <p><strong>Elapsed Time:</strong> 32.59 seconds</p>
+                <div class="details">
+                    <strong>Details:</strong>
+                    <ul><li>Session still active after 30 seconds</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="finding">
+                <p><strong>Test Interval:</strong> 60 seconds</p>
+                <p><strong>Status:</strong> <span class="fail">ACTIVE</span></p>
+                <p><strong>Session ID Before:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Session ID After:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Authenticated Before:</strong> True</p>
+                <p><strong>Authenticated After:</strong> True</p>
+                <p><strong>Redirects to Login:</strong> False</p>
+                <p><strong>Elapsed Time:</strong> 60.01 seconds</p>
+                <div class="details">
+                    <strong>Details:</strong>
+                    <ul><li>Session still active after 60 seconds</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="finding">
+                <p><strong>Test Interval:</strong> 120 seconds</p>
+                <p><strong>Status:</strong> <span class="fail">ACTIVE</span></p>
+                <p><strong>Session ID Before:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Session ID After:</strong> 8rltevrrcurv10ogh2jpcpktn1</p>
+                <p><strong>Authenticated Before:</strong> True</p>
+                <p><strong>Authenticated After:</strong> True</p>
+                <p><strong>Redirects to Login:</strong> False</p>
+                <p><strong>Elapsed Time:</strong> 120.01 seconds</p>
+                <div class="details">
+                    <strong>Details:</strong>
+                    <ul><li>Session still active after 120 seconds</li>
+                    </ul>
+                </div>
+            </div></div>
+    
+        <div class="reuse-test">
+            <h3>Session Reuse After Timeout Test</h3>
+            <div class="finding">
+                <p><strong>Status:</strong> <span class="pass">NOT VULNERABLE</span></p>
+                <p><strong>Details:</strong> Session did not expire during test period</p>
+            </div>
+        </div>
+
+    <div class="recommendations">
+        <h3>Remediation Recommendations</h3>
+        <ul>
+            <li>Implement appropriate session timeout periods (5-30 minutes for web applications)</li>
+            <li>Properly invalidate sessions on the server side when they expire</li>
+            <li>Redirect users to the login page after session timeout</li>
+            <li>Destroy all session data associated with expired sessions</li>
+            <li>Prevent reuse of expired session tokens</li>
+            <li>Implement sliding timeout mechanisms for better user experience</li>
+            <li>Consider different timeout values for different user roles</li>
+            <li>Log session timeout events for security monitoring</li>
+        </ul>
+        <h4>Recommended Timeout Values:</h4>
+        <ul>
+            <li><strong>High Security:</strong> 5-15 minutes of inactivity</li>
+            <li><strong>Standard Security:</strong> 15-30 minutes of inactivity</li>
+            <li><strong>Low Security:</strong> 30-60 minutes of inactivity</li>
+        </ul>
+        <h4>Secure Implementation Example:</h4>
+        <pre>// PHP example
+session_start();
+$timeout_duration = 1800; // 30 minutes
+
+// Check if session has expired
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $timeout_duration)) {
+    // Session has expired
+    session_unset();
+    session_destroy();
+    header("Location: login.php");
+    exit();
+}
+
+// Update last activity time
+$_SESSION['last_activity'] = time();</pre>
+    </div>
+
+    <div class="references">
+        <h3>References</h3>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/06-Session_Management_Testing/07-Testing_for_Session_Timeout" target="_blank">OWASP Testing Guide - OTG-SESS-007</a></li>
+            <li><a href="https://owasp.org/www-project-cheat-sheets/cheatsheets/Session_Management_Cheat_Sheet" target="_blank">OWASP Session Management Cheat Sheet</a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/613.html" target="_blank">CWE-613: Insufficient Session Expiration</a></li>
+            <li><a href="https://owasp.org/www-community/controls/Session_Timeout" target="_blank">OWASP Session Timeout</a></li>
+        </ul>
+    </div>
+</body>
+</html>

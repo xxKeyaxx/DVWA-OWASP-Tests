@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OTG-AUTHN-003 Security Assessment Report</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            margin: -20px -20px 20px -20px;
+        }
+        h1, h2, h3 {
+            color: #003366;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 200px;
+        }
+        .value {
+            display: inline;
+        }
+        .status {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            font-size: 0.9em;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .risk {
+            font-weight: bold;
+            color: #cc0000;
+        }
+        .success {
+            color: #008800;
+            font-weight: bold;
+        }
+        .failed {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            OWASP Web Security Testing Guide - OTG-AUTHN-003
+        </header>
+
+        <h1>OTG-AUTHN-003: Testing for Weak Lock Out Mechanism</h1>
+
+        <div class="field"><span class="label">Test Date:</span> <span class="value">2025-08-03 22:59:53</span></div>
+        <div class="field"><span class="label">Target URL:</span> <span class="value">http://localhost/dvwa/login.php</span></div>
+        <div class="field"><span class="label">Test Result:</span> <span class="value status">Failed</span></div>
+
+        <h2>Vulnerability Description</h2>
+        <p>
+            A weak lockout mechanism allows attackers to perform brute-force attacks by repeatedly attempting 
+            to guess user credentials without facing account lockout or significant delays. A strong lockout 
+            mechanism should temporarily or permanently lock an account after a certain number of failed login 
+            attempts to prevent unauthorized access.
+        </p>
+        <p>
+            This test evaluates whether the application implements an effective account lockout mechanism by 
+            simulating multiple failed login attempts and analyzing the application's response.
+        </p>
+
+        <h2>Impact</h2>
+        <p class="risk">Medium</p>
+        <p>
+            Without a proper lockout mechanism, attackers can use brute-force or dictionary attacks to guess 
+            user passwords, potentially gaining unauthorized access to accounts. This can lead to data breaches, 
+            privilege escalation, and compromise of the entire application.
+        </p>
+
+        <h2>Test Findings</h2>
+        <pre>No effective account lockout mechanism detected.
+
+The application allowed 30 consecutive failed login attempts without locking the account.
+
+Total attempts made: 30
+This makes the application vulnerable to brute-force attacks.
+</pre>
+
+        <h2>Proof of Concept (PoC)</h2>
+        <p>The following script demonstrates the weak lockout behavior:</p>
+        <pre><code>#!/usr/bin/env python3
+import requests
+from bs4 import BeautifulSoup
+
+session = requests.Session()
+target = "http://localhost/dvwa/login.php"
+
+# Perform 30 failed login attempts
+for i in range(1, 31):
+    # Get CSRF token
+    resp = session.get(target)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+    token = soup.find('input', {'name': 'user_token'})['value']
+    
+    # Attempt login with wrong password
+    data = {
+        'username': 'admin',
+        'password': 'wrongpass',
+        'Login': 'Login',
+        'user_token': token
+    }
+    login_resp = session.post("http://localhost/dvwa/login.php", data=data)
+    
+    print(f"Attempt {i}: Login failed - Status: {login_resp.status_code}")
+    
+print("All 30 attempts completed without account lockout.")</code></pre>
+
+        <h2>Remediation / Recommendations</h2>
+        <p>
+The application lacks an effective account lockout mechanism, making it vulnerable to brute-force attacks. 
+Implement the following security measures:
+
+1. Enforce account lockout after 5-10 failed login attempts.
+2. Implement temporary lockouts (e.g., 15-30 minutes) rather than permanent locks.
+3. Use incremental delays between login attempts (exponential backoff).
+4. Consider IP-based rate limiting to prevent distributed attacks.
+5. Implement CAPTCHA after a few failed attempts.
+6. Log all failed login attempts for security monitoring.
+7. Alert administrators of suspicious login patterns.
+8. Provide secure account recovery options for locked users.
+</p>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authentication_Testing/03-Testing_for_Weak_Lock_Out_Mechanism" target="_blank">
+                OWASP WSTG - OTG-AUTHN-003</a></li>
+            <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank">
+                OWASP Authentication Cheat Sheet</a></li>
+            <li>NIST SP 800-63B: Digital Identity Guidelines - Authentication and Lifecycle Management</li>
+            <li>Implement account lockout after 5-10 failed attempts.</li>
+            <li>Use incremental delays instead of permanent lockouts where possible.</li>
+            <li>Consider IP-based rate limiting as an additional layer of protection.</li>
+            <li>Provide clear feedback to users without revealing account existence.</li>
+        </ul>
+
+        <footer>
+            OSCP-Style Security Assessment Report | Generated by OTG-AUTHN-003 Tester
+        </footer>
+    </div>
+</body>
+</html>
+    

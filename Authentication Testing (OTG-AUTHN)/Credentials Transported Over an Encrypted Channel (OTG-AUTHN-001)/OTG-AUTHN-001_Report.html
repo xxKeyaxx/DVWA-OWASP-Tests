@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OTG-AUTHN-001 Security Assessment Report</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            margin: -20px -20px 20px -20px;
+        }
+        h1, h2, h3 {
+            color: #003366;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 180px;
+        }
+        .value {
+            display: inline;
+        }
+        .status {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            font-size: 0.9em;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .risk {
+            font-weight: bold;
+            color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            OWASP Web Security Testing Guide - OTG-AUTHN-001
+        </header>
+
+        <h1>OTG-AUTHN-001: Credentials Transported over an Encrypted Channel</h1>
+
+        <div class="field"><span class="label">Test Date:</span> <span class="value">2025-08-03 22:27:46</span></div>
+        <div class="field"><span class="label">Target URL:</span> <span class="value">http://localhost/dvwa/login.php</span></div>
+        <div class="field"><span class="label">Test Result:</span> <span class="value status">Failed</span></div>
+
+        <h2>Vulnerability Description</h2>
+        <p>
+            During the authentication process, user credentials (username and password) must be transmitted over an encrypted channel (e.g., HTTPS with TLS). 
+            If credentials are sent over an unencrypted HTTP connection, they are vulnerable to interception via man-in-the-middle (MITM) attacks, 
+            packet sniffing, or proxy logging on untrusted networks.
+        </p>
+        <p>
+            In this test, the login form submission was analyzed to determine whether the request was made over a secure (HTTPS) connection.
+        </p>
+
+        <h2>Impact</h2>
+        <p class="risk">Medium to High</p>
+        <p>
+            An attacker capable of eavesdropping on network traffic (e.g., on public Wi-Fi) can capture plaintext credentials and gain unauthorized access 
+            to user accounts. This compromises the confidentiality and integrity of the entire application.
+        </p>
+
+        <h2>Test Findings</h2>
+        <pre>Credentials are transmitted over an unencrypted HTTP channel. This exposes authentication data to network interception.
+
+Note: The server appears to support HTTPS, but does not enforce it for login. This represents a configuration weakness.</pre>
+
+        <h2>Proof of Concept (PoC)</h2>
+        <p>The following request demonstrates how credentials are transmitted:</p>
+        <pre><code>curl -X POST "http://localhost/dvwa/login.php" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin" \
+  -d "password=password" \
+  -d "Login=Login" -d "user_token=0164c5a24edf3dd9219c60c8e3a09751"</code></pre>
+
+        <h2>Remediation / Recommendations</h2>
+        <p>Enable and enforce HTTPS for all authentication pages:
+1. Obtain a valid TLS certificate (e.g., Let's Encrypt).
+2. Redirect all HTTP requests to HTTPS using 301 redirects.
+3. Set the 'Secure' flag on all cookies.
+4. Implement HSTS (HTTP Strict Transport Security) header:
+   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+5. Disable HTTP entirely if possible.</p>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authentication_Testing/01-Testing_for_Credentials_Transported_over_an_Encrypted_Channel" target="_blank">
+                OWASP WSTG - OTG-AUTHN-001</a></li>
+            <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank">
+                OWASP Authentication Cheat Sheet</a></li>
+            <li>Enforce HTTPS using HSTS headers and redirect all HTTP traffic to HTTPS.</li>
+        </ul>
+
+        <footer>
+            OSCP-Style Security Assessment Report | Generated by OTG-AUTHN-001 Tester
+        </footer>
+    </div>
+</body>
+</html>
+    

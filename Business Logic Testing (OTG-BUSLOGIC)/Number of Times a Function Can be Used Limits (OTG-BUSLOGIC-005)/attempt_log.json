@@ -1,0 +1,278 @@
+{
+  "database_reset": {
+    "total_attempts": 5,
+    "successful_attempts": 5,
+    "results": [
+      {
+        "attempt": 1,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:44.704959"
+      },
+      {
+        "attempt": 2,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:45.360913"
+      },
+      {
+        "attempt": 3,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:46.063431"
+      },
+      {
+        "attempt": 4,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:46.725629"
+      },
+      {
+        "attempt": 5,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:47.388743"
+      }
+    ]
+  },
+  "password_change": {
+    "total_attempts": 8,
+    "successful_attempts": 0,
+    "results": [
+      {
+        "attempt": 1,
+        "status": "Failed",
+        "password_used": "pass000",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:48.084339"
+      },
+      {
+        "attempt": 2,
+        "status": "Failed",
+        "password_used": "pass001",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:48.426600"
+      },
+      {
+        "attempt": 3,
+        "status": "Failed",
+        "password_used": "pass002",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:48.805321"
+      },
+      {
+        "attempt": 4,
+        "status": "Failed",
+        "password_used": "pass003",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:49.157110"
+      },
+      {
+        "attempt": 5,
+        "status": "Failed",
+        "password_used": "pass004",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:49.509605"
+      },
+      {
+        "attempt": 6,
+        "status": "Failed",
+        "password_used": "pass005",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:49.866684"
+      },
+      {
+        "attempt": 7,
+        "status": "Failed",
+        "password_used": "pass006",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:50.224048"
+      },
+      {
+        "attempt": 8,
+        "status": "Failed",
+        "password_used": "pass007",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:50.611962"
+      }
+    ]
+  },
+  "security_level_change": {
+    "total_attempts": 10,
+    "successful_attempts": 10,
+    "results": [
+      {
+        "attempt": 1,
+        "status": "Success",
+        "level_changed_to": "low",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:51.051387"
+      },
+      {
+        "attempt": 2,
+        "status": "Success",
+        "level_changed_to": "medium",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:51.190675"
+      },
+      {
+        "attempt": 3,
+        "status": "Success",
+        "level_changed_to": "high",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:51.326249"
+      },
+      {
+        "attempt": 4,
+        "status": "Success",
+        "level_changed_to": "low",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:51.462036"
+      },
+      {
+        "attempt": 5,
+        "status": "Success",
+        "level_changed_to": "medium",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:51.597021"
+      },
+      {
+        "attempt": 6,
+        "status": "Success",
+        "level_changed_to": "low",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:51.735233"
+      },
+      {
+        "attempt": 7,
+        "status": "Success",
+        "level_changed_to": "medium",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:51.878051"
+      },
+      {
+        "attempt": 8,
+        "status": "Success",
+        "level_changed_to": "high",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:52.018751"
+      },
+      {
+        "attempt": 9,
+        "status": "Success",
+        "level_changed_to": "low",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:52.156803"
+      },
+      {
+        "attempt": 10,
+        "status": "Success",
+        "level_changed_to": "medium",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:52.292498"
+      }
+    ]
+  },
+  "brute_force": {
+    "total_attempts": 10,
+    "failed_attempts": 10,
+    "results": [
+      {
+        "attempt": 1,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:52.519259"
+      },
+      {
+        "attempt": 2,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:52.798580"
+      },
+      {
+        "attempt": 3,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:53.109010"
+      },
+      {
+        "attempt": 4,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:53.450714"
+      },
+      {
+        "attempt": 5,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:53.761764"
+      },
+      {
+        "attempt": 6,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:54.088832"
+      },
+      {
+        "attempt": 7,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:54.414319"
+      },
+      {
+        "attempt": 8,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:54.715593"
+      },
+      {
+        "attempt": 9,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:55.023728"
+      },
+      {
+        "attempt": 10,
+        "status": "Failed Login",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:55.348694"
+      }
+    ]
+  },
+  "form_resubmission": {
+    "total_attempts": 5,
+    "successful_attempts": 5,
+    "results": [
+      {
+        "attempt": 1,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:44:58.890233"
+      },
+      {
+        "attempt": 2,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:45:02.258261"
+      },
+      {
+        "attempt": 3,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:45:05.606761"
+      },
+      {
+        "attempt": 4,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:45:08.980469"
+      },
+      {
+        "attempt": 5,
+        "status": "Success",
+        "response_code": 200,
+        "timestamp": "2025-08-01T22:45:12.386405"
+      }
+    ]
+  }
+}

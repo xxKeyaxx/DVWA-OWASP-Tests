@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Session Management Bypass Test - OTG-SESS-001</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background-color: #252526;
+            padding: 20px;
+            border-left: 4px solid #569cd6;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #569cd6;
+            font-size: 24px;
+        }
+        .summary-box {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .finding {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .vulnerable {
+            border-left: 4px solid #ff6b6b;
+        }
+        .not-vulnerable {
+            border-left: 4px solid #6bcf7f;
+        }
+        .risk-rating {
+            display: inline-block;
+            padding: 5px 10px;
+            font-weight: bold;
+            background-color: #ffd93d;
+            color: #000;
+        }
+        .recommendations {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .references {
+            background-color: #2d2d30;
+            border: 1px solid #3c3c3c;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        h2, h3 {
+            color: #569cd6;
+        }
+        .timestamp {
+            color: #9cdcfe;
+            font-size: 14px;
+        }
+        pre {
+            background-color: #1e1e1e;
+            border: 1px solid #3c3c3c;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        a {
+            color: #569cd6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OWASP Testing Guide - OTG-SESS-001</h1>
+        <h2>Session Management Bypass Test Report</h2>
+        <div class="timestamp">Generated on: 2025-08-02 22:58:16</div>
+        <div>Target: <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></div>
+    </div>
+
+    <div class="summary-box">
+        <h3>Executive Summary</h3>
+        <p>This report details the findings of automated testing for Session Management Schema bypass vulnerabilities (OTG-SESS-001) on the DVWA application. The tests focused on identifying common session management flaws that could lead to session hijacking, fixation, or unauthorized access.</p>
+        <p><strong>Risk Rating: <span class="risk-rating">MEDIUM</span></strong></p>
+        <p><strong>Vulnerabilities Found: 1</strong></p>
+    </div>
+
+    <h2>Test Details</h2>
+    <h3>Methodology</h3>
+    <p>The following tests were conducted:</p>
+    <ul>
+        <li>Session Fixation Testing</li>
+        <li>Session Reuse After Logout</li>
+        <li>Session Regeneration Verification</li>
+    </ul>
+    <p>All tests were performed against DVWA configured at security level 'Low'.</p>
+
+    <h3>Findings</h3>
+    <div class="finding not-vulnerable">
+        <h3>Session Fixation Test</h3>
+        <p><strong>Status:</strong> NOT VULNERABLE</p>
+        <p><strong>Details:</strong> Login failed</p>
+    </div>
+    <div class="finding not-vulnerable">
+        <h3>Session Reuse After Logout</h3>
+        <p><strong>Status:</strong> NOT VULNERABLE</p>
+        <p><strong>Details:</strong> Session correctly invalidated</p>
+    </div>
+    <div class="finding vulnerable">
+        <h3>Session Regeneration Test</h3>
+        <p><strong>Status:</strong> VULNERABLE</p>
+        <p><strong>Details:</strong> Session ID reused: 9mchr7ao6mk13c9v3kh83ihdut</p>
+    </div>
+    <div class="recommendations">
+        <h3>Remediation Recommendations</h3>
+        <ul>
+            <li>Always regenerate session IDs after successful authentication</li>
+            <li>Invalidate session tokens upon logout</li>
+            <li>Implement secure session management practices as per OWASP guidelines</li>
+            <li>Use secure, HttpOnly, and SameSite cookie attributes</li>
+            <li>Implement proper session timeout mechanisms</li>
+        </ul>
+    </div>
+
+    <div class="references">
+        <h3>References</h3>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/06-Session_Management_Testing/01-Testing_for_Session_Management_Schema" target="_blank">OWASP Testing Guide - OTG-SESS-001</a></li>
+            <li><a href="https://owasp.org/www-project-cheat-sheets/cheatsheets/Session_Management_Cheat_Sheet" target="_blank">OWASP Session Management Cheat Sheet</a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/384.html" target="_blank">CWE-384: Session Fixation</a></li>
+        </ul>
+    </div>
+</body>
+</html>
