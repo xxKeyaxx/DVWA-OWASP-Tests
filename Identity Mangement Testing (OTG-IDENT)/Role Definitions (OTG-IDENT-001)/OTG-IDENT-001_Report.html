@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Assessment Report - OTG-IDENT-001</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2d2d30;
+            padding: 20px;
+            border-left: 4px solid #4ec9b0;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #4ec9b0;
+            margin: 0;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #9cdcfe;
+        }
+        .section {
+            background-color: #2d2d30;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-left: 3px solid #c586c0;
+        }
+        .section-title {
+            color: #4ec9b0;
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .finding-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .finding-table th {
+            background-color: #3c3c3c;
+            color: #4ec9b0;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #555;
+        }
+        .finding-table td {
+            padding: 10px;
+            border: 1px solid #555;
+            vertical-align: top;
+        }
+        .high { color: #f48771; }
+        .medium { color: #e2c08d; }
+        .low { color: #75beff; }
+        .summary-box {
+            background-color: #3c3c3c;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 3px solid #4ec9b0;
+        }
+        pre {
+            background-color: #3c3c3c;
+            padding: 15px;
+            overflow-x: auto;
+            border: 1px solid #555;
+            color: #d4d4d4;
+        }
+        .evidence {
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Security Assessment Report</h1>
+        <p><strong>Target:</strong> http://localhost/dvwa</p>
+        <p><strong>Test ID:</strong> OTG-IDENT-001 - Testing Role Definitions</p>
+        <p><strong>Date:</strong> 2025-08-04 04:07:06</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Executive Summary</h2>
+        <p>This assessment evaluated the role-based access control implementation of the DVWA application 
+        according to OWASP Testing Guide v4 - OTG-IDENT-001. Testing was performed using a regular user account 
+        (gordonb/abc123) to identify improper role enforcement, privilege escalation opportunities, and unauthorized 
+        access to administrative functionality.</p>
+        
+        <div class="summary-box">
+            <p><strong>Findings Summary:</strong></p>
+            <p><span class="high">High Severity:</span> 6 findings</p>
+            <p><span class="medium">Medium Severity:</span> 3 findings</p>
+            <p><span class="low">Low Severity:</span> 0 findings</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Methodology</h2>
+        <p>The testing methodology followed OWASP Testing Guide v4 guidelines for testing role definitions:</p>
+        <ul>
+            <li>Authenticated as regular user (gordonb/abc123) to test access control enforcement</li>
+            <li>Attempted access to administrative functions and privileged operations</li>
+            <li>Tested authentication bypass vulnerabilities (IDOR)</li>
+            <li>Evaluated CSRF vulnerabilities that could allow privilege escalation</li>
+            <li>Attempted direct access to restricted resources and configuration files</li>
+            <li>Tested access to privileged vulnerability modules</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Test Results</h2>
+        <table class="finding-table">
+            <tr>
+                <th>Vulnerability</th>
+                <th>Endpoint</th>
+                <th>Evidence</th>
+                <th>Severity</th>
+            </tr>
+            <tr>
+                <td>CSRF Functionality Access</td>
+                <td>http://localhost/dvwa/vulnerabilities/csrf/</td>
+                <td class="evidence">Status: 200, CSRF change password functionality accessible</td>
+                <td class="medium">Medium</td>
+            </tr>
+            <tr>
+                <td>Potential Admin Password Modification Access</td>
+                <td>http://localhost/dvwa/vulnerabilities/csrf/</td>
+                <td class="evidence">Status: 200, Password change functionality accessible to regular user</td>
+                <td class="high">High</td>
+            </tr>
+            <tr>
+                <td>Unauthorized Security Level Access</td>
+                <td>http://localhost/dvwa/security.php</td>
+                <td class="evidence">Status: 200, Can access security level controls as regular user</td>
+                <td class="high">High</td>
+            </tr>
+            <tr>
+                <td>Unauthorized PHP Info Access</td>
+                <td>http://localhost/dvwa/phpinfo.php</td>
+                <td class="evidence">Status: 200, PHP configuration information disclosed</td>
+                <td class="medium">Medium</td>
+            </tr>
+            <tr>
+                <td>Unauthorized Setup Access</td>
+                <td>http://localhost/dvwa/setup.php</td>
+                <td class="evidence">Status: 200, Setup/reinstall functionality accessible</td>
+                <td class="high">High</td>
+            </tr>
+            <tr>
+                <td>Directory Listing Enabled</td>
+                <td>http://localhost/dvwa/config/</td>
+                <td class="evidence">Status: 200, Directory listing found</td>
+                <td class="medium">Medium</td>
+            </tr>
+            <tr>
+                <td>Privileged Module Access</td>
+                <td>http://localhost/dvwa/vulnerabilities/upload/</td>
+                <td class="evidence">Status: 200, Accessed 'file upload' functionality as regular user</td>
+                <td class="high">High</td>
+            </tr>
+            <tr>
+                <td>Privileged Module Access</td>
+                <td>http://localhost/dvwa/vulnerabilities/exec/</td>
+                <td class="evidence">Status: 200, Accessed 'file upload' functionality as regular user</td>
+                <td class="high">High</td>
+            </tr>
+            <tr>
+                <td>Privileged Module Access</td>
+                <td>http://localhost/dvwa/vulnerabilities/fi/.?page=include.php</td>
+                <td class="evidence">Status: 200, Accessed 'file upload' functionality as regular user</td>
+                <td class="high">High</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Risk Assessment</h2>
+        <p>Based on the findings, the application shows varying degrees of role definition enforcement issues. 
+        High severity findings indicate potential for unauthorized administrative access and privilege escalation, 
+        which could lead to complete system compromise.</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Recommendations</h2>
+        <ol>
+            <li>Implement strict server-side role validation for all administrative functions</li>
+            <li>Enforce proper session management and role assignment mechanisms</li>
+            <li>Disable directory listing and restrict access to sensitive paths</li>
+            <li>Implement proper CSRF protection tokens for all state-changing operations</li>
+            <li>Prevent IDOR vulnerabilities through proper user context validation</li>
+            <li>Regularly audit role-based access controls and privilege assignments</li>
+            <li>Ensure all privileged operations require proper authorization checks</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">References</h2>
+        <ul>
+            <li>OWASP Testing Guide v4 - OTG-IDENT-001: Testing Role Definitions</li>
+            <li>OWASP Top 10 - A01:2021-Broken Access Control</li>
+            <li>OWASP Top 10 - A04:2021-Insecure Design</li>
+            <li>CWE-284: Improper Access Control</li>
+            <li>CWE-352: Cross-Site Request Forgery (CSRF)</li>
+            <li>CWE-639: Authorization Bypass Through User-Controlled Key</li>
+        </ul>
+    </div>
+</body>
+</html>
