@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTG-CRYPST-003 Security Test Report</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #000;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            background-color: #111;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            margin-bottom: 20px;
+        }
+        .banner {
+            background-color: #8B0000;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border: 1px solid #ff0000;
+        }
+        .section {
+            background-color: #111;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .finding {
+            color: #ff4444;
+            font-weight: bold;
+        }
+        .code-block {
+            background-color: #222;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        h1, h2, h3 {
+            color: #00ff00;
+            margin-top: 0;
+        }
+        .risk-high {
+            color: #ff4444;
+            font-weight: bold;
+        }
+        .footer {
+            background-color: #111;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #00ff00;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #222;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>OWASP Testing Guide</h1>
+        <h2>OTG-CRYPST-003: Sensitive Information Sent via Unencrypted Channels</h2>
+        <p><strong>Target:</strong> http://localhost/dvwa/</p>
+        <p><strong>Test Date:</strong> 2025-08-04 20:26:50</p>
+    </div>
+
+    <div class="banner">
+        VULNERABILITY CONFIRMED - HIGH RISK
+    </div>
+
+    <div class="section">
+        <h3>VULNERABILITY SUMMARY</h3>
+        <p>The application transmits sensitive authentication data over unencrypted HTTP channels. This exposes credentials and session tokens to potential interception by attackers on the same network.</p>
+    </div>
+
+    <div class="section">
+        <h3>RISK ASSESSMENT</h3>
+        <p><span class="risk-high">Risk Level: HIGH</span></p>
+        <p><strong>Impact:</strong> Unauthorized access to user accounts through credential/session token interception</p>
+        <p><strong>Likelihood:</strong> High in shared network environments (public Wi-Fi, corporate networks)</p>
+    </div>
+
+    <div class="section">
+        <h3>FINDINGS</h3>
+        <ul>
+            <li class='finding'>[!] Site uses unencrypted HTTP protocol</li>
+            <li class='finding'>[!] Cookie 'security' missing Secure flag</li>
+            <li class='finding'>[!] Cookie 'security' missing HttpOnly flag</li>
+            <li class='finding'>[!] Cookie 'PHPSESSID' missing Secure flag</li>
+            <li class='finding'>[!] Cookie 'PHPSESSID' missing HttpOnly flag</li>
+            <li class='finding'>[!] Password transmitted in plaintext POST data</li>
+            <li class='finding'>[!] Username transmitted in plaintext POST data</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>PROOF OF CONCEPT</h3>
+        <h4>Login Request (Plaintext Credentials):</h4>
+        <div class="code-block">
+POST http://localhost/dvwa/login.php HTTP/1.1
+Host: localhost
+User-Agent: Python-requests
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 63
+
+username=admin&password=password&Login=Login        </div>
+
+        <h4>Response Headers (Cookie Security):</h4>
+        <div class="code-block">
+HTTP/1.1 200 OK
+Date: Mon, 04 Aug 2025 13:26:50 GMT
+Server: Apache/2.4.52 (Win64) OpenSSL/1.1.1m PHP/8.1.2
+X-Powered-By: PHP/8.1.2
+Expires: Tue, 23 Jun 2009 12:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 1392
+Keep-Alive: timeout=5, max=97
+Connection: Keep-Alive
+Content-Type: text/html;charset=utf-8
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>STEPS TO REPRODUCE</h3>
+        <ol>
+            <li>Access DVWA login page at <code>http://localhost/dvwa/login.php</code></li>
+            <li>Enter credentials: admin/password</li>
+            <li>Intercept the POST request using Burp Suite or similar tool</li>
+            <li>Observe plaintext credentials in request body</li>
+            <li>Check response headers for cookie security flags</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h3>MITIGATION</h3>
+        <ul>
+            <li>Enforce HTTPS site-wide using TLS 1.2+</li>
+            <li>Set <code>Secure</code> flag on all authentication cookies</li>
+            <li>Set <code>HttpOnly</code> flag to prevent XSS cookie theft</li>
+            <li>Implement HTTP Strict Transport Security (HSTS)</li>
+            <li>Use SameSite attribute for additional CSRF protection</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>REFERENCES</h3>
+        <ul>
+            <li><a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/09-Testing_for_Weak_Cryptography/03-Testing_for_Sensitive_Information_Sent_via_Unencrypted_Channels" style="color:#00ff00;">OWASP OTG-CRYPST-003</a></li>
+            <li>OSCP Exam Guidelines - Network Security Testing</li>
+            <li>NIST SP 800-52 - Guidelines for TLS Implementation</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>TOOLS USED</h3>
+        <ul>
+            <li>Custom Python Script (requests library)</li>
+            <li>Burp Suite (manual verification)</li>
+            <li>Wireshark (network traffic analysis)</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>Generated by DVWA Security Testing Framework | OTG-CRYPST-003 Report</p>
+        <p>This report is for educational and authorized testing purposes only</p>
+    </div>
+</body>
+</html>
