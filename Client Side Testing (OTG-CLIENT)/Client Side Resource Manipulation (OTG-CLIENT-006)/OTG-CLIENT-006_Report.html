@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OSCP-Style Security Assessment Report</title>
+  <style>
+    /* OSCP-inspired styling: monospace, dark theme, clean layout */
+    body { 
+      font-family: 'Courier New', monospace; 
+      background: #111; 
+      color: #00FF00; 
+      padding: 20px; 
+      line-height: 1.6;
+    }
+    .header { text-align: center; margin-bottom: 30px; }
+    h1, h2, h3 { color: #00CCFF; border-bottom: 1px solid #00CCFF; padding-bottom: 5px; }
+    .section { margin: 20px 0; }
+    pre { 
+      background: #222; 
+      padding: 12px; 
+      border-left: 5px solid #00CCFF; 
+      overflow-x: auto; 
+      font-size: 0.9em;
+      color: #FFCC00;
+    }
+    .evidence { color: #FFCC00; font-weight: bold; }
+    .recommendation { color: #AAFF00; }
+    .vulnerable { color: #FF5555; font-weight: bold; }
+    .safe { color: #55FF55; }
+    footer { margin-top: 60px; font-size: 0.8em; text-align: center; color: #666; }
+    code { background: #333; padding: 2px 4px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Security Assessment Report</h1>
+    <p><strong>Test ID:</strong> OTG-CLIENT-006</p>
+    <p><strong>Vulnerability:</strong> Client-Side Resource Manipulation</p>
+    <p><strong>Target:</strong> http://localhost/dvwa/</p>
+    <p><strong>Date:</strong> 2025-08-06 14:03:39</p>
+  </div>
+
+  <div class="section">
+    <h2>1. Test Overview</h2>
+    <p><strong>Objective:</strong> Detect and verify if user input can control the loading of client-side resources.</p>
+    <p><strong>OWASP Reference:</strong> OTG-CLIENT-006</p>
+    <p><strong>Description:</strong> Client-Side Resource Manipulation occurs when user input is used to specify the source of resources like scripts, iframes, or images, potentially leading to XSS or data exfiltration.</p>
+  </div>
+
+  <div class="section">
+    <h2>2. Test Procedure</h2>
+    <p>1. Authenticate to DVWA using provided credentials.</p>
+    <p>2. Set security level to <strong>Low</strong>.</p>
+    <p>3. Navigate to vulnerable input forms (e.g., XSS Reflected/Stores).</p>
+    <p>4. Inject resource manipulation payloads such as <code>&lt;script src=&quot;...&quot;&gt;</code>, <code>&lt;iframe src=&quot;...&quot;&gt;</code>.</p>
+    <p>5. Capture server responses and DOM state.</p>
+    <p>6. Verify resource loading via browser automation.</p>
+  </div>
+
+  <div class="section">
+    <h2>3. Findings</h2>
+    <h3>Reflected Script Manipulation</h3>
+    <p><strong>Status:</strong> <span class="vulnerable">
+        Vulnerable
+    </span></p>
+    <p><strong>Payload Used:</strong> <code>&lt;script src=&quot;http://localhost:8000/test.js&quot;&gt;&lt;/script&gt;</code></p>
+    <pre>Script tag with external source reflected in response. URL: http://localhost/dvwa/vulnerabilities/xss_r/?name=%3Cscript%20src%3D%22http%3A//localhost%3A8000/test.js%22%3E%3C/script%3E</pre>
+    <p class="evidence"><strong>Evidence:</strong> External script source reflected in response and loaded.</p>
+
+    <h3>Reflected Iframe Manipulation</h3>
+    <p><strong>Status:</strong> <span class="vulnerable">
+        Vulnerable
+    </span></p>
+    <p><strong>Payload Used:</strong> <code>&lt;iframe src=&quot;javascript:console.log(&#x27;Iframe Manipulation&#x27;)&quot;&gt;&lt;/iframe&gt;</code></p>
+    <pre>Iframe tag with manipulated source reflected in response. URL: http://localhost/dvwa/vulnerabilities/xss_r/?name=%3Ciframe%20src%3D%22javascript%3Aconsole.log%28%27Iframe%20Manipulation%27%29%22%3E%3C/iframe%3E</pre>
+    <p class="evidence"><strong>Evidence:</strong> Iframe source manipulated and rendered.</p>
+
+    <h3>Stored Image Manipulation</h3>
+    <p><strong>Status:</strong> <span class="vulnerable">
+        Vulnerable
+    </span></p>
+    <p><strong>Payload Used:</strong> <code>&lt;img src=&quot;http://localhost:8000/track.gif&quot; onerror=&quot;console.log(&#x27;Image Error&#x27;)&quot; /&gt;</code></p>
+    <pre>Image tag with manipulated source stored in guestbook</pre>
+    <p class="evidence"><strong>Evidence:</strong> Image source manipulated and stored.</p>
+
+    <h3>Attribute Manipulation</h3>
+    <p><strong>Status:</strong> <span class="safe">
+        Not Vulnerable
+    </span></p>
+    <p><strong>Payload Used:</strong> <code>N/A</code></p>
+    <pre>No evidence of vulnerability found</pre>
+    <p class="evidence"><strong>Evidence:</strong> No attribute manipulation detected.</p>
+  </div>
+
+  <div class="section">
+    <h2>4. Impact</h2>
+    <p>An attacker can manipulate resource loading to execute malicious scripts, exfiltrate data, or redirect users to phishing sites. This can lead to full account compromise when combined with XSS. The vulnerabilities found allow control over script sources, iframe content, and image loading, which can be exploited for various malicious purposes.</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Recommendations</h2>
+    <p class="recommendation">- Sanitize user inputs to remove or encode resource-related attributes and tags.</p>
+    <p class="recommendation">- Implement proper output encoding based on context (HTML, attribute, JavaScript, CSS).</p>
+    <p class="recommendation">- Use Content Security Policy (CSP) to restrict resource loading from external domains.</p>
+    <p class="recommendation">- Avoid using user input in resource URLs or HTML attributes without validation.</p>
+    <p class="recommendation">- Validate and filter input for resource manipulation patterns (script, iframe, img tags).</p>
+    <p class="recommendation">- Implement CSRF protection tokens for all forms.</p>
+    <p class="recommendation">- Regularly audit client-side code for insecure resource handling.</p>
+  </div>
+
+  <footer>
+    &copy; 2025 Automated Security Testing Framework. Report generated by AI Agent.
+  </footer>
+</body>
+</html>
