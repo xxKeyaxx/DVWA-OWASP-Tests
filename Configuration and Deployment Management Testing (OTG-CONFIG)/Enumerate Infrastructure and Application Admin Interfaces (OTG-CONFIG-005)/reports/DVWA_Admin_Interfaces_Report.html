@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVWA Admin Interfaces Test Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .finding {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .risk-high {
+            border-left: 5px solid #e74c3c;
+            background-color: #fdf2f2;
+        }
+        .risk-medium {
+            border-left: 5px solid #f39c12;
+            background-color: #fff9f2;
+        }
+        .risk-low {
+            border-left: 5px solid #27ae60;
+            background-color: #f2fdf5;
+        }
+        .risk-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .risk-high-tag {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .risk-medium-tag {
+            background-color: #f39c12;
+            color: white;
+        }
+        .risk-low-tag {
+            background-color: #27ae60;
+            color: white;
+        }
+        .interface-type-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-left: 10px;
+            background-color: #3498db;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .code-block {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+        }
+        .high-stat {
+            background-color: #e74c3c;
+        }
+        .medium-stat {
+            background-color: #f39c12;
+        }
+        .low-stat {
+            background-color: #27ae60;
+        }
+        .total-stat {
+            background-color: #3498db;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .warning {
+            background-color: #f8d7da;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DVWA Security Test Report</h1>
+        <p>Enumerate Infrastructure and Application Admin Interfaces (OTG-CONFIG-005)</p>
+        <p>Generated on: 2025-08-06 23:44:18</p>
+    </div>
+
+    <div class="section">
+        <h2>Executive Summary</h2>
+        <p>This report presents the findings of a security assessment focused on identifying administrative interfaces and infrastructure management endpoints in the Damn Vulnerable Web Application (DVWA). The test was conducted according to OWASP Testing Guide v4 methodology OTG-CONFIG-005.</p>
+        
+        <div class="summary-stats">
+            <div class="stat-box total-stat">
+                <div class="stat-number">14</div>
+                <div>Accessible Interfaces</div>
+            </div>
+            <div class="stat-box high-stat">
+                <div class="stat-number">12</div>
+                <div>High Risk Issues</div>
+            </div>
+            <div class="stat-box medium-stat">
+                <div class="stat-number">1</div>
+                <div>Medium Risk Issues</div>
+            </div>
+        </div>
+        <div class="warning">
+            <strong>Security Alert:</strong> High-risk administrative interfaces were found accessible. These should be reviewed and secured immediately.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Test Overview</h2>
+        <h3>OWASP Testing Guide - OTG-CONFIG-005</h3>
+        <p><strong>Objective:</strong> Enumerate Infrastructure and Application Admin Interfaces</p>
+        <p><strong>Description:</strong> Identify administrative interfaces, configuration panels, and infrastructure management endpoints that may provide elevated access or sensitive information.</p>
+        <p><strong>Target:</strong> http://localhost/dvwa</p>
+        <p><strong>Server Root:</strong> http://localhost</p>
+        <p><strong>Paths Tested:</strong> 78 administrative interface paths</p>
+        <p><strong>Accessible Interfaces Found:</strong> 14</p>
+    </div>
+
+    <div class="section">
+        <h2>Methodology</h2>
+        <p>The testing methodology included the following steps:</p>
+        <ol>
+            <li><strong>Authentication:</strong> Logged into DVWA with default credentials</li>
+            <li><strong>Path Enumeration:</strong> Tested administrative interface paths including:
+                <ul>
+                    <li>Application administration panels</li>
+                    <li>Database management interfaces</li>
+                    <li>Server infrastructure endpoints</li>
+                    <li>Configuration and setup interfaces</li>
+                    <li>Development and debugging interfaces</li>
+                    <li>DVWA-specific vulnerability modules</li>
+                </ul>
+            </li>
+            <li><strong>Special Testing:</strong> Specifically tested DVWA authentication bypass vulnerability with default credentials (gordonb:abc123)</li>
+            <li><strong>Testing Locations:</strong> Checked interfaces relative to both:
+                <ul>
+                    <li>DVWA application root (http://localhost/dvwa)</li>
+                    <li>Server root (http://localhost)</li>
+                </ul>
+            </li>
+            <li><strong>Risk Assessment:</strong> Categorized findings by interface type and potential risk level</li>
+        </ol>
+    </div>
+    <div class="section">
+        <h2>Findings Summary</h2>
+        <table>
+            <tr>
+                <th>Interface Path</th>
+                <th>Status Code</th>
+                <th>Type</th>
+                <th>Risk Level</th>
+                <th>Tested At</th>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/vulnerabilities/authbypass/" target="_blank">/dvwa/vulnerabilities/authbypass/</a></td>
+                <td>200</td>
+                <td>Server Infrastructure</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>dvwa_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">/dvwa/vulnerabilities/csrf/</a></td>
+                <td>200</td>
+                <td>Server Infrastructure</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>dvwa_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/setup.php" target="_blank">/dvwa/setup.php</a></td>
+                <td>200</td>
+                <td>Server Infrastructure</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>dvwa_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/phpmyadmin/" target="_blank">/phpmyadmin/</a></td>
+                <td>200</td>
+                <td>Application Admin</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>server_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/database/" target="_blank">/dvwa/database/</a></td>
+                <td>200</td>
+                <td>Database Admin</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>dvwa_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/server-status/" target="_blank">/server-status/</a></td>
+                <td>200</td>
+                <td>Server Infrastructure</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>server_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/server-info/" target="_blank">/server-info/</a></td>
+                <td>200</td>
+                <td>Server Infrastructure</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>server_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/phpinfo.php" target="_blank">/dvwa/phpinfo.php</a></td>
+                <td>200</td>
+                <td>Server Infrastructure</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>dvwa_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/xampp/" target="_blank">/xampp/</a></td>
+                <td>200</td>
+                <td>Server Infrastructure</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>server_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/config/" target="_blank">/dvwa/config/</a></td>
+                <td>200</td>
+                <td>Configuration</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>dvwa_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/README.md" target="_blank">/dvwa/README.md</a></td>
+                <td>200</td>
+                <td>Database Admin</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>dvwa_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/vulnerabilities/authbypass/" target="_blank">/dvwa/vulnerabilities/authbypass/</a></td>
+                <td>200</td>
+                <td>DVWA Vulnerabilities</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+                <td>dvwa_vulnerabilities</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/login.php" target="_blank">/dvwa/login.php</a></td>
+                <td>200</td>
+                <td>Unknown</td>
+                <td><span class="risk-tag risk-medium-tag">Medium</span></td>
+                <td>dvwa_root</td>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/robots.txt" target="_blank">/dvwa/robots.txt</a></td>
+                <td>200</td>
+                <td>Unknown</td>
+                <td><span class="risk-tag risk-low-tag">Low</span></td>
+                <td>dvwa_root</td>
+            </tr>
+        </table>
+    </div>
+    <div class="section">
+        <h2>Detailed Findings (High/Medium Risk)</h2>
+        <div class="finding risk-high">
+            <h3>/dvwa/vulnerabilities/authbypass/</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Server Infrastructure</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html;charset=utf-8</p>
+            <p><strong>Content Length:</strong> 4436 bytes</p>
+            <p><strong>Tested At:</strong> dvwa_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/authbypass/" target="_blank">http://localhost/dvwa/vulnerabilities/authbypass/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/dvwa/vulnerabilities/csrf/</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Server Infrastructure</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html;charset=utf-8</p>
+            <p><strong>Content Length:</strong> 5856 bytes</p>
+            <p><strong>Tested At:</strong> dvwa_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/dvwa/setup.php</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Server Infrastructure</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html;charset=utf-8</p>
+            <p><strong>Content Length:</strong> 6200 bytes</p>
+            <p><strong>Tested At:</strong> dvwa_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/phpmyadmin/</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Application Admin</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html; charset=utf-8</p>
+            <p><strong>Content Length:</strong> 139207 bytes</p>
+            <p><strong>Tested At:</strong> server_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/phpmyadmin/" target="_blank">http://localhost/phpmyadmin/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/dvwa/database/</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Database Admin</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html;charset=UTF-8</p>
+            <p><strong>Content Length:</strong> 2117 bytes</p>
+            <p><strong>Tested At:</strong> dvwa_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/database/" target="_blank">http://localhost/dvwa/database/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/server-status/</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Server Infrastructure</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html; charset=ISO-8859-1</p>
+            <p><strong>Content Length:</strong> 4766 bytes</p>
+            <p><strong>Tested At:</strong> server_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/server-status/" target="_blank">http://localhost/server-status/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/server-info/</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Server Infrastructure</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html; charset=ISO-8859-1</p>
+            <p><strong>Content Length:</strong> 99542 bytes</p>
+            <p><strong>Tested At:</strong> server_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/server-info/" target="_blank">http://localhost/server-info/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/dvwa/phpinfo.php</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Server Infrastructure</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html; charset=UTF-8</p>
+            <p><strong>Content Length:</strong> 86613 bytes</p>
+            <p><strong>Tested At:</strong> dvwa_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/phpinfo.php" target="_blank">http://localhost/dvwa/phpinfo.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/xampp/</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Server Infrastructure</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html;charset=UTF-8</p>
+            <p><strong>Content Length:</strong> 767 bytes</p>
+            <p><strong>Tested At:</strong> server_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/xampp/" target="_blank">http://localhost/xampp/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/dvwa/config/</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Configuration</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html;charset=UTF-8</p>
+            <p><strong>Content Length:</strong> 1218 bytes</p>
+            <p><strong>Tested At:</strong> dvwa_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/config/" target="_blank">http://localhost/dvwa/config/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/dvwa/README.md</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">Database Admin</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> unknown</p>
+            <p><strong>Content Length:</strong> 32043 bytes</p>
+            <p><strong>Tested At:</strong> dvwa_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/README.md" target="_blank">http://localhost/dvwa/README.md</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/dvwa/vulnerabilities/authbypass/</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span> 
+               <span class="interface-type-tag">DVWA Vulnerabilities</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html;charset=utf-8</p>
+            <p><strong>Content Length:</strong> 4436 bytes</p>
+            <p><strong>Tested At:</strong> dvwa_vulnerabilities</p>
+            <p><strong>Description:</strong> DVWA Authentication Bypass Vulnerability</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/authbypass/" target="_blank">http://localhost/dvwa/vulnerabilities/authbypass/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/dvwa/login.php</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span> 
+               <span class="interface-type-tag">Unknown</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html;charset=utf-8</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Tested At:</strong> dvwa_root</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+    </div>
+    <div class="section">
+        <h2>Interface Type Breakdown</h2>
+        <table>
+            <tr>
+                <th>Interface Type</th>
+                <th>Count</th>
+            </tr>
+            <tr>
+                <td>Server Infrastructure</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>Unknown</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>Application Admin</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>Database Admin</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>Configuration</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>DVWA Vulnerabilities</td>
+                <td>1</td>
+            </tr>
+        </table>
+    </div>
+    <div class="section">
+        <h2>Remediation Recommendations</h2>
+        <ol>
+            <li><strong>Access Control:</strong> Implement proper authentication and authorization for all administrative interfaces</li>
+            <li><strong>Interface Removal:</strong> Remove or disable unused administrative interfaces from production environments</li>
+            <li><strong>Network Segmentation:</strong> Restrict access to administrative interfaces to trusted networks only</li>
+            <li><strong>Web Server Configuration:</strong> Configure web server to deny access to common administrative paths</li>
+            <li><strong>Regular Auditing:</strong> Implement automated scanning for exposed administrative interfaces</li>
+            <li><strong>Strong Authentication:</strong> Use multi-factor authentication for high-risk administrative interfaces</li>
+            <li><strong>DVWA Security:</strong> In production environments, ensure DVWA vulnerability modules are properly secured or removed</li>
+        </ol>
+        <h3>Apache Configuration Example:</h3>
+        <div class="code-block">
+# Deny access to common administrative paths<br>
+<LocationMatch "(admin|administrator|phpmyadmin|server-status|phpinfo|vulnerabilities)"><br>
+    Require ip 127.0.0.1<br>
+    Require ip ::1<br>
+</LocationMatch><br><br>
+# Deny access to configuration files<br>
+<FilesMatch "\.(conf|config|ini|env)$"><br>
+    Require all denied<br>
+</FilesMatch>
+        </div>
+        <h3>Nginx Configuration Example:</h3>
+        <div class="code-block">
+# Deny access to common administrative paths<br>
+location ~* (admin|administrator|phpmyadmin|server-status|phpinfo|vulnerabilities) {{<br>
+    allow 127.0.0.1;<br>
+    allow ::1;<br>
+    deny all;<br>
+}}<br><br>
+# Deny access to configuration files<br>
+location ~* \.(conf|config|ini|env)$ {{<br>
+    deny all;<br>
+    return 404;<br>
+}}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Conclusion</h2>
+        <p>The administrative interface enumeration assessment evaluated the web application and server infrastructure for exposed management endpoints that could provide unauthorized access or sensitive information. The assessment identified 12 high-risk administrative interfaces that require immediate attention to prevent potential unauthorized access to sensitive functionality.</p>
+        <p>This assessment demonstrates the importance of proper access controls and network segmentation for administrative interfaces. Organizations should regularly audit their environments for exposed management endpoints and ensure they are properly protected. Special attention should be paid to educational and testing applications like DVWA which contain intentional vulnerabilities.</p>
+    </div>
+
+    <div class="footer">
+        <p>Generated by DVWA Admin Interfaces Test Script | OTG-CONFIG-005</p>
+        <p>This is a security testing report for educational purposes</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVWA File Extension Handling Test Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .finding {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .risk-high {
+            border-left: 5px solid #e74c3c;
+            background-color: #fdf2f2;
+        }
+        .risk-medium {
+            border-left: 5px solid #f39c12;
+            background-color: #fff9f2;
+        }
+        .risk-low {
+            border-left: 5px solid #27ae60;
+            background-color: #f2fdf5;
+        }
+        .risk-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .risk-high-tag {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .risk-medium-tag {
+            background-color: #f39c12;
+            color: white;
+        }
+        .risk-low-tag {
+            background-color: #27ae60;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .code-block {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+        }
+        .high-stat {
+            background-color: #e74c3c;
+        }
+        .medium-stat {
+            background-color: #f39c12;
+        }
+        .low-stat {
+            background-color: #27ae60;
+        }
+        .total-stat {
+            background-color: #3498db;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .warning {
+            background-color: #f8d7da;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DVWA Security Test Report</h1>
+        <p>File Extension Handling Assessment (OTG-CONFIG-003)</p>
+        <p>Generated on: 2025-08-06 23:00:00</p>
+    </div>
+
+    <div class="section">
+        <h2>Executive Summary</h2>
+        <p>This report presents the findings of a security assessment focused on testing file extension handling for sensitive information disclosure in the Damn Vulnerable Web Application (DVWA). The test was conducted according to OWASP Testing Guide v4 methodology OTG-CONFIG-003.</p>
+        
+        <div class="summary-stats">
+            <div class="stat-box total-stat">
+                <div class="stat-number">1</div>
+                <div>Total Accessible Files</div>
+            </div>
+            <div class="stat-box high-stat">
+                <div class="stat-number">1</div>
+                <div>High Risk Issues</div>
+            </div>
+            <div class="stat-box medium-stat">
+                <div class="stat-number">0</div>
+                <div>Medium Risk Issues</div>
+            </div>
+        </div>
+        <div class="warning">
+            <strong>Security Alert:</strong> Potentially sensitive files were found accessible. These should be reviewed and secured immediately.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Test Overview</h2>
+        <h3>OWASP Testing Guide - OTG-CONFIG-003</h3>
+        <p><strong>Objective:</strong> Test File Extensions Handling for Sensitive Information</p>
+        <p><strong>Description:</strong> Verify that the web server does not serve sensitive files with backup, temporary, or development extensions that could expose configuration details, source code, or credentials.</p>
+        <p><strong>Target:</strong> http://localhost/dvwa</p>
+        <p><strong>Test Files Checked:</strong> 49 common sensitive file patterns</p>
+        <p><strong>Directories Scanned:</strong> Root directory plus 18 common web application subdirectories</p>
+        <p><strong>Key Test Files Include:</strong> phpinfo.php, config files, backup files, log files, .env files</p>
+    </div>
+
+    <div class="section">
+        <h2>Methodology</h2>
+        <p>The testing methodology included the following steps:</p>
+        <ol>
+            <li><strong>Authentication:</strong> Logged into DVWA with default credentials</li>
+            <li><strong>Reconnaissance:</strong> Identified common directories for sensitive files including root directory</li>
+            <li><strong>Enumeration:</strong> Tested access to files with sensitive extensions including:
+                <ul>
+                    <li>PHP information files (phpinfo.php, info.php) - tested in root and subdirectories</li>
+                    <li>Configuration files (.php, .env, .config, .ini)</li>
+                    <li>Backup files (.bak, .backup, .old, ~)</li>
+                    <li>Database dumps (.sql)</li>
+                    <li>Log files (.log)</li>
+                    <li>Version control files (.git, .svn)</li>
+                </ul>
+            </li>
+            <li><strong>Content Analysis:</strong> Evaluated HTTP responses for sensitive content disclosure using intelligent pattern matching</li>
+        </ol>
+    </div>
+    <div class="section">
+        <h2>Findings Summary</h2>
+        <table>
+            <tr>
+                <th>File Path</th>
+                <th>Status Code</th>
+                <th>Content Type</th>
+                <th>Content Length</th>
+                <th>Risk Level</th>
+            </tr>
+            <tr>
+                <td><a href="http://localhost/dvwa/phpinfo.php" target="_blank">/phpinfo.php</a></td>
+                <td>200</td>
+                <td>text/html; charset=UTF-8</td>
+                <td>86595</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+        </table>
+    </div>
+    <div class="section">
+        <h2>Detailed Findings (High/Medium Risk)</h2>
+        <div class="finding risk-high">
+            <h3>/phpinfo.php</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Type:</strong> text/html; charset=UTF-8</p>
+            <p><strong>Content Length:</strong> 86595 bytes</p>
+            <p><strong>⚠️ SENSITIVE CONTENT DETECTED</strong></p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/phpinfo.php" target="_blank">http://localhost/dvwa/phpinfo.php</a></p>
+        </div>
+    </div>
+    <div class="section">
+        <h2>Remediation Recommendations</h2>
+        <ol>
+            <li><strong>File Access Control:</strong> Implement proper file access controls to prevent serving of sensitive files in all directories including root</li>
+            <li><strong>Web Server Configuration:</strong> Configure web server to deny access to common backup and temporary file extensions</li>
+            <li><strong>Remove Sensitive Files:</strong> Delete or secure development files like phpinfo.php, test.php from production (especially in root directory)</li>
+            <li><strong>File Permissions:</strong> Set appropriate file permissions to restrict access to sensitive files</li>
+            <li><strong>Deployment Process:</strong> Ensure development and backup files are not deployed to production</li>
+            <li><strong>Regular Auditing:</strong> Implement regular scanning for sensitive file exposure in all directories</li>
+        </ol>
+        <h3>Apache Configuration Example:</h3>
+        <div class="code-block">
+# Deny access to sensitive file extensions<br>
+<FilesMatch "\.(bak|backup|old|orig|save|swp|tmp|log|sql|config|env|key|info)$"><br>
+    Require all denied<br>
+</FilesMatch><br><br>
+# Deny access to sensitive file names<br>
+<FilesMatch "(phpinfo|info|test|debug)\.php$"><br>
+    Require all denied<br>
+</FilesMatch><br><br>
+# Deny access to hidden files<br>
+<FilesMatch "^\."gt;<br>
+    Require all denied<br>
+</FilesMatch>
+        </div>
+        <h3>Nginx Configuration Example:</h3>
+        <div class="code-block">
+# Deny access to sensitive file extensions<br>
+location ~* \.(bak|backup|old|orig|save|swp|tmp|log|sql|config|env|key|info)$ {{<br>
+    deny all;<br>
+    return 404;<br>
+}}<br><br>
+# Deny access to sensitive file names<br>
+location ~* (phpinfo|info|test|debug)\.php$ {{<br>
+    deny all;<br>
+    return 404;<br>
+}}<br><br>
+# Deny access to hidden files<br>
+location ~* /\..* {{<br>
+    deny all;<br>
+    return 404;<br>
+}}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Conclusion</h2>
+        <p>The file extension handling test evaluated the web application's exposure of sensitive files through improper file access controls. The assessment identified 1 high-risk and 0 medium-risk issues that require immediate attention to prevent unauthorized access to configuration files, backup data, and other sensitive resources.</p>
+        <p>This assessment demonstrates the importance of proper file management and access controls in web applications to prevent information disclosure vulnerabilities. Files like phpinfo.php can expose critical system information and should never be accessible in production environments, especially in the root directory.</p>
+    </div>
+
+    <div class="footer">
+        <p>Generated by DVWA File Extension Handling Test Script | OTG-CONFIG-003</p>
+        <p>This is a security testing report for educational purposes</p>
+    </div>
+</body>
+</html>

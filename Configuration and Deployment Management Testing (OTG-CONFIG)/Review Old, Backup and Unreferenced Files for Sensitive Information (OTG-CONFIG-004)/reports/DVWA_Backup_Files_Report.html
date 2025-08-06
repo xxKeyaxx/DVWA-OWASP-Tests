@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVWA Backup Files Test Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .finding {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .risk-high {
+            border-left: 5px solid #e74c3c;
+            background-color: #fdf2f2;
+        }
+        .risk-medium {
+            border-left: 5px solid #f39c12;
+            background-color: #fff9f2;
+        }
+        .risk-low {
+            border-left: 5px solid #27ae60;
+            background-color: #f2fdf5;
+        }
+        .risk-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .risk-high-tag {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .risk-medium-tag {
+            background-color: #f39c12;
+            color: white;
+        }
+        .risk-low-tag {
+            background-color: #27ae60;
+            color: white;
+        }
+        .backup-tag {
+            background-color: #9b59b6;
+            color: white;
+            margin-left: 10px;
+        }
+        .unreferenced-tag {
+            background-color: #3498db;
+            color: white;
+            margin-left: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .code-block {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+        }
+        .high-stat {
+            background-color: #e74c3c;
+        }
+        .medium-stat {
+            background-color: #f39c12;
+        }
+        .low-stat {
+            background-color: #27ae60;
+        }
+        .total-stat {
+            background-color: #3498db;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .warning {
+            background-color: #f8d7da;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DVWA Security Test Report</h1>
+        <p>Review Old, Backup and Unreferenced Files (OTG-CONFIG-004)</p>
+        <p>Generated on: 2025-08-06 23:29:26</p>
+    </div>
+
+    <div class="section">
+        <h2>Executive Summary</h2>
+        <p>This report presents the findings of a security assessment focused on identifying old, backup, and unreferenced files that could expose sensitive information in the Damn Vulnerable Web Application (DVWA). The test was conducted according to OWASP Testing Guide v4 methodology OTG-CONFIG-004.</p>
+        
+        <div class="summary-stats">
+            <div class="stat-box total-stat">
+                <div class="stat-number">0</div>
+                <div>Total Suspicious Files</div>
+            </div>
+            <div class="stat-box high-stat">
+                <div class="stat-number">0</div>
+                <div>High Risk Issues</div>
+            </div>
+            <div class="stat-box medium-stat">
+                <div class="stat-number">0</div>
+                <div>Medium Risk Issues</div>
+            </div>
+        </div>
+        <div class="success">
+            <strong>Good Security Posture:</strong> No high or medium risk backup files were found during this test.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Test Overview</h2>
+        <h3>OWASP Testing Guide - OTG-CONFIG-004</h3>
+        <p><strong>Objective:</strong> Review Old, Backup and Unreferenced Files for Sensitive Information</p>
+        <p><strong>Description:</strong> Identify backup copies of web files, temporary files, and unreferenced files that may contain sensitive information and are not intended to be served by the web server.</p>
+        <p><strong>Target:</strong> http://localhost/dvwa</p>
+        <p><strong>Files Tested:</strong> 0 potentially suspicious files</p>
+        <p><strong>Directories Scanned:</strong> 20 common web application directories</p>
+        <p><strong>Referenced Files Found:</strong> 47 files identified during site crawl</p>
+    </div>
+
+    <div class="section">
+        <h2>Methodology</h2>
+        <p>The testing methodology included the following steps:</p>
+        <ol>
+            <li><strong>Authentication:</strong> Logged into DVWA with default credentials</li>
+            <li><strong>Site Crawling:</strong> Enumerated referenced files through automated crawling</li>
+            <li><strong>Backup File Generation:</strong> Created comprehensive list of backup filename variations including:
+                <ul>
+                    <li>Common backup extensions (.bak, .backup, .old, .orig, ~, etc.)</li>
+                    <li>Temporary file patterns (.tmp, .temp, .save)</li>
+                    <li>Editor backup files (.swp, ~)</li>
+                    <li>Archive files (.zip, .tar.gz, .rar)</li>
+                </ul>
+            </li>
+            <li><strong>File Enumeration:</strong> Tested for accessible backup and unreferenced files in:
+                <ul>
+                    <li>Root directory</li>
+                    <li>Configuration directories (config/, includes/)</li>
+                    <li>Backup directories (backup/, backups/)</li>
+                    <li>Temporary directories (tmp/, temp/)</li>
+                    <li>Database directories (sql/, db/)</li>
+                </ul>
+            </li>
+            <li><strong>Content Analysis:</strong> Evaluated HTTP responses for sensitive content disclosure</li>
+        </ol>
+    </div>
+    <div class="section">
+        <h2>Findings Summary</h2>
+        <div class="success">
+            <strong>Good News:</strong> No suspicious backup or unreferenced files were found accessible during this test.
+        </div>
+    </div>
+    <div class="section">
+        <h2>Remediation Recommendations</h2>
+        <ol>
+            <li><strong>Remove Backup Files:</strong> Delete all backup, temporary, and unreferenced files from production servers</li>
+            <li><strong>Web Server Configuration:</strong> Configure web server to deny access to common backup file extensions</li>
+            <li><strong>Development Process:</strong> Implement strict policies to prevent backup files from being deployed</li>
+            <li><strong>File Permissions:</strong> Set appropriate file permissions to restrict access to sensitive files</li>
+            <li><strong>Regular Auditing:</strong> Implement automated scanning for backup and temporary files</li>
+            <li><strong>Editor Configuration:</strong> Configure editors to store backup files outside the web root</li>
+        </ol>
+        <h3>Apache Configuration Example:</h3>
+        <div class="code-block">
+# Deny access to backup and temporary files<br>
+<FilesMatch "\.(bak|backup|old|orig|tmp|temp|save|swp|copy|~)$"><br>
+    Require all denied<br>
+</FilesMatch><br><br>
+# Deny access to archive files<br>
+<FilesMatch "\.(zip|tar|tar\.gz|rar|7z)$"><br>
+    Require all denied<br>
+</FilesMatch><br><br>
+# Deny access to hidden files<br>
+<FilesMatch "^\."gt;<br>
+    Require all denied<br>
+</FilesMatch>
+        </div>
+        <h3>Nginx Configuration Example:</h3>
+        <div class="code-block">
+# Deny access to backup and temporary files<br>
+location ~* \.(bak|backup|old|orig|tmp|temp|save|swp|copy|~)$ {{<br>
+    deny all;<br>
+    return 404;<br>
+}}<br><br>
+# Deny access to archive files<br>
+location ~* \.(zip|tar|tar\.gz|rar|7z)$ {{<br>
+    deny all;<br>
+    return 404;<br>
+}}<br><br>
+# Deny access to hidden files<br>
+location ~* /\..* {{<br>
+    deny all;<br>
+    return 404;<br>
+}}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Conclusion</h2>
+        <p>The backup file assessment evaluated the web application's exposure of old, backup, and unreferenced files that could contain sensitive information. The assessment found no accessible backup or unreferenced files, indicating good file management practices.</p>
+        <p>This assessment demonstrates the importance of proper file management and access controls in web applications to prevent information disclosure through forgotten backup files. Organizations should implement strict policies to prevent backup files from being deployed to production environments.</p>
+    </div>
+
+    <div class="footer">
+        <p>Generated by DVWA Backup Files Test Script | OTG-CONFIG-004</p>
+        <p>This is a security testing report for educational purposes</p>
+    </div>
+</body>
+</html>

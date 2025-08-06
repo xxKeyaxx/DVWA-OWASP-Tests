@@ -1,0 +1,2199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVWA HTTP Methods Test Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .finding {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .risk-high {
+            border-left: 5px solid #e74c3c;
+            background-color: #fdf2f2;
+        }
+        .risk-medium {
+            border-left: 5px solid #f39c12;
+            background-color: #fff9f2;
+        }
+        .risk-low {
+            border-left: 5px solid #27ae60;
+            background-color: #f2fdf5;
+        }
+        .risk-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .risk-high-tag {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .risk-medium-tag {
+            background-color: #f39c12;
+            color: white;
+        }
+        .risk-low-tag {
+            background-color: #27ae60;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .code-block {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .stat-box {
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+        }
+        .high-stat {
+            background-color: #e74c3c;
+        }
+        .medium-stat {
+            background-color: #f39c12;
+        }
+        .low-stat {
+            background-color: #27ae60;
+        }
+        .total-stat {
+            background-color: #3498db;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .warning {
+            background-color: #f8d7da;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DVWA Security Test Report</h1>
+        <p>Test HTTP Methods (OTG-CONFIG-006)</p>
+        <p>Generated on: 2025-08-06 23:53:10</p>
+    </div>
+
+    <div class="section">
+        <h2>Executive Summary</h2>
+        <p>This report presents the findings of a security assessment focused on testing HTTP methods for the Damn Vulnerable Web Application (DVWA). The test was conducted according to OWASP Testing Guide v4 methodology OTG-CONFIG-006.</p>
+        
+        <div class="summary-stats">
+            <div class="stat-box total-stat">
+                <div class="stat-number">294</div>
+                <div>Total Tests Performed</div>
+            </div>
+            <div class="stat-box high-stat">
+                <div class="stat-number">54</div>
+                <div>High Risk Issues</div>
+            </div>
+            <div class="stat-box medium-stat">
+                <div class="stat-number">144</div>
+                <div>Medium Risk Issues</div>
+            </div>
+        </div>
+        <div class="warning">
+            <strong>Security Alert:</strong> High-risk HTTP method vulnerabilities were found. These should be reviewed and secured immediately.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Test Overview</h2>
+        <h3>OWASP Testing Guide - OTG-CONFIG-006</h3>
+        <p><strong>Objective:</strong> Test HTTP Methods</p>
+        <p><strong>Description:</strong> Verify that the web server and application properly handle HTTP methods and do not expose dangerous methods that could be exploited.</p>
+        <p><strong>Target:</strong> http://localhost/dvwa</p>
+        <p><strong>Methods Tested:</strong> 16 HTTP methods</p>
+        <p><strong>Endpoints Tested:</strong> 18 DVWA endpoints</p>
+        <p><strong>Total Tests Performed:</strong> 294</p>
+    </div>
+
+    <div class="section">
+        <h2>Methodology</h2>
+        <p>The testing methodology included the following steps:</p>
+        <ol>
+            <li><strong>Authentication:</strong> Logged into DVWA with default credentials</li>
+            <li><strong>Method Enumeration:</strong> Tested 16 HTTP methods including:
+                <ul>
+                    <li>Standard methods: GET, POST, HEAD, OPTIONS</li>
+                    <li>Extended methods: PUT, DELETE, TRACE, PATCH, CONNECT</li>
+                    <li>WebDAV methods: PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK, UNLOCK</li>
+                </ul>
+            </li>
+            <li><strong>Endpoint Testing:</strong> Tested methods on 18 key DVWA endpoints including:
+                <ul>
+                    <li>Main application pages</li>
+                    <li>Authentication interfaces</li>
+                    <li>Security configuration pages</li>
+                    <li>Vulnerability modules</li>
+                </ul>
+            </li>
+            <li><strong>Method Tampering:</strong> Tested HTTP method bypass techniques</li>
+            <li><strong>Risk Assessment:</strong> Analyzed responses for security implications</li>
+        </ol>
+    </div>
+    <div class="section">
+        <h2>Findings Summary</h2>
+        <table>
+            <tr>
+                <th>Endpoint</th>
+                <th>Method</th>
+                <th>Status Code</th>
+                <th>Risk Level</th>
+            </tr>
+            <tr>
+                <td>/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/login.php</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/login.php</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/login.php</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/index.php</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/index.php</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/index.php</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/security.php</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/security.php</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/security.php</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/logout.php</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/logout.php</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/logout.php</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/setup.php</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/setup.php</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/setup.php</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/instructions.php</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/instructions.php</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/instructions.php</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/brute/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/brute/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/brute/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/exec/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/exec/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/exec/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/csrf/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/csrf/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/csrf/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/fi/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/fi/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/fi/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/upload/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/upload/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/upload/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/captcha/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/captcha/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/captcha/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/sqli/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/sqli/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/sqli/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/sqli_blind/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/sqli_blind/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/sqli_blind/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/weak_id/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/weak_id/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/weak_id/</td>
+                <td>TRACE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/xss_r/</td>
+                <td>PUT</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td>/vulnerabilities/xss_r/</td>
+                <td>DELETE</td>
+                <td>200</td>
+                <td><span class="risk-tag risk-high-tag">High</span></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;"><em>... and 244 more findings</em></td>
+            </tr>
+        </table>
+    </div>
+    <div class="section">
+        <h2>Detailed Findings (High/Medium Risk)</h2>
+        <div class="finding risk-high">
+            <h3>/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 249 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/login.php - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/login.php - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/login.php - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 258 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/index.php - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/index.php - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/index.php - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 258 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/security.php - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/security.php - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/security.php - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 261 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/logout.php - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/logout.php - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/logout.php - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 259 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/setup.php - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/setup.php - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/setup.php - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 258 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/instructions.php - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/instructions.php - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/instructions.php - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 265 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/brute/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/brute/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/brute/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 271 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/exec/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/exec/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/exec/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 270 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/csrf/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/csrf/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/csrf/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 270 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/fi/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/fi/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/fi/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 268 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/upload/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/upload/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/upload/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 272 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/captcha/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/captcha/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/captcha/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 273 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/sqli/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/sqli/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/sqli/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 270 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/sqli_blind/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/sqli_blind/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/sqli_blind/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 276 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/weak_id/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/weak_id/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/weak_id/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 273 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/xss_r/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/xss_r/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/xss_r/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 271 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/xss_s/ - PUT</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PUT method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/xss_s/ - DELETE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> DELETE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-high">
+            <h3>/vulnerabilities/xss_s/ - TRACE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-high-tag">High</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 271 bytes</p>
+            <p><strong>Description:</strong> TRACE method enabled with sensitive header reflection (XST vulnerability)</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/" target="_blank">http://localhost/dvwa/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/login.php - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/login.php - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/login.php - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/login.php - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/login.php - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/login.php - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/login.php - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/login.php - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/login.php" target="_blank">http://localhost/dvwa/login.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/index.php - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/index.php - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/index.php - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/index.php - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/index.php - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/index.php - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/index.php - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/index.php - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 6403 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/index.php" target="_blank">http://localhost/dvwa/index.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/security.php - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/security.php - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/security.php - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/security.php - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/security.php - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/security.php - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/security.php - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/security.php - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4957 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/security.php" target="_blank">http://localhost/dvwa/security.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/logout.php - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/logout.php - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/logout.php - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/logout.php - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/logout.php - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/logout.php - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/logout.php - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/logout.php - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/logout.php" target="_blank">http://localhost/dvwa/logout.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/setup.php - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/setup.php - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/setup.php - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/setup.php - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/setup.php - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/setup.php - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/setup.php - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/setup.php - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 4518 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/setup.php" target="_blank">http://localhost/dvwa/setup.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/instructions.php - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/instructions.php - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/instructions.php - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/instructions.php - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/instructions.php - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/instructions.php - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/instructions.php - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/instructions.php - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 39350 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/instructions.php" target="_blank">http://localhost/dvwa/instructions.php</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/brute/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/brute/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/brute/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/brute/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/brute/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/brute/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/brute/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/brute/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/brute/" target="_blank">http://localhost/dvwa/vulnerabilities/brute/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/exec/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/exec/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/exec/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/exec/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/exec/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/exec/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/exec/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/exec/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/exec/" target="_blank">http://localhost/dvwa/vulnerabilities/exec/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/csrf/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/csrf/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/csrf/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/csrf/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/csrf/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/csrf/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/csrf/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/csrf/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/csrf/" target="_blank">http://localhost/dvwa/vulnerabilities/csrf/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/fi/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/fi/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/fi/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/fi/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/fi/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/fi/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/fi/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/fi/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/fi/" target="_blank">http://localhost/dvwa/vulnerabilities/fi/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/upload/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/upload/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/upload/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/upload/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/upload/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/upload/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/upload/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/upload/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/upload/" target="_blank">http://localhost/dvwa/vulnerabilities/upload/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/captcha/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/captcha/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/captcha/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/captcha/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/captcha/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/captcha/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/captcha/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/captcha/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/captcha/" target="_blank">http://localhost/dvwa/vulnerabilities/captcha/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli_blind/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli_blind/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli_blind/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli_blind/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli_blind/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli_blind/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli_blind/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/sqli_blind/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/sqli_blind/" target="_blank">http://localhost/dvwa/vulnerabilities/sqli_blind/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/weak_id/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/weak_id/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/weak_id/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/weak_id/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/weak_id/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/weak_id/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/weak_id/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/weak_id/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/weak_id/" target="_blank">http://localhost/dvwa/vulnerabilities/weak_id/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_r/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_r/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_r/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_r/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_r/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_r/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_r/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_r/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_r/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_r/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_s/ - PATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_s/ - PROPFIND</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPFIND method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_s/ - PROPPATCH</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> PROPPATCH method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_s/ - MKCOL</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MKCOL method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_s/ - COPY</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> COPY method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_s/ - MOVE</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> MOVE method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_s/ - LOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> LOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+        <div class="finding risk-medium">
+            <h3>/vulnerabilities/xss_s/ - UNLOCK</h3>
+            <p><strong>Risk Level:</strong> <span class="risk-tag risk-medium-tag">Medium</span></p>
+            <p><strong>HTTP Status:</strong> 200</p>
+            <p><strong>Content Length:</strong> 1342 bytes</p>
+            <p><strong>Description:</strong> UNLOCK method test</p>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/vulnerabilities/xss_s/" target="_blank">http://localhost/dvwa/vulnerabilities/xss_s/</a></p>
+        </div>
+    </div>
+    <div class="section">
+        <h2>HTTP Methods Overview</h2>
+        <h3>Standard HTTP Methods</h3>
+        <ul>
+            <li><strong>GET</strong> - Retrieve information (Generally safe)</li>
+            <li><strong>POST</strong> - Submit data (Generally safe)</li>
+            <li><strong>HEAD</strong> - Retrieve headers only (Generally safe)</li>
+            <li><strong>OPTIONS</strong> - Query available methods (Informational)</li>
+        </ul>
+        
+        <h3>Dangerous HTTP Methods</h3>
+        <ul>
+            <li><strong>TRACE</strong> - Echoes back the received request (High risk - XST vulnerability)</li>
+            <li><strong>PUT</strong> - Upload file/resource (High risk)</li>
+            <li><strong>DELETE</strong> - Delete resource (High risk)</li>
+            <li><strong>CONNECT</strong> - Reserved for proxies (High risk)</li>
+            <li><strong>PATCH</strong> - Partial resource modification (Medium risk)</li>
+        </ul>
+        
+        <h3>WebDAV Methods</h3>
+        <ul>
+            <li><strong>PROPFIND</strong> - Retrieve properties (Medium risk)</li>
+            <li><strong>PROPPATCH</strong> - Modify properties (Medium risk)</li>
+            <li><strong>MKCOL</strong> - Create collection/directory (Medium risk)</li>
+            <li><strong>COPY/MOVE</strong> - File operations (Medium risk)</li>
+            <li><strong>LOCK/UNLOCK</strong> - Resource locking (Medium risk)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Remediation Recommendations</h2>
+        <ol>
+            <li><strong>Disable Dangerous Methods:</strong> Explicitly disable HTTP methods that are not required for application functionality</li>
+            <li><strong>Web Server Configuration:</strong> Configure web server to reject dangerous HTTP methods</li>
+            <li><strong>Application-Level Controls:</strong> Implement proper method validation in the application</li>
+            <li><strong>Regular Auditing:</strong> Periodically test HTTP methods to ensure they remain properly restricted</li>
+            <li><strong>Security Headers:</strong> Implement proper security headers to prevent method abuse</li>
+        </ol>
+        <h3>Apache Configuration Example:</h3>
+        <div class="code-block">
+# Disable dangerous HTTP methods<br>
+<LimitExcept GET POST HEAD OPTIONS><br>
+    Require all denied<br>
+</LimitExcept><br><br>
+# Explicitly deny TRACE method<br>
+TraceEnable Off
+        </div>
+        <h3>Nginx Configuration Example:</h3>
+        <div class="code-block">
+# Block dangerous HTTP methods<br>
+if ($request_method !~ ^(GET|HEAD|POST|OPTIONS)$ ) {{<br>
+    return 405;<br>
+}}<br><br>
+# Disable TRACE method<br>
+more_clear_headers ' TRACE';
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Conclusion</h2>
+        <p>The HTTP method assessment evaluated the web application's handling of various HTTP methods to identify potential security vulnerabilities. The assessment identified 54 high-risk HTTP method vulnerabilities that require immediate attention to prevent potential exploitation.</p>
+        <p>This assessment demonstrates the importance of proper HTTP method validation and restriction. Organizations should ensure that only necessary HTTP methods are enabled and that dangerous methods like TRACE, PUT, and DELETE are properly disabled to prevent potential exploitation.</p>
+    </div>
+
+    <div class="footer">
+        <p>Generated by DVWA HTTP Methods Test Script | OTG-CONFIG-006</p>
+        <p>This is a security testing report for educational purposes</p>
+    </div>
+</body>
+</html>
