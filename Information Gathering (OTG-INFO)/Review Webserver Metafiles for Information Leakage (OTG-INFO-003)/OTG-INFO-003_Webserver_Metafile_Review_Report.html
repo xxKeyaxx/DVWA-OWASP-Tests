@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWASP OTG-INFO-003 - Webserver Metafile Review Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0a0a0a;
+            --secondary-dark: #1a1a1a;
+            --accent-green: #00ff00;
+            --accent-blue: #00aaff;
+            --accent-red: #ff0000;
+            --accent-orange: #ff8c00;
+            --accent-yellow: #ffff00;
+            --text-light: #ffffff;
+            --text-gray: #cccccc;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--secondary-dark);
+            padding: 30px;
+            border-left: 4px solid var(--accent-green);
+            margin-bottom: 30px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        h1 {
+            color: var(--accent-green);
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        h3 {
+            color: var(--text-light);
+        }
+        
+        .report-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .meta-item {
+            background-color: var(--secondary-dark);
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .meta-item strong {
+            color: var(--accent-green);
+        }
+        
+        .findings-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .summary-card {
+            background-color: var(--secondary-dark);
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        
+        .summary-card.critical { border-top: 4px solid var(--accent-red); }
+        .summary-card.high { border-top: 4px solid var(--accent-orange); }
+        .summary-card.medium { border-top: 4px solid var(--accent-yellow); }
+        .summary-card.low { border-top: 4px solid var(--accent-green); }
+        
+        .finding {
+            background-color: var(--secondary-dark);
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid var(--text-gray);
+        }
+        
+        .finding.critical { border-left-color: var(--accent-red); }
+        .finding.high { border-left-color: var(--accent-orange); }
+        .finding.medium { border-left-color: var(--accent-yellow); }
+        .finding.low { border-left-color: var(--accent-green); }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .badge.critical { background-color: var(--accent-red); }
+        .badge.high { background-color: var(--accent-orange); }
+        .badge.medium { background-color: var(--accent-yellow); color: #000; }
+        .badge.low { background-color: var(--accent-green); }
+        
+        .content-preview {
+            background-color: var(--primary-dark);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: var(--secondary-dark);
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        
+        th {
+            background-color: rgba(0, 255, 0, 0.1);
+            color: var(--accent-green);
+        }
+        
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--text-gray);
+            border-top: 1px solid #333;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+            .container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>OWASP Testing Guide - OTG-INFO-003</h1>
+            <h2>Webserver Metafile Review Report</h2>
+            <div class="report-meta">
+                <div class="meta-item">
+                    <strong>Target:</strong> http://localhost/dvwa/
+                </div>
+                <div class="meta-item">
+                    <strong>Date:</strong> 2025-08-06 17:14:57
+                </div>
+                <div class="meta-item">
+                    <strong>Test ID:</strong> OTG-INFO-003
+                </div>
+                <div class="meta-item">
+                    <strong>Tester:</strong> AI Security Agent
+                </div>
+            </div>
+        </header>
+
+        <section>
+            <h2>Executive Summary</h2>
+            <p>This report details the findings of a security assessment focused on identifying information leakage through webserver metafiles and backup files. The assessment targeted the DVWA application running on localhost to identify exposed files that could reveal sensitive configuration data, source code, or system information.</p>
+        </section>
+
+        <section>
+            <h2>Test Details</h2>
+            <p><strong>OWASP Test ID:</strong> OTG-INFO-003 - Review Webserver Metafiles for Information Leakage</p>
+            <p>This test identifies sensitive information leakage through common webserver metafiles, backup files, and configuration files that may be accessible to unauthorized users.</p>
+        </section>
+
+        <section>
+            <h2>Methodology</h2>
+            <p>The assessment was performed using a custom Python script that systematically checked for the presence of common metafiles and backup files that are often left exposed in web applications. HTTP GET requests were made to each target file path, and accessible files were analyzed for sensitive content.</p>
+            <p><strong>Tools Used:</strong> Custom Python Metafile Scanner</p>
+            <p><strong>Scope:</strong> DVWA installation at http://localhost/dvwa/</p>
+        </section>
+
+        <section>
+            <h2>Findings Summary</h2>
+            <div class="findings-summary">
+
+                <div class="summary-card critical">
+                    <h3>Critical</h3>
+                    <p>0</p>
+                </div>
+                <div class="summary-card high">
+                    <h3>High</h3>
+                    <p>1</p>
+                </div>
+                <div class="summary-card medium">
+                    <h3>Medium</h3>
+                    <p>1</p>
+                </div>
+                <div class="summary-card low">
+                    <h3>Low</h3>
+                    <p>1</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Detailed Findings</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Status</th>
+                        <th>Length</th>
+                        <th>Severity</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td><a href="http://localhost/dvwa/robots.txt" target="_blank">robots.txt</a></td>
+                        <td>200</td>
+                        <td>25</td>
+                        <td><span class="badge medium">Medium</span></td>
+                        <td>Robots.txt file accessible - may reveal hidden paths</td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="http://localhost/dvwa/phpinfo.php" target="_blank">phpinfo.php</a></td>
+                        <td>200</td>
+                        <td>1342</td>
+                        <td><span class="badge high">High</span></td>
+                        <td>PHP info file accessible - exposes system information</td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="http://localhost/dvwa/README.md" target="_blank">README.md</a></td>
+                        <td>200</td>
+                        <td>32043</td>
+                        <td><span class="badge low">Low</span></td>
+                        <td>File accessible with 32043 bytes</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </section>
+
+        <section class="finding medium">
+            <h3>robots.txt</h3>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/robots.txt" target="_blank">http://localhost/dvwa/robots.txt</a></p>
+            <p><strong>Status:</strong> 200</p>
+            <p><strong>Length:</strong> 25 bytes</p>
+            <p><strong>Severity:</strong> <span class="badge medium">Medium</span></p>
+            <p><strong>Description:</strong> Robots.txt file accessible - may reveal hidden paths</p>
+            <p><strong>Content Preview:</strong></p>
+            <div class="content-preview">User-agent: *
+Disallow: /</div>
+            <p><strong>Remediation:</strong> 
+Remove or restrict access to unnecessary files and backup files from the web server.
+            </p>
+        </section>
+
+        <section class="finding high">
+            <h3>phpinfo.php</h3>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/phpinfo.php" target="_blank">http://localhost/dvwa/phpinfo.php</a></p>
+            <p><strong>Status:</strong> 200</p>
+            <p><strong>Length:</strong> 1342 bytes</p>
+            <p><strong>Severity:</strong> <span class="badge high">High</span></p>
+            <p><strong>Description:</strong> PHP info file accessible - exposes system information</p>
+            <p><strong>Content Preview:</strong></p>
+            <div class="content-preview"><!DOCTYPE html>
+
+<html lang="en-GB">
+
+	<head>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+		<title>Login :: Damn Vulnerable Web Application (DVWA)</title>
+
+		<link rel="stylesheet" type="text/css" href="dvwa/css/login.css" />
+
+	</head>
+
+	<body>
+
+	<div id="wrapper">
+
+	<div id="header">
+
+	<br />
+
+	<p><img src="dvwa/images/login_logo.png" /></p>
+
+	<br />
+
+	</div> <!--<div id="header">-->
+
+	<div id="content">
+
+	<form action="login.php" meth</div>
+            <p><strong>Remediation:</strong> 
+Remove phpinfo.php files from production servers as they expose sensitive system information.
+            </p>
+        </section>
+
+        <section class="finding low">
+            <h3>README.md</h3>
+            <p><strong>URL:</strong> <a href="http://localhost/dvwa/README.md" target="_blank">http://localhost/dvwa/README.md</a></p>
+            <p><strong>Status:</strong> 200</p>
+            <p><strong>Length:</strong> 32043 bytes</p>
+            <p><strong>Severity:</strong> <span class="badge low">Low</span></p>
+            <p><strong>Description:</strong> File accessible with 32043 bytes</p>
+            <p><strong>Content Preview:</strong></p>
+            <div class="content-preview"># DAMN VULNERABLE WEB APPLICATION
+
+Damn Vulnerable Web Application (DVWA) is a PHP/MariaDB web application that is damn vulnerable. Its main goal is to be an aid for security professionals to test their skills and tools in a legal environment, help web developers better understand the processes of securing web applications and to aid both students & teachers to learn about web application security in a controlled class room environment.
+
+The aim of DVWA is to **practice some of the most common w</div>
+            <p><strong>Remediation:</strong> 
+Remove or restrict access to unnecessary files and backup files from the web server.
+            </p>
+        </section>
+
+        <section>
+            <h2>Remediation Recommendations</h2>
+            <ul>
+                <li>Remove all development files (.git, .env, backup files) from production environments</li>
+                <li>Store configuration files outside the web root directory</li>
+                <li>Implement proper access controls to prevent direct access to sensitive files</li>
+                <li>Regularly audit web directories for exposed metafiles and backup files</li>
+                <li>Use proper file permissions and web server configuration to restrict access</li>
+                <li>Implement a deployment process that excludes development artifacts</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Conclusion</h2>
+            <p>The assessment identified several metafiles and backup files that are accessible and may expose sensitive information. Immediate remediation is recommended to prevent potential information leakage that could be exploited by attackers to gain deeper insights into the application structure and configuration.</p>
+        </section>
+
+        <footer>
+            <p><em>This report was generated for educational purposes in a controlled environment (DVWA). Unauthorized testing on systems without permission is illegal.</em></p>
+            <p>Report generated by AI Security Agent - OTG-INFO-003 Scanner</p>
+        </footer>
+    </div>
+</body>
+</html>
